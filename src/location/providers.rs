@@ -1,7 +1,7 @@
 //! Location providers: Nominatim, IP API, and built-in fallback dataset.
 
 use super::types::{LocationError, LocationSource, ResolvedLocation};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 // ─── Built-in dataset ───────────────────────────────────────────
 
@@ -251,6 +251,28 @@ fn builtin_to_resolved(city: &BuiltinCity) -> ResolvedLocation {
         disambiguated: false,
         disambiguation_note: None,
     }
+}
+
+/// A city entry for the public city list API.
+#[derive(Debug, Clone, Serialize)]
+pub struct CityInfo {
+    pub name: String,
+    pub country: String,
+    pub lat: f64,
+    pub lon: f64,
+}
+
+/// Return the full built-in city list (for autocomplete / API).
+pub fn builtin_city_list() -> Vec<CityInfo> {
+    BUILTIN_CITIES
+        .iter()
+        .map(|c| CityInfo {
+            name: c.names[0].to_string(),
+            country: c.country_code.to_string(),
+            lat: c.lat,
+            lon: c.lon,
+        })
+        .collect()
 }
 
 // ─── Nominatim provider ─────────────────────────────────────────

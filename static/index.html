@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polaris Chronos</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span class="star">&#11088;</span> Polaris Chronos</h1>
+      <p class="subtitle">Adaptive Prayer Time Engine</p>
+    </header>
+
+    <div class="controls">
+      <div class="input-group">
+        <div class="autocomplete-wrapper">
+          <input type="text" id="city-input" placeholder="Enter city name..." autocomplete="off">
+          <div id="autocomplete-list" class="autocomplete-list"></div>
+        </div>
+        <input type="date" id="date-input">
+        <select id="strategy-input">
+          <option value="projected45">Projected45</option>
+          <option value="strict">Strict</option>
+        </select>
+        <button id="go-btn">Go</button>
+      </div>
+    </div>
+
+    <div id="error-msg" class="error-msg" style="display:none;"></div>
+
+    <div id="results" style="display:none;">
+      <div class="location-banner">
+        <span class="pin">&#128205;</span>
+        <span id="loc-name"></span> &mdash; <span id="loc-date"></span>
+        <span id="day-state" class="day-state"></span>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="prayer-table">
+          <thead>
+            <tr>
+              <th>Prayer</th>
+              <th>Time</th>
+              <th>Method</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody id="prayer-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="solar-panel">
+        <h3>Solar Info</h3>
+        <div class="solar-grid">
+          <div class="solar-item">
+            <span class="solar-label">Max Altitude</span>
+            <span id="solar-max" class="solar-value"></span>
+          </div>
+          <div class="solar-item">
+            <span class="solar-label">Min Altitude</span>
+            <span id="solar-min" class="solar-value"></span>
+          </div>
+          <div class="solar-item">
+            <span class="solar-label">Peak (UTC)</span>
+            <span id="solar-peak" class="solar-value"></span>
+          </div>
+          <div class="solar-item">
+            <span class="solar-label">Nadir (UTC)</span>
+            <span id="solar-nadir" class="solar-value"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-panel">
+        <span class="meta-item">Strategy: <strong id="meta-strategy"></strong></span>
+        <span class="meta-item">Source: <strong id="meta-source"></strong></span>
+        <span class="meta-item">Confidence: <strong id="meta-confidence"></strong></span>
+      </div>
+    </div>
+
+    <footer>
+      <p>Polaris Chronos &mdash; Virtual Horizon Prayer Time Engine</p>
+    </footer>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
