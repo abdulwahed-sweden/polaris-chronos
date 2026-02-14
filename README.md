@@ -1,21 +1,66 @@
-# Polaris Chronos
+# Polaris 🌌
+### The Universal Prayer Time Engine
 
-**Universal Prayer Time Engine** — solves high-latitude calculations using adaptive projection and angular solar dynamics.
+> 🌐 Languages: [English](README.md) | [العربية](README_AR.md)
 
-## Features
+**Polaris** is a high-precision astronomical engine written in Rust, designed to solve prayer time calculations for **all locations on Earth**, including extreme latitudes (Midnight Sun & Polar Night).
 
-- SPA-based solar position engine (Jean Meeus algorithm)
-- Virtual Horizon logic for twilight events
-- Adaptive Compensation Engine (Projected45 strategy)
-- Polar Night and Midnight Sun detection
-- Smart city resolution with Nominatim disambiguation
-- Built-in dataset for 30+ major cities with fuzzy matching
-- File-based location cache with 30-day TTL
-- IP-based auto-detection fallback
-- Confidence scoring per prayer event (Standard / Virtual / Projected)
-- JSON output to stdout, ASCII timeline to stderr
+---
 
-## Installation
+## 🌍 Why Two Documentations?
+
+Different audiences require different explanations:
+
+- **Developers (English):** Need installation, API usage, and technical clarity.
+- **Arabic users / researchers:** Need conceptual understanding and trust — *"How was this calculated?"*
+
+👉 Therefore:
+- `README.md` → Technical (this file)
+- `README_AR.md` → Conceptual explanation (Q&A format)
+
+---
+
+## 🚀 Why Polaris?
+
+| Feature | Traditional Libraries | Polaris Engine |
+| :--- | :--- | :--- |
+| **Polar Night** | Fails / Returns Error | **Virtual Schedule** (Wave-based) |
+| **Midnight Sun** | Missing Maghrib/Isha | **Adaptive Projection** |
+| **Transparency** | Hidden logic | **Explicit Method Labels** |
+| **Confidence** | Unknown | **Scored (1.0 → 0.5)** |
+| **Architecture** | Static formulas | **Dynamic solar simulation** |
+
+---
+
+## 🧠 Core Idea
+
+Polaris treats the sun not as a "visible disk", but as a **continuous angular motion (sine wave)**.
+
+Even when:
+- the sun never sets ☀️
+- or never rises 🌑
+
+👉 the system still computes a **complete, consistent daily schedule**
+
+---
+
+## ⚙️ Calculation Modes
+
+| Mode | Description |
+|------|------------|
+| **Standard** | Real astronomical events (sunrise/sunset exist) |
+| **Virtual** | Derived from solar wave (no visible twilight) |
+| **Projected** | Borrowed duration from moderate latitude (adaptive model) |
+
+Each result includes:
+
+```
+time + method + confidence
+```
+
+---
+
+## 📦 Installation
 
 ```bash
 cargo build --release
@@ -23,7 +68,9 @@ cargo build --release
 
 The binary is at `target/release/polaris`.
 
-## Usage
+---
+
+## 📦 Usage
 
 ```bash
 # By city name (positional)
@@ -51,7 +98,9 @@ polaris Stockholm --strategy strict
 polaris --city Paris --topk 5
 ```
 
-## CLI Flags
+---
+
+## 🔧 CLI Flags
 
 | Flag | Description |
 |------|-------------|
@@ -67,7 +116,18 @@ polaris --city Paris --topk 5
 | `--show-confidence` | Display confidence in ASCII timeline |
 | `--offline` | Skip network calls, use cache/built-in only |
 
-## Architecture
+---
+
+## 📊 Example Output
+
+```
+Maghrib: 21:24 [P] (0.5)
+Reason: Sun does not set — projected from moderate latitude
+```
+
+---
+
+## 🏗️ Architecture
 
 ```
 src/
@@ -86,7 +146,9 @@ scripts/
   global_maghrib_test.py   30-city x 3-date stress test
 ```
 
-## Testing
+---
+
+## 🧪 Testing
 
 ```bash
 # Rust unit tests (79 tests)
@@ -97,6 +159,17 @@ cargo build --release
 python3 scripts/global_maghrib_test.py
 ```
 
-## License
+---
+
+## 🔬 Design Principles
+
+- **Physics-first:** Never fake astronomical events
+- **Transparent:** Every value explains how it was computed
+- **Universal:** Works at any latitude
+- **Deterministic:** Same input → same output
+
+---
+
+## 📄 License
 
 MIT
