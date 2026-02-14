@@ -37,24 +37,24 @@
 
 <br>
 
-<table width="100%" dir="rtl">
+<table>
 <thead>
 <tr>
-<th align="right" width="25%">الظاهرة</th>
-<th align="right" width="35%">ماذا يحدث</th>
-<th align="right" width="40%">النتيجة في التطبيقات التقليدية</th>
+<th align="right">النتيجة في التطبيقات التقليدية</th>
+<th align="right">ماذا يحدث</th>
+<th align="right">الظاهرة</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="right"><strong>شمس منتصف الليل</strong> ☀️</td>
-<td align="right">الشمس لا تغرب لأسابيع</td>
 <td align="right">لا يوجد مغرب ولا عشاء — خطأ أو فراغ</td>
+<td align="right">الشمس لا تغرب لأسابيع</td>
+<td align="right"><strong>شمس منتصف الليل</strong> ☀️</td>
 </tr>
 <tr>
-<td align="right"><strong>الليل القطبي</strong> 🌑</td>
-<td align="right">الشمس لا تشرق لأسابيع</td>
 <td align="right">لا يوجد فجر ولا شروق — خطأ أو فراغ</td>
+<td align="right">الشمس لا تشرق لأسابيع</td>
+<td align="right"><strong>الليل القطبي</strong> 🌑</td>
 </tr>
 </tbody>
 </table>
@@ -112,33 +112,33 @@
 
 <br>
 
-<table width="100%" dir="rtl">
+<table>
 <thead>
 <tr>
-<th align="right" width="15%">الطريقة</th>
-<th align="right" width="15%">الثقة</th>
-<th align="right" width="30%">متى تُستخدم</th>
-<th align="right" width="40%">كيف تعمل</th>
+<th align="right">كيف تعمل</th>
+<th align="right">متى تُستخدم</th>
+<th align="center">الثقة</th>
+<th align="right">الطريقة</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="right">🟢 <strong>Standard</strong></td>
-<td align="center"><code>1.0</code></td>
-<td align="right">الشمس تشرق وتغرب بشكل طبيعي</td>
 <td align="right">حساب فلكي مباشر — نفس المنهج المستخدم في معظم التطبيقات</td>
+<td align="right">الشمس تشرق وتغرب بشكل طبيعي</td>
+<td align="center"><code>1.0</code></td>
+<td align="right">🟢 <strong>Standard</strong></td>
 </tr>
 <tr>
-<td align="right">🟡 <strong>Virtual</strong></td>
-<td align="center"><code>0.7</code></td>
-<td align="right">لا توجد زاوية كافية للفجر أو العشاء (لا يوجد شفق حقيقي)</td>
 <td align="right">اشتقاق الوقت من أدنى نقطة في الموجة الشمسية — "منتصف الليل الفلكي"</td>
+<td align="right">لا توجد زاوية كافية للفجر أو العشاء</td>
+<td align="center"><code>0.7</code></td>
+<td align="right">🟡 <strong>Virtual</strong></td>
 </tr>
 <tr>
-<td align="right">🔴 <strong>Projected</strong></td>
-<td align="center"><code>0.5</code></td>
+<td align="right">إسقاط نسب اليوم من خط عرض معتدل (~45°–55°) على موقعك</td>
 <td align="right">لا يوجد شروق أو غروب إطلاقاً</td>
-<td align="right">إسقاط نسب اليوم من خط عرض معتدل (~45°–55°) على موقعك الحقيقي</td>
+<td align="center"><code>0.5</code></td>
+<td align="right">🔴 <strong>Projected</strong></td>
 </tr>
 </tbody>
 </table>
@@ -172,58 +172,58 @@
 
 <br>
 
-<table width="100%" dir="rtl">
+<table>
 <thead>
 <tr>
-<th align="right" width="12%">الصلاة</th>
-<th align="center" width="16%">الوقت</th>
-<th align="center" width="14%">الطريقة</th>
-<th align="center" width="10%">الثقة</th>
-<th align="right" width="48%">التفسير</th>
+<th align="right">التفسير</th>
+<th align="center">الثقة</th>
+<th align="center">الطريقة</th>
+<th align="center">الوقت</th>
+<th align="right">الصلاة</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td align="right">مشتق من أدنى نقطة في الموجة الشمسية</td>
+<td align="center">0.70</td>
+<td align="center">Virtual</td>
+<td align="center"><code>00:46</code> (+1 يوم)</td>
 <td align="right"><strong>الفجر</strong></td>
-<td align="center"><code>00:46</code> &nbsp;(+1 يوم)</td>
-<td align="center">Virtual</td>
-<td align="center">0.70</td>
-<td align="right">مشتق من أدنى نقطة في الموجة الشمسية</td>
 </tr>
 <tr>
-<td align="right"><strong>الشروق</strong></td>
+<td align="right">إسقاط من خط عرض مرجعي 54.7°</td>
+<td align="center">0.50</td>
+<td align="center">Projected</td>
 <td align="center"><code>04:07</code></td>
-<td align="center">Projected</td>
-<td align="center">0.50</td>
-<td align="right">إسقاط من خط عرض مرجعي 54.7°</td>
+<td align="right"><strong>الشروق</strong></td>
 </tr>
 <tr>
-<td align="right"><strong>الظهر</strong></td>
-<td align="center"><code>12:46</code></td>
-<td align="center">Standard</td>
-<td align="center">1.00</td>
 <td align="right">ذروة الشمس — حساب فلكي مباشر</td>
-</tr>
-<tr>
-<td align="right"><strong>العصر</strong></td>
-<td align="center"><code>17:57</code></td>
-<td align="center">Standard</td>
 <td align="center">1.00</td>
+<td align="center">Standard</td>
+<td align="center"><code>12:46</code></td>
+<td align="right"><strong>الظهر</strong></td>
+</tr>
+<tr>
 <td align="right">نسبة طول الظل — حساب فلكي مباشر</td>
+<td align="center">1.00</td>
+<td align="center">Standard</td>
+<td align="center"><code>17:57</code></td>
+<td align="right"><strong>العصر</strong></td>
 </tr>
 <tr>
-<td align="right"><strong>المغرب</strong></td>
-<td align="center"><code>21:24</code></td>
-<td align="center">Projected</td>
-<td align="center">0.50</td>
 <td align="right">إسقاط من خط عرض مرجعي 54.7°</td>
+<td align="center">0.50</td>
+<td align="center">Projected</td>
+<td align="center"><code>21:24</code></td>
+<td align="right"><strong>المغرب</strong></td>
 </tr>
 <tr>
-<td align="right"><strong>العشاء</strong></td>
-<td align="center"><code>00:46</code> &nbsp;(+1 يوم)</td>
-<td align="center">Virtual</td>
-<td align="center">0.70</td>
 <td align="right">مشتق من أدنى نقطة في الموجة الشمسية</td>
+<td align="center">0.70</td>
+<td align="center">Virtual</td>
+<td align="center"><code>00:46</code> (+1 يوم)</td>
+<td align="right"><strong>العشاء</strong></td>
 </tr>
 </tbody>
 </table>
@@ -260,39 +260,39 @@
 
 <br>
 
-<table width="100%" dir="rtl">
+<table>
 <thead>
 <tr>
-<th align="right" width="34%">المقارنة</th>
-<th align="center" width="33%">التطبيقات التقليدية</th>
-<th align="center" width="33%">بولاريس</th>
+<th align="center">بولاريس</th>
+<th align="center">التطبيقات التقليدية</th>
+<th align="right">المقارنة</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td align="center">✅ جدول كامل دائماً</td>
+<td align="center">❌ يفشل أو يعطي نتائج خاطئة</td>
 <td align="right">يعمل في المناطق القطبية</td>
-<td align="center">❌ &nbsp;يفشل أو يعطي نتائج خاطئة</td>
-<td align="center">✅ &nbsp;جدول كامل دائماً</td>
 </tr>
 <tr>
+<td align="center">✅ كل وقت موسوم بطريقته</td>
+<td align="center">❌ نتيجة بدون تفسير</td>
 <td align="right">يوضح طريقة الحساب</td>
-<td align="center">❌ &nbsp;نتيجة بدون تفسير</td>
-<td align="center">✅ &nbsp;كل وقت موسوم بطريقته</td>
 </tr>
 <tr>
+<td align="center">✅ درجة ثقة لكل وقت</td>
+<td align="center">❌ كل النتائج تبدو متساوية</td>
 <td align="right">يميز بين الحقيقي والتقديري</td>
-<td align="center">❌ &nbsp;كل النتائج تبدو متساوية</td>
-<td align="center">✅ &nbsp;درجة ثقة لكل وقت</td>
 </tr>
 <tr>
+<td align="center">✅ محاكاة موقع الشمس (SPA)</td>
+<td align="center">❌ معادلات مبسطة</td>
 <td align="right">يعتمد على الفيزياء الفلكية</td>
-<td align="center">❌ &nbsp;معادلات مبسطة</td>
-<td align="center">✅ &nbsp;محاكاة موقع الشمس (SPA)</td>
 </tr>
 <tr>
+<td align="center">✅ قاعدة بيانات مدمجة + كاش محلي</td>
+<td align="center">❌ يحتاج اتصال غالباً</td>
 <td align="right">يعمل بدون إنترنت</td>
-<td align="center">❌ &nbsp;يحتاج اتصال غالباً</td>
-<td align="center">✅ &nbsp;قاعدة بيانات مدمجة + كاش محلي</td>
 </tr>
 </tbody>
 </table>
