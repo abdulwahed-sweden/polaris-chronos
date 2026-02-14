@@ -1,40 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Polaris Chronos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <h1><span class="star">&#11088;</span> Polaris Chronos</h1>
+      <div class="logo">Polaris Chronos</div>
       <p class="subtitle">Adaptive Prayer Time Engine</p>
     </header>
 
     <div class="controls">
-      <div class="input-group">
+      <div class="input-row">
         <div class="autocomplete-wrapper">
-          <input type="text" id="city-input" placeholder="Enter city name..." autocomplete="off">
+          <input type="text" id="city-input" placeholder="Search city..." autocomplete="off" spellcheck="false">
           <div id="autocomplete-list" class="autocomplete-list"></div>
         </div>
         <input type="date" id="date-input">
-        <select id="strategy-input">
-          <option value="projected45">Projected45</option>
-          <option value="strict">Strict</option>
-        </select>
-        <button id="go-btn">Go</button>
+        <div class="strategy-toggle">
+          <button id="strategy-projected" class="strat-btn active" data-value="projected45">Projected</button>
+          <button id="strategy-strict" class="strat-btn" data-value="strict">Strict</button>
+        </div>
+        <button id="go-btn">Search</button>
       </div>
     </div>
 
-    <div id="error-msg" class="error-msg" style="display:none;"></div>
+    <!-- Empty state -->
+    <div id="empty-state" class="empty-state">
+      <div class="empty-icon">&#127760;</div>
+      <p>Enter a city name to view prayer times</p>
+      <p class="empty-hint">Try Stockholm, Mecca, or Tromso</p>
+    </div>
 
+    <!-- Error state -->
+    <div id="error-state" class="error-state" style="display:none;">
+      <div class="error-icon">&#9888;</div>
+      <p id="error-msg"></p>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div id="loading-state" class="loading-state" style="display:none;">
+      <div class="skeleton-banner"></div>
+      <div class="skeleton-table">
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+      </div>
+      <div class="skeleton-solar"></div>
+    </div>
+
+    <!-- Results -->
     <div id="results" style="display:none;">
       <div class="location-banner">
-        <span class="pin">&#128205;</span>
-        <span id="loc-name"></span> &mdash; <span id="loc-date"></span>
-        <span id="day-state" class="day-state"></span>
+        <div class="loc-main">
+          <span id="loc-name" class="loc-name"></span>
+          <span id="day-state" class="day-state"></span>
+        </div>
+        <div class="loc-meta">
+          <span id="loc-tz" class="loc-tz"></span>
+          <span class="loc-sep">&middot;</span>
+          <span id="loc-date" class="loc-date"></span>
+          <span class="loc-sep">&middot;</span>
+          <span id="loc-coords" class="loc-coords"></span>
+        </div>
+      </div>
+
+      <!-- Now indicator -->
+      <div id="now-bar" class="now-bar" style="display:none;">
+        <div class="now-label">
+          <span id="now-prayer" class="now-prayer"></span>
+          <span class="now-sep">&mdash;</span>
+          <span id="now-next"></span>
+        </div>
+        <div id="now-countdown" class="now-countdown"></div>
       </div>
 
       <div class="table-wrapper">
@@ -52,7 +99,7 @@
       </div>
 
       <div class="solar-panel">
-        <h3>Solar Info</h3>
+        <div class="solar-title">Solar Data</div>
         <div class="solar-grid">
           <div class="solar-item">
             <span class="solar-label">Max Altitude</span>
@@ -63,7 +110,7 @@
             <span id="solar-min" class="solar-value"></span>
           </div>
           <div class="solar-item">
-            <span class="solar-label">Peak (UTC)</span>
+            <span class="solar-label">Solar Noon (UTC)</span>
             <span id="solar-peak" class="solar-value"></span>
           </div>
           <div class="solar-item">
@@ -73,7 +120,7 @@
         </div>
       </div>
 
-      <div class="meta-panel">
+      <div class="meta-row">
         <span class="meta-item">Strategy: <strong id="meta-strategy"></strong></span>
         <span class="meta-item">Source: <strong id="meta-source"></strong></span>
         <span class="meta-item">Confidence: <strong id="meta-confidence"></strong></span>
@@ -81,7 +128,7 @@
     </div>
 
     <footer>
-      <p>Polaris Chronos &mdash; Virtual Horizon Prayer Time Engine</p>
+      Polaris Chronos &mdash; Virtual Horizon Prayer Time Engine
     </footer>
   </div>
   <script src="/app.js"></script>

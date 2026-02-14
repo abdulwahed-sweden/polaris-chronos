@@ -183,7 +183,7 @@ fn run_compute(cli: ComputeArgs) {
 
     // ── Print location banner ───────────────────────────────────
 
-    eprintln!("  {} {}", "\u{1F4CD}", final_resolved.display_line());
+    eprintln!("  \u{1F4CD} {}", final_resolved.display_line());
     if final_resolved.disambiguated {
         if let Some(ref note) = final_resolved.disambiguation_note {
             eprintln!("  \u{26A0}\u{FE0F}  Disambiguated: {}", note);

@@ -227,10 +227,8 @@ pub fn builtin_lookup_with_country(query: &str, country: Option<&str>) -> Option
     for city in &candidates {
         for name in city.names {
             let dist = edit_distance(&q, name);
-            if dist <= 2 {
-                if best.is_none() || dist < best.unwrap().1 {
-                    best = Some((city, dist));
-                }
+            if dist <= 2 && (best.is_none() || dist < best.unwrap().1) {
+                best = Some((city, dist));
             }
         }
     }
@@ -368,7 +366,7 @@ fn name_similarity(query: &str, display_name: &str) -> f64 {
 fn extract_country_code(display_name: &str) -> String {
     // Nominatim display_name ends with the country.
     // We extract it and try to map to ISO code.
-    let last = display_name.split(',').last().unwrap_or("").trim();
+    let last = display_name.split(',').next_back().unwrap_or("").trim();
     country_name_to_code(last).unwrap_or_default()
 }
 
@@ -498,7 +496,7 @@ pub fn nominatim_resolve_candidates(
     let url = format!(
         "https://nominatim.openstreetmap.org/search?q={}&format=json&limit={}&addressdetails=0{}",
         urlencod(query),
-        limit.max(3).min(10),
+        limit.clamp(3, 10),
         country_param,
     );
 

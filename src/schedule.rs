@@ -116,6 +116,16 @@ pub enum DayState {
     PolarNight,
 }
 
+impl std::fmt::Display for DayState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DayState::Normal => write!(f, "Normal"),
+            DayState::MidnightSun => write!(f, "MidnightSun"),
+            DayState::PolarNight => write!(f, "PolarNight"),
+        }
+    }
+}
+
 /// Complete prayer schedule with method metadata.
 #[derive(Debug, Clone, Serialize)]
 pub struct Schedule {
