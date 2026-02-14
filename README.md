@@ -1,175 +1,185 @@
-# Polaris 🌌
-### The Universal Prayer Time Engine
-
-> 🌐 Languages: [English](README.md) | [العربية](README_AR.md)
-
-**Polaris** is a high-precision astronomical engine written in Rust, designed to solve prayer time calculations for **all locations on Earth**, including extreme latitudes (Midnight Sun & Polar Night).
-
----
-
-## 🌍 Why Two Documentations?
-
-Different audiences require different explanations:
-
-- **Developers (English):** Need installation, API usage, and technical clarity.
-- **Arabic users / researchers:** Need conceptual understanding and trust — *"How was this calculated?"*
-
-👉 Therefore:
-- `README.md` → Technical (this file)
-- `README_AR.md` → Conceptual explanation (Q&A format)
+<p align="center">
+  <h1 align="center">Polaris 🌌</h1>
+  <p align="center"><strong>The Universal Prayer Time Engine</strong></p>
+  <p align="center">
+    High-precision solar position engine written in Rust.<br/>
+    Solves prayer time calculations for <em>every location on Earth</em> — including polar regions.
+  </p>
+  <p align="center">
+    <a href="README.md">English</a> · <a href="README_AR.md">العربية</a>
+  </p>
+</p>
 
 ---
 
-## 🚀 Why Polaris?
-
-| Feature | Traditional Libraries | Polaris Engine |
-| :--- | :--- | :--- |
-| **Polar Night** | Fails / Returns Error | **Virtual Schedule** (Wave-based) |
-| **Midnight Sun** | Missing Maghrib/Isha | **Adaptive Projection** |
-| **Transparency** | Hidden logic | **Explicit Method Labels** |
-| **Confidence** | Unknown | **Scored (1.0 → 0.5)** |
-| **Architecture** | Static formulas | **Dynamic solar simulation** |
+Most prayer time libraries break above 65°N. The sun doesn't set, so there is no Maghrib. The sun doesn't rise, so there is no Fajr. **Polaris doesn't break.** It models the sun as a continuous angular wave and produces a complete, transparent schedule — everywhere, every day, every edge case.
 
 ---
 
-## 🧠 Core Idea
+## Why Polaris?
 
-Polaris treats the sun not as a "visible disk", but as a **continuous angular motion (sine wave)**.
-
-Even when:
-- the sun never sets ☀️
-- or never rises 🌑
-
-👉 the system still computes a **complete, consistent daily schedule**
+| Problem | Traditional Libraries | Polaris |
+|:--------|:----------------------|:--------|
+| Polar Night (no sunrise) | Returns error or blank | Complete virtual schedule |
+| Midnight Sun (no sunset) | Missing Maghrib / Isha | Adaptive projection from reference latitude |
+| Transparency | Black-box output | Every time labeled with its method |
+| Confidence | No indication | Scored per event (1.0 = astronomical, 0.5 = projected) |
+| Architecture | Static angle formulas | SPA-based solar simulation with wave analysis |
 
 ---
 
-## ⚙️ Calculation Modes
+## How It Works
 
-| Mode | Description |
-|------|------------|
-| **Standard** | Real astronomical events (sunrise/sunset exist) |
-| **Virtual** | Derived from solar wave (no visible twilight) |
-| **Projected** | Borrowed duration from moderate latitude (adaptive model) |
+The engine computes the sun's altitude at every minute of the day using the **Solar Position Algorithm** (Jean Meeus). From this continuous wave, it derives prayer events — even when classical threshold crossings don't exist.
 
-Each result includes:
+Three computation modes, applied automatically:
+
+| Mode | When | What happens |
+|:-----|:-----|:-------------|
+| **Standard** | Sun crosses the required altitude | Direct astronomical calculation. Confidence: `1.0` |
+| **Virtual** | Twilight angle never reached (e.g., Fajr/Isha in polar summer) | Derived from wave nadir/peak timing. Confidence: `0.7` |
+| **Projected** | Sunrise or sunset doesn't occur at all | Duration borrowed from an adaptive reference latitude (~45°–55°). Confidence: `0.5` |
+
+Every result carries three fields:
 
 ```
-time + method + confidence
+time  +  method  +  confidence
 ```
+
+No hidden logic. No silent fallbacks.
 
 ---
 
-## 📦 Installation
+## Real Output: Tromsø, Norway — June 21, 2026
+
+**Midnight Sun.** The sun never sets. Minimum solar altitude: +3.1°.
+
+```
+polaris Tromso --date 2026-06-21
+```
+
+| Prayer | Time | Method | Confidence | Note |
+|:-------|:-----|:-------|:-----------|:-----|
+| Fajr | 00:46 (+1d) | Virtual | 0.70 | Derived from wave nadir |
+| Sunrise | 04:07 | Projected | 0.50 | Ref. latitude 54.7° |
+| Dhuhr | 12:46 | Standard | 1.00 | Solar noon |
+| Asr | 17:57 | Standard | 1.00 | Shadow-length ratio |
+| Maghrib | 21:24 | Projected | 0.50 | Ref. latitude 54.7° |
+| Isha | 00:46 (+1d) | Virtual | 0.70 | Derived from wave nadir |
+
+**What happened:** The sun stayed above the horizon for 24 hours. There was no physical sunset or sunrise event. Polaris detected `MidnightSun` state, applied the `Projected45` strategy for Sunrise/Maghrib, and computed Fajr/Isha from the solar wave's virtual nadir. Dhuhr and Asr were calculated normally — the sun still reaches its peak and casts shadows.
+
+---
+
+## Installation
 
 ```bash
 cargo build --release
 ```
 
-The binary is at `target/release/polaris`.
+Binary: `target/release/polaris`
 
 ---
 
-## 📦 Usage
+## Usage
 
 ```bash
-# By city name (positional)
+# City name (positional)
 polaris Stockholm
 
-# Named city flag
+# Named flag with date
 polaris --city "New York" --date 2026-03-20
 
-# Comma-separated with country
+# City with country (comma syntax)
 polaris --city "Medina, Saudi Arabia"
 
 # Country hint (ISO alpha-2)
 polaris --city Medina --country SA
 
-# Auto-detect via IP
+# Auto-detect location via IP
 polaris --auto --now
 
 # Raw coordinates
 polaris --lat 21.4225 --lon 39.8262 --tz Asia/Riyadh
 
-# Strict mode (no projection for polar gaps)
+# Strict mode — no projection, gaps shown as missing
 polaris Stockholm --strategy strict
 
-# Debug: show top-K Nominatim candidates
+# Debug: show top-K geocoding candidates
 polaris --city Paris --topk 5
 ```
 
 ---
 
-## 🔧 CLI Flags
+## CLI Reference
 
 | Flag | Description |
-|------|-------------|
-| `--city` | City name |
-| `--auto` / `-a` | Auto-detect location via IP |
-| `--lat` / `--lon` | Manual coordinates |
-| `--date` / `-d` | Date (YYYY-MM-DD), defaults to today |
-| `--tz` | IANA timezone override |
+|:-----|:------------|
+| `--city` | City name (or use positional argument) |
+| `--country` | ISO 3166-1 alpha-2 hint (e.g. `SA`, `NO`, `US`) |
+| `--auto` / `-a` | Auto-detect location via IP geolocation |
+| `--lat` / `--lon` | Manual coordinates (requires `--tz`) |
+| `--date` / `-d` | Date in `YYYY-MM-DD` format (default: today) |
+| `--tz` | IANA timezone override (e.g. `Europe/Oslo`) |
 | `--strategy` | `projected45` (default) or `strict` |
-| `--country` | ISO 3166-1 alpha-2 country hint |
+| `--now` | Show current prayer and countdown to next |
+| `--show-confidence` | Display confidence scores in ASCII timeline |
 | `--topk` | Show top-K Nominatim candidates |
-| `--now` | Show current prayer and countdown |
-| `--show-confidence` | Display confidence in ASCII timeline |
-| `--offline` | Skip network calls, use cache/built-in only |
+| `--offline` | Skip network calls; use cache and built-in data only |
 
 ---
 
-## 📊 Example Output
-
-```
-Maghrib: 21:24 [P] (0.5)
-Reason: Sun does not set — projected from moderate latitude
-```
-
----
-
-## 🏗️ Architecture
+## Architecture
 
 ```
 src/
-  main.rs          CLI entry point (clap)
-  lib.rs           Library root
-  solar.rs         SPA solar position algorithm
-  schedule.rs      Prayer scheduling & gap strategies
-  solver.rs        Solver + ASCII timeline renderer
+  main.rs              CLI entry point (clap)
+  lib.rs               Library root & public API
+  solar.rs             SPA solar position algorithm (Jean Meeus)
+  schedule.rs          Prayer event scheduling & gap strategies
+  solver.rs            Solver engine + ASCII timeline renderer
   location/
-    mod.rs         Module exports
-    types.rs       Core types (ResolvedLocation, LocationError)
-    resolver.rs    Fallback chain orchestrator
-    providers.rs   Nominatim, IP API, built-in dataset
-    cache.rs       File-based location cache
+    mod.rs             Module exports
+    types.rs           ResolvedLocation, LocationError, confidence
+    resolver.rs        Fallback chain: cache → built-in → Nominatim → IP
+    providers.rs       Nominatim geocoder, IP API, 30+ city dataset
+    cache.rs           File-based location cache (30-day TTL)
 scripts/
-  global_maghrib_test.py   30-city x 3-date stress test
+  global_maghrib_test.py   Stress test: 30 cities × 3 dates + fuzz
 ```
+
+**Location resolution** follows a priority chain:
+1. File cache (instant, offline)
+2. Built-in dataset with fuzzy matching (30+ major cities)
+3. Nominatim geocoding with country filtering and disambiguation
+4. IP-based geolocation (fallback)
+
+**Solar engine** samples altitude at 1-minute resolution across 24 hours, then applies threshold detection for each prayer event. When a threshold is never crossed, the engine switches to Virtual or Projected mode automatically.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
-# Rust unit tests (79 tests)
+# 79 unit tests — solar, schedule, solver, location
 cargo test
 
-# Global stress test (30 cities x 3 dates + fuzz)
-cargo build --release
-python3 scripts/global_maghrib_test.py
+# Global stress test — 30 cities × 3 dates + fuzzy edge cases
+cargo build --release && python3 scripts/global_maghrib_test.py
 ```
 
 ---
 
-## 🔬 Design Principles
+## Design Principles
 
-- **Physics-first:** Never fake astronomical events
-- **Transparent:** Every value explains how it was computed
-- **Universal:** Works at any latitude
-- **Deterministic:** Same input → same output
+- **Physics-first** — The sun's position is computed, never approximated or hard-coded
+- **Transparent** — Every output value explains how it was derived
+- **Universal** — Works identically from Mecca (21°N) to Svalbard (78°N) to the South Pole
+- **Deterministic** — Same coordinates + same date = same result, always
+- **Honest** — When precision drops, confidence drops with it
 
 ---
 
-## 📄 License
+## License
 
 MIT
