@@ -106,6 +106,24 @@
     }
   }
 
+  // ── Coordinates copy ────────────────────────────────────────
+  document.getElementById('loc-coords').addEventListener('click', function () {
+    var text = this.textContent;
+    if (!text) return;
+    var el = this;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        el.classList.add('copied');
+        var original = el.textContent;
+        el.textContent = 'Copied!';
+        setTimeout(function () {
+          el.textContent = original;
+          el.classList.remove('copied');
+        }, 1200);
+      });
+    }
+  });
+
   // ── Fetch ──────────────────────────────────────────────────
   goBtn.addEventListener('click', fetchTimes);
 
@@ -192,6 +210,24 @@
     stateEl.textContent = data.state;
     stateEl.className = 'day-state ' + data.state.toLowerCase().replace(/\s+/g, '');
 
+    // Strategy note
+    var stratNote = document.getElementById('strategy-note');
+    var stratText = document.getElementById('strategy-note-text');
+    var stratIcon = stratNote.querySelector('.strategy-note-icon');
+    var allStandard = checkAllStandard(data);
+
+    if (allStandard) {
+      stratNote.style.display = 'flex';
+      stratNote.className = 'strategy-note all-standard';
+      stratIcon.textContent = '\u2714';
+      stratText.textContent = 'All times are astronomically computed (real sun positions).';
+    } else {
+      stratNote.style.display = 'flex';
+      stratNote.className = 'strategy-note has-projected';
+      stratIcon.textContent = '\u26A0';
+      stratText.textContent = 'Some times are projected or virtual due to extreme latitude conditions.';
+    }
+
     // Prayer table
     var tbody = document.getElementById('prayer-tbody');
     tbody.innerHTML = '';
@@ -209,8 +245,13 @@
       var ev = data.events[name];
       var tr = document.createElement('tr');
 
+      // Maghrib special highlight
+      if (name === 'maghrib') {
+        tr.classList.add('maghrib-row');
+      }
+
       if (currentPrayer && currentPrayer.current === name) {
-        tr.className = 'current-prayer';
+        tr.classList.add('current-prayer');
       }
 
       // Name
@@ -264,6 +305,16 @@
 
     // Now bar + countdown
     updateNowBar(data, currentPrayer);
+  }
+
+  // ── Strategy check ──────────────────────────────────────────
+
+  function checkAllStandard(data) {
+    var prayers = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    for (var i = 0; i < prayers.length; i++) {
+      if (data.events[prayers[i]].method !== 'Standard') return false;
+    }
+    return true;
   }
 
   // ── Current prayer detection ───────────────────────────────
@@ -338,17 +389,27 @@
       var now = new Date();
       var nowMins = now.getHours() * 60 + now.getMinutes();
       var diff = currentPrayer.nextMinutes - nowMins;
+      var countdownEl = document.getElementById('now-countdown');
+
       if (diff <= 0) {
-        document.getElementById('now-countdown').textContent = 'Now';
+        countdownEl.textContent = 'Now';
+        countdownEl.classList.remove('urgent');
         if (countdownInterval) clearInterval(countdownInterval);
         // Refresh after a minute
         setTimeout(function () { fetchTimes(); }, 60000);
         return;
       }
+
+      // Urgent: less than 60 minutes
+      if (diff <= 60) {
+        countdownEl.classList.add('urgent');
+      } else {
+        countdownEl.classList.remove('urgent');
+      }
+
       var h = Math.floor(diff / 60);
       var m = diff % 60;
-      document.getElementById('now-countdown').textContent =
-        (h > 0 ? h + 'h ' : '') + m + 'm';
+      countdownEl.textContent = (h > 0 ? h + 'h ' : '') + m + 'm';
     }
 
     updateCountdown();
