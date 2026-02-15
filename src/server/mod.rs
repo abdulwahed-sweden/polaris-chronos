@@ -4,21 +4,42 @@ mod static_files;
 
 use axum::Router;
 use axum::routing::get;
+use axum::http::HeaderValue;
 use state::AppState;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
+use tower_http::set_header::SetResponseHeaderLayer;
+
+/// Application version, read from Cargo.toml at compile time.
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn build_router() -> Router {
     let state = Arc::new(AppState::new());
+
+    // API routes with no-cache + version headers
+    let api_routes = Router::new()
+        .route("/api/resolve", get(handlers::resolve))
+        .route("/api/times", get(handlers::prayer_times))
+        .route("/api/month", get(handlers::month_times))
+        .route("/api/cities", get(handlers::city_list))
+        .layer(SetResponseHeaderLayer::overriding(
+            axum::http::header::CACHE_CONTROL,
+            HeaderValue::from_static("no-store, no-cache, must-revalidate, max-age=0"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            axum::http::header::PRAGMA,
+            HeaderValue::from_static("no-cache"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            axum::http::HeaderName::from_static("x-polaris-version"),
+            HeaderValue::from_static(VERSION),
+        ));
 
     Router::new()
         .route("/", get(handlers::index))
         .route("/style.css", get(handlers::style))
         .route("/app.js", get(handlers::script))
-        .route("/api/resolve", get(handlers::resolve))
-        .route("/api/times", get(handlers::prayer_times))
-        .route("/api/month", get(handlers::month_times))
-        .route("/api/cities", get(handlers::city_list))
+        .merge(api_routes)
         .layer(CorsLayer::permissive())
         .with_state(state)
 }
@@ -37,7 +58,8 @@ pub async fn start(host: &str, port: u16) {
 
     eprintln!();
     eprintln!("--------------------------------------------------");
-    eprintln!("  Polaris Chronos Server Running");
+    eprintln!("  Polaris Chronos Server v{}", VERSION);
+    eprintln!("  Cache: fresh (in-memory, 6h TTL)");
     eprintln!();
     eprintln!("  Local:     {}", base);
     eprintln!();

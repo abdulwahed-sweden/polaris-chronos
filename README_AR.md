@@ -462,6 +462,47 @@
 
 <br>
 
+<h2 align="right">ضمان البيانات الحديثة</h2>
+
+<p align="right">
+كل استجابة من واجهة API تتضمن ترويسات تمنع عرض بيانات قديمة:
+</p>
+
+<table>
+<thead>
+<tr>
+<th align="right">القيمة</th>
+<th align="right">الترويسة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>no-store, no-cache, must-revalidate, max-age=0</code></td>
+<td align="right"><code>Cache-Control</code></td>
+</tr>
+<tr>
+<td align="right"><code>no-cache</code></td>
+<td align="right"><code>Pragma</code></td>
+</tr>
+<tr>
+<td align="right">رقم الإصدار الحالي (مثلاً <code>0.6.0</code>)</td>
+<td align="right"><code>x-polaris-version</code></td>
+</tr>
+</tbody>
+</table>
+
+<p align="right">
+الملفات الثابتة (<code>style.css</code>، <code>app.js</code>) تستخدم روابط مختومة بالإصدار (<code>?v=0.6.0</code>).
+واجهة المستخدم تستخدم <code>cache: "no-store"</code> في كل طلبات الشبكة.
+ذاكرة التخزين المؤقتة (6 ساعات) تُعاد من الصفر عند كل إعادة تشغيل للخادم.
+</p>
+
+<br>
+
+<hr>
+
+<br>
+
 <h2 align="right">الخلاصة</h2>
 
 <p align="right">

@@ -23,7 +23,7 @@
   dateInput.value = new Date().toISOString().split('T')[0];
 
   // Load cities
-  fetch('/api/cities')
+  fetch('/api/cities', { cache: 'no-store' })
     .then(function (r) { return r.json(); })
     .then(function (data) { cities = data; })
     .catch(function () {});
@@ -138,7 +138,7 @@
     var resolveParams = new URLSearchParams();
     resolveParams.set('query', city);
 
-    fetch('/api/resolve?' + resolveParams.toString())
+    fetch('/api/resolve?' + resolveParams.toString(), { cache: 'no-store' })
       .then(function (r) {
         if (r.status === 300) {
           return r.json().then(function (j) {
@@ -168,7 +168,7 @@
     if (dateInput.value) timesParams.set('date', dateInput.value);
     timesParams.set('strategy', currentStrategy);
 
-    fetch('/api/times?' + timesParams.toString())
+    fetch('/api/times?' + timesParams.toString(), { cache: 'no-store' })
       .then(function (r) {
         if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Computation failed'); });
         return r.json();
