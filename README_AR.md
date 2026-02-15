@@ -10,7 +10,7 @@
   <a href="#"><img src="https://img.shields.io/badge/Rust-2021_Edition-DEA584?logo=rust&logoColor=white" alt="Rust"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
   <a href="#"><img src="https://img.shields.io/badge/Tests-96_passing-brightgreen" alt="Tests"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Version-0.6.0-purple" alt="Version"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Version-0.7.0-purple" alt="Version"></a>
 </p>
 
 <p align="center">
@@ -485,14 +485,14 @@
 <td align="right"><code>Pragma</code></td>
 </tr>
 <tr>
-<td align="right">رقم الإصدار الحالي (مثلاً <code>0.6.0</code>)</td>
+<td align="right">رقم الإصدار الحالي (مثلاً <code>0.7.0</code>)</td>
 <td align="right"><code>x-polaris-version</code></td>
 </tr>
 </tbody>
 </table>
 
 <p align="right">
-الملفات الثابتة (<code>style.css</code>، <code>app.js</code>) تستخدم روابط مختومة بالإصدار (<code>?v=0.6.0</code>).
+الملفات الثابتة (<code>style.css</code>، <code>app.js</code>) تستخدم روابط مختومة بالإصدار (<code>?v=0.7.0</code>).
 واجهة المستخدم تستخدم <code>cache: "no-store"</code> في كل طلبات الشبكة.
 ذاكرة التخزين المؤقتة (6 ساعات) تُعاد من الصفر عند كل إعادة تشغيل للخادم.
 </p>

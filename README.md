@@ -10,7 +10,7 @@
   <a href="#installation"><img src="https://img.shields.io/badge/Rust-2021_Edition-DEA584?logo=rust&logoColor=white" alt="Rust"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
   <a href="#testing"><img src="https://img.shields.io/badge/Tests-96_passing-brightgreen" alt="Tests"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Version-0.6.0-purple" alt="Version"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Version-0.7.0-purple" alt="Version"></a>
 </p>
 
 <p align="center">
@@ -340,9 +340,9 @@ Every API response includes headers that prevent stale data:
 |--------|-------|
 | `Cache-Control` | `no-store, no-cache, must-revalidate, max-age=0` |
 | `Pragma` | `no-cache` |
-| `x-polaris-version` | Current version (e.g. `0.6.0`) |
+| `x-polaris-version` | Current version (e.g. `0.7.0`) |
 
-Static assets (`style.css`, `app.js`) use version-stamped URLs (`?v=0.6.0`) for cache busting. The frontend uses `cache: "no-store"` on all fetch calls. The in-memory computation cache (6h TTL) resets on every server restart.
+Static assets (`style.css`, `app.js`) use version-stamped URLs (`?v=0.7.0`) for cache busting. The frontend uses `cache: "no-store"` on all fetch calls. The in-memory computation cache (6h TTL) resets on every server restart.
 
 **Verify with curl:**
 
@@ -350,7 +350,7 @@ Static assets (`style.css`, `app.js`) use version-stamped URLs (`?v=0.6.0`) for 
 curl -sI "http://127.0.0.1:3000/api/times?city=mecca" | grep -iE "cache-control|pragma|x-polaris"
 # cache-control: no-store, no-cache, must-revalidate, max-age=0
 # pragma: no-cache
-# x-polaris-version: 0.6.0
+# x-polaris-version: 0.7.0
 ```
 
 <br>
