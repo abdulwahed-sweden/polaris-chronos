@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=0.6.0">
+  <link rel="stylesheet" href="/style.css?v=0.7.0">
 </head>
 <body>
   <div class="container">
@@ -35,14 +35,7 @@
     <!-- Loading -->
     <div id="loading-state" class="loading-state" style="display:none">
       <div class="skeleton-banner"></div>
-      <div class="skeleton-grid">
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-      </div>
+      <div class="skeleton-table"></div>
     </div>
 
     <!-- ===== CALENDAR VIEW ===== -->
@@ -76,7 +69,23 @@
         </div>
       </div>
 
-      <div id="calendar-grid" class="calendar-grid"></div>
+      <div class="table-wrapper calendar-table-wrapper">
+        <table class="calendar-table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Date</th>
+              <th>Fajr</th>
+              <th>Sunrise</th>
+              <th>Dhuhr</th>
+              <th>Asr</th>
+              <th>Maghrib</th>
+              <th>Isha</th>
+            </tr>
+          </thead>
+          <tbody id="calendar-tbody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- ===== DAY DETAIL VIEW ===== -->
@@ -154,6 +163,6 @@
 
     <footer>Polaris Chronos &mdash; Virtual Horizon Prayer Time Engine</footer>
   </div>
-  <script src="/app.js?v=0.6.0"></script>
+  <script src="/app.js?v=0.7.0"></script>
 </body>
 </html>

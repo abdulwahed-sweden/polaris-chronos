@@ -20,7 +20,6 @@
   // ── State ───────────────────────────────────────────────
   var cities = [];
   var selectedIndex = -1;
-  var currentLoc = null;
   var countdownInterval = null;
 
   // ── Routing ─────────────────────────────────────────────
@@ -71,7 +70,6 @@
         if (r.status === 300) {
           return r.json().then(function (j) {
             showDisambiguation(j, function (loc) {
-              currentLoc = loc;
               fetchRamadanMonth(loc);
             });
             return null;
@@ -82,7 +80,6 @@
       })
       .then(function (loc) {
         if (!loc) return;
-        currentLoc = loc;
         fetchRamadanMonth(loc);
       })
       .catch(function (err) {
@@ -94,11 +91,17 @@
     // Ramadan 1447 spans Feb + Mar 2026
     var p1 = fetch('/api/month?lat=' + loc.lat + '&lon=' + loc.lon +
       '&tz=' + encodeURIComponent(loc.tz) + '&year=2026&month=2', { cache: 'no-store' })
-      .then(function (r) { return r.json(); });
+      .then(function (r) {
+        if (!r.ok) throw new Error('Failed to fetch February data');
+        return r.json();
+      });
 
     var p2 = fetch('/api/month?lat=' + loc.lat + '&lon=' + loc.lon +
       '&tz=' + encodeURIComponent(loc.tz) + '&year=2026&month=3', { cache: 'no-store' })
-      .then(function (r) { return r.json(); });
+      .then(function (r) {
+        if (!r.ok) throw new Error('Failed to fetch March data');
+        return r.json();
+      });
 
     Promise.all([p1, p2])
       .then(function (results) {
@@ -144,46 +147,56 @@
     document.getElementById('ramadan-dates').textContent =
       displayDate(RAMADAN_START) + ' \u2014 ' + displayDate(endDate);
 
-    // Calendar grid
-    var grid = document.getElementById('calendar-grid');
-    grid.innerHTML = '';
+    // Calendar table
+    var tbody = document.getElementById('calendar-tbody');
+    tbody.innerHTML = '';
     var todayStr = isoDate(new Date());
+    var prayerKeys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
     days.forEach(function (day) {
-      var card = document.createElement('div');
-      card.className = 'day-card';
-      if (day.date === todayStr) card.classList.add('today');
-
-      var fajrEv = day.data.events.fajr;
-      var maghribEv = day.data.events.maghrib;
-      var fajrTime = fajrEv.time ? fmtTime(fajrEv.time) : '---';
-      var iftarTime = maghribEv.time ? fmtTime(maghribEv.time) : '---';
-      var fajrMethod = (fajrEv.method || 'Standard').toLowerCase();
-      var iftarMethod = (maghribEv.method || 'Standard').toLowerCase();
+      var tr = document.createElement('tr');
+      if (day.date === todayStr) tr.className = 'today-row';
 
       var dateObj = new Date(day.date + 'T12:00:00');
       var dayName = dateObj.toLocaleDateString('en', { weekday: 'short' });
       var monthDay = dateObj.toLocaleDateString('en', { month: 'short', day: 'numeric' });
 
-      card.innerHTML =
-        '<div class="card-header">' +
-          '<span class="card-ramadan-day">Ramadan ' + day.ramadanDay + '</span>' +
-          '<span class="card-date">' + dayName + ', ' + monthDay + '</span>' +
-        '</div>' +
-        '<div class="card-times">' +
-          '<div class="card-time-row">' +
-            '<span class="card-label">Fajr</span>' +
-            '<span class="card-time">' + fajrTime + '</span>' +
-            '<span class="method-dot ' + fajrMethod + '"></span>' +
-          '</div>' +
-          '<div class="card-time-row iftar-row">' +
-            '<span class="card-label">Iftar</span>' +
-            '<span class="card-time iftar-time">' + iftarTime + '</span>' +
-            '<span class="method-dot ' + iftarMethod + '"></span>' +
-          '</div>' +
-        '</div>';
+      // Day number
+      var tdDay = document.createElement('td');
+      tdDay.className = 'cal-day-num';
+      tdDay.textContent = day.ramadanDay;
+      tr.appendChild(tdDay);
 
-      card.addEventListener('click', (function (d) {
+      // Date
+      var tdDate = document.createElement('td');
+      tdDate.className = 'cal-date';
+      tdDate.textContent = dayName + ', ' + monthDay;
+      tr.appendChild(tdDate);
+
+      // Prayer times
+      prayerKeys.forEach(function (key) {
+        var ev = day.data.events[key];
+        var td = document.createElement('td');
+        td.className = 'time-cell';
+        if (key === 'maghrib') td.classList.add('iftar-cell');
+
+        if (ev && ev.time) {
+          td.textContent = fmtTime(ev.time);
+          var method = (ev.method || 'Standard').toLowerCase();
+          if (method !== 'standard') {
+            var dot = document.createElement('span');
+            dot.className = 'method-dot ' + method;
+            td.appendChild(dot);
+          }
+        } else {
+          td.textContent = '---';
+          td.classList.add('no-time');
+        }
+
+        tr.appendChild(td);
+      });
+
+      tr.addEventListener('click', (function (d) {
         return function () {
           window.location.href = '/day?date=' + d.date +
             '&lat=' + loc.lat + '&lon=' + loc.lon +
@@ -194,7 +207,7 @@
         };
       })(day));
 
-      grid.appendChild(card);
+      tbody.appendChild(tr);
     });
 
     // Now intelligence

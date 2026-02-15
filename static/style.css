@@ -59,7 +59,7 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -212,7 +212,7 @@ input[type="text"]:focus {
 }
 
 .skeleton-banner,
-.skeleton-card {
+.skeleton-table {
   background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
@@ -224,14 +224,8 @@ input[type="text"]:focus {
   margin-bottom: 1rem;
 }
 
-.skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.75rem;
-}
-
-.skeleton-card {
-  height: 110px;
+.skeleton-table {
+  height: 400px;
 }
 
 @keyframes shimmer {
@@ -370,93 +364,48 @@ input[type="text"]:focus {
   text-align: right;
 }
 
-/* ── Calendar grid ───────────────────────────────────────── */
+/* ── Calendar table ──────────────────────────────────────── */
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.65rem;
+.calendar-table-wrapper {
+  overflow-x: auto;
   margin-bottom: 2rem;
 }
 
-/* ── Day card ────────────────────────────────────────────── */
-
-.day-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.7rem 0.75rem;
-  cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-  box-shadow: var(--shadow-sm);
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
 }
 
-.day-card:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.day-card.today {
-  border: 2px solid var(--accent);
-  background: rgba(22, 163, 74, 0.08);
-  box-shadow: 0 0 12px rgba(22, 163, 74, 0.15);
-}
-
-.card-header {
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.card-ramadan-day {
-  display: block;
-  font-size: 0.85rem;
+.calendar-table td.cal-day-num {
   font-weight: 700;
   color: var(--primary);
+  text-align: center;
+  width: 50px;
 }
 
-.card-date {
-  display: block;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-top: 0.1rem;
+.calendar-table td.cal-date {
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
 }
 
-.card-times {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.card-time-row {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.card-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  min-width: 2.5rem;
-}
-
-.card-time {
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.iftar-row .card-label {
+.calendar-table td.iftar-cell {
   color: var(--iftar);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.iftar-time {
-  color: var(--iftar) !important;
-  font-weight: 700 !important;
-  font-size: 1.05rem !important;
+.calendar-table tbody tr {
+  cursor: pointer;
+}
+
+.calendar-table tbody tr.today-row {
+  background: rgba(22, 163, 74, 0.08) !important;
+  border-left: 3px solid var(--accent);
+}
+
+.calendar-table tbody tr.today-row td.cal-day-num {
+  color: var(--accent);
 }
 
 /* Method dot */
@@ -853,12 +802,8 @@ footer {
 /* ── Responsive ──────────────────────────────────────────── */
 
 @media (max-width: 800px) {
-  .calendar-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .skeleton-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .calendar-table {
+    font-size: 14px;
   }
 }
 
@@ -883,12 +828,8 @@ footer {
     width: 100%;
   }
 
-  .calendar-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .skeleton-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .calendar-table {
+    font-size: 13px;
   }
 
   .loc-name {
@@ -953,10 +894,6 @@ footer {
 }
 
 [dir="rtl"] .strategy-note {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .card-time-row {
   flex-direction: row-reverse;
 }
 
