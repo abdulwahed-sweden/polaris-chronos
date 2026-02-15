@@ -119,6 +119,25 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
 }
 
+#date-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: var(--font-sans);
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  max-width: 180px;
+}
+
+#date-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
 #go-btn {
   background: var(--primary);
   color: #fff;
@@ -822,6 +841,11 @@ footer {
 
   .autocomplete-wrapper {
     min-width: 100%;
+  }
+
+  #date-input {
+    max-width: 100%;
+    width: 100%;
   }
 
   #go-btn {

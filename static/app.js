@@ -9,6 +9,7 @@
 
   // ── DOM refs ────────────────────────────────────────────
   var cityInput = document.getElementById('city-input');
+  var dateInput = document.getElementById('date-input');
   var goBtn = document.getElementById('go-btn');
   var errorState = document.getElementById('error-state');
   var errorMsg = document.getElementById('error-msg');
@@ -21,6 +22,7 @@
   var cities = [];
   var selectedIndex = -1;
   var countdownInterval = null;
+  var currentLoc = null;
 
   // ── Routing ─────────────────────────────────────────────
   var route = window.location.pathname === '/day' ? 'day' : 'calendar';
@@ -49,8 +51,18 @@
     cityInput.value = city;
 
     goBtn.addEventListener('click', function () {
+      if (dateInput.value && currentLoc) {
+        navigateToDay(dateInput.value, currentLoc);
+        return;
+      }
       var c = cityInput.value.trim();
       if (c) loadCalendarForCity(c);
+    });
+
+    dateInput.addEventListener('change', function () {
+      if (dateInput.value && currentLoc) {
+        navigateToDay(dateInput.value, currentLoc);
+      }
     });
 
     setupAutocomplete(function (name) {
@@ -126,9 +138,19 @@
       });
   }
 
+  function navigateToDay(date, loc) {
+    window.location.href = '/day?date=' + date +
+      '&lat=' + loc.lat + '&lon=' + loc.lon +
+      '&tz=' + encodeURIComponent(loc.tz) +
+      '&name=' + encodeURIComponent(loc.name) +
+      (loc.country ? '&country=' + encodeURIComponent(loc.country) : '') +
+      (loc.country_code ? '&cc=' + encodeURIComponent(loc.country_code) : '');
+  }
+
   function renderCalendar(loc, days) {
     hideLoading();
     calendarView.style.display = 'block';
+    currentLoc = loc;
 
     // Location banner
     var displayName = capitalize(loc.name);
