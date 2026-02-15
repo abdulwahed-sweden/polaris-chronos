@@ -152,7 +152,27 @@ const BUILTIN_CITIES: &[BuiltinCity] = &[
     BuiltinCity {
         names: &["jerusalem", "al-quds"],
         lat: 31.7683, lon: 35.2137, tz: "Asia/Jerusalem",
-        country_code: "IL",
+        country_code: "PS",
+    },
+    BuiltinCity {
+        names: &["gaza", "ghazza"],
+        lat: 31.5017, lon: 34.4668, tz: "Asia/Gaza",
+        country_code: "PS",
+    },
+    BuiltinCity {
+        names: &["ramallah"],
+        lat: 31.9038, lon: 35.2034, tz: "Asia/Hebron",
+        country_code: "PS",
+    },
+    BuiltinCity {
+        names: &["hebron", "al-khalil"],
+        lat: 31.5326, lon: 35.0998, tz: "Asia/Hebron",
+        country_code: "PS",
+    },
+    BuiltinCity {
+        names: &["nablus", "nablous"],
+        lat: 32.2211, lon: 35.2544, tz: "Asia/Hebron",
+        country_code: "PS",
     },
     BuiltinCity {
         names: &["nairobi"],
@@ -320,7 +340,8 @@ const WELL_KNOWN_CITIES: &[(&str, &str)] = &[
     ("medina", "SA"), ("madinah", "SA"),
     ("mecca", "SA"), ("makkah", "SA"),
     ("jeddah", "SA"), ("gaza", "PS"),
-    ("jerusalem", "IL"), ("bethlehem", "PS"),
+    ("jerusalem", "PS"), ("al-quds", "PS"), ("bethlehem", "PS"),
+    ("ramallah", "PS"), ("hebron", "PS"), ("al-khalil", "PS"), ("nablus", "PS"),
     ("damascus", "SY"), ("baghdad", "IQ"),
     ("cairo", "EG"), ("istanbul", "TR"),
     ("paris", "FR"), ("london", "GB"),
@@ -337,7 +358,7 @@ const WELL_KNOWN_CITIES: &[(&str, &str)] = &[
     ("casablanca", "MA"), ("dhaka", "BD"),
     ("mumbai", "IN"), ("delhi", "IN"),
     ("karachi", "PK"), ("tehran", "IR"),
-    ("baghdad", "IQ"), ("jerusalem", "IL"),
+    ("baghdad", "IQ"), ("jerusalem", "PS"),
 ];
 
 fn type_rank(place_type: &str, place_class: &str) -> f64 {
@@ -501,7 +522,7 @@ pub fn nominatim_resolve_candidates(
     );
 
     let response = ureq::get(&url)
-        .set("User-Agent", "PolarisChronos/0.5 (prayer-time-engine)")
+        .set("User-Agent", "PolarisChronos/0.6 (prayer-time-engine)")
         .call()
         .map_err(|e| LocationError::Network(e.to_string()))?;
 
@@ -561,6 +582,10 @@ pub fn nominatim_resolve_with_options(
                         super::types::AmbiguousCandidate {
                             name: c.display_name.clone(),
                             country: c.country_code.clone(),
+                            country_name: country_display_name(&c.country_code).to_string(),
+                            lat: c.lat,
+                            lon: c.lon,
+                            tz: tz_from_coords(c.lat, c.lon),
                             score: c.score,
                         }
                     }).collect(),
@@ -612,7 +637,7 @@ struct IpApiResult {
 /// Auto-detect location via IP geolocation.
 pub fn ip_geolocate() -> Result<ResolvedLocation, LocationError> {
     let response = ureq::get("https://ipapi.co/json/")
-        .set("User-Agent", "PolarisChronos/0.5")
+        .set("User-Agent", "PolarisChronos/0.6")
         .call()
         .map_err(|e| LocationError::Network(e.to_string()))?;
 
@@ -651,7 +676,7 @@ pub fn ip_geolocate() -> Result<ResolvedLocation, LocationError> {
 
 /// Approximate IANA timezone from longitude (rough but works offline).
 /// This is a fallback — Nominatim results get a better estimate.
-fn tz_from_coords(lat: f64, lon: f64) -> String {
+pub fn tz_from_coords(lat: f64, lon: f64) -> String {
     // Try the timezone API first (fast, free, no key)
     if let Ok(tz) = tz_from_api(lat, lon) {
         return tz;
@@ -694,7 +719,7 @@ fn tz_from_api(lat: f64, lon: f64) -> Result<String, LocationError> {
     );
 
     let response = ureq::get(&url)
-        .set("User-Agent", "PolarisChronos/0.5")
+        .set("User-Agent", "PolarisChronos/0.6")
         .timeout(std::time::Duration::from_secs(3))
         .call()
         .map_err(|e| LocationError::Network(e.to_string()))?;
@@ -725,6 +750,93 @@ fn urlencod(s: &str) -> String {
             _ => format!("%{:02X}", c as u32),
         })
         .collect()
+}
+
+// ─── Display helpers ─────────────────────────────────────────
+
+/// Map ISO 3166-1 alpha-2 country code to English display name.
+pub fn country_display_name(code: &str) -> &str {
+    // Try uppercase match; if found, return the static name.
+    // If not found, return the original code.
+    match code.to_uppercase().as_str() {
+        "AF" => "Afghanistan", "AL" => "Albania", "DZ" => "Algeria",
+        "AR" => "Argentina", "AM" => "Armenia", "AU" => "Australia",
+        "AT" => "Austria", "AZ" => "Azerbaijan", "BH" => "Bahrain",
+        "BD" => "Bangladesh", "BY" => "Belarus", "BE" => "Belgium",
+        "BA" => "Bosnia and Herzegovina", "BR" => "Brazil", "BN" => "Brunei",
+        "BG" => "Bulgaria", "CA" => "Canada", "CL" => "Chile",
+        "CN" => "China", "CO" => "Colombia", "HR" => "Croatia",
+        "CZ" => "Czech Republic", "DK" => "Denmark", "EG" => "Egypt",
+        "EE" => "Estonia", "ET" => "Ethiopia", "FI" => "Finland",
+        "FR" => "France", "GE" => "Georgia", "DE" => "Germany",
+        "GR" => "Greece", "HU" => "Hungary", "IS" => "Iceland",
+        "IN" => "India", "ID" => "Indonesia", "IR" => "Iran",
+        "IQ" => "Iraq", "IE" => "Ireland", "IL" => "Israel",
+        "IT" => "Italy", "JP" => "Japan", "JO" => "Jordan",
+        "KZ" => "Kazakhstan", "KE" => "Kenya", "KW" => "Kuwait",
+        "KG" => "Kyrgyzstan", "LB" => "Lebanon", "LY" => "Libya",
+        "LT" => "Lithuania", "LV" => "Latvia", "MY" => "Malaysia",
+        "MA" => "Morocco", "MX" => "Mexico", "NL" => "Netherlands",
+        "NZ" => "New Zealand", "NG" => "Nigeria", "NO" => "Norway",
+        "OM" => "Oman", "PK" => "Pakistan", "PS" => "Palestine",
+        "PE" => "Peru", "PH" => "Philippines", "PL" => "Poland",
+        "PT" => "Portugal", "QA" => "Qatar", "RO" => "Romania",
+        "RU" => "Russia", "SA" => "Saudi Arabia", "RS" => "Serbia",
+        "SG" => "Singapore", "SK" => "Slovakia", "SI" => "Slovenia",
+        "ZA" => "South Africa", "KR" => "South Korea", "ES" => "Spain",
+        "SE" => "Sweden", "CH" => "Switzerland", "SY" => "Syria",
+        "TW" => "Taiwan", "TJ" => "Tajikistan", "TZ" => "Tanzania",
+        "TH" => "Thailand", "TN" => "Tunisia", "TR" => "Turkey",
+        "TM" => "Turkmenistan", "UA" => "Ukraine", "AE" => "United Arab Emirates",
+        "GB" => "United Kingdom", "US" => "United States",
+        "UZ" => "Uzbekistan", "VN" => "Vietnam", "YE" => "Yemen",
+        _ => code,
+    }
+}
+
+/// Map ISO 3166-1 alpha-2 country code to Arabic display name.
+pub fn country_display_name_ar(code: &str) -> &str {
+    match code.to_uppercase().as_str() {
+        "AF" => "أفغانستان", "AL" => "ألبانيا", "DZ" => "الجزائر",
+        "AR" => "الأرجنتين", "AM" => "أرمينيا", "AU" => "أستراليا",
+        "AT" => "النمسا", "AZ" => "أذربيجان", "BH" => "البحرين",
+        "BD" => "بنغلاديش", "BY" => "بيلاروسيا", "BE" => "بلجيكا",
+        "BA" => "البوسنة والهرسك", "BR" => "البرازيل", "BN" => "بروناي",
+        "BG" => "بلغاريا", "CA" => "كندا", "CL" => "تشيلي",
+        "CN" => "الصين", "CO" => "كولومبيا", "HR" => "كرواتيا",
+        "CZ" => "التشيك", "DK" => "الدنمارك", "EG" => "مصر",
+        "EE" => "إستونيا", "ET" => "إثيوبيا", "FI" => "فنلندا",
+        "FR" => "فرنسا", "GE" => "جورجيا", "DE" => "ألمانيا",
+        "GR" => "اليونان", "HU" => "المجر", "IS" => "آيسلندا",
+        "IN" => "الهند", "ID" => "إندونيسيا", "IR" => "إيران",
+        "IQ" => "العراق", "IE" => "أيرلندا", "IL" => "إسرائيل",
+        "IT" => "إيطاليا", "JP" => "اليابان", "JO" => "الأردن",
+        "KZ" => "كازاخستان", "KE" => "كينيا", "KW" => "الكويت",
+        "KG" => "قيرغيزستان", "LB" => "لبنان", "LY" => "ليبيا",
+        "LT" => "ليتوانيا", "LV" => "لاتفيا", "MY" => "ماليزيا",
+        "MA" => "المغرب", "MX" => "المكسيك", "NL" => "هولندا",
+        "NZ" => "نيوزيلندا", "NG" => "نيجيريا", "NO" => "النرويج",
+        "OM" => "عُمان", "PK" => "باكستان", "PS" => "فلسطين",
+        "PE" => "بيرو", "PH" => "الفلبين", "PL" => "بولندا",
+        "PT" => "البرتغال", "QA" => "قطر", "RO" => "رومانيا",
+        "RU" => "روسيا", "SA" => "السعودية", "RS" => "صربيا",
+        "SG" => "سنغافورة", "SK" => "سلوفاكيا", "SI" => "سلوفينيا",
+        "ZA" => "جنوب أفريقيا", "KR" => "كوريا الجنوبية", "ES" => "إسبانيا",
+        "SE" => "السويد", "CH" => "سويسرا", "SY" => "سوريا",
+        "TW" => "تايوان", "TJ" => "طاجيكستان", "TZ" => "تنزانيا",
+        "TH" => "تايلاند", "TN" => "تونس", "TR" => "تركيا",
+        "TM" => "تركمانستان", "UA" => "أوكرانيا", "AE" => "الإمارات",
+        "GB" => "المملكة المتحدة", "US" => "الولايات المتحدة",
+        "UZ" => "أوزبكستان", "VN" => "فيتنام", "YE" => "اليمن",
+        _ => code,
+    }
+}
+
+/// Format coordinates as human-readable string: "31.50°N, 34.47°E"
+pub fn format_coords(lat: f64, lon: f64) -> String {
+    let ns = if lat >= 0.0 { "N" } else { "S" };
+    let ew = if lon >= 0.0 { "E" } else { "W" };
+    format!("{:.2}\u{00B0}{}, {:.2}\u{00B0}{}", lat.abs(), ns, lon.abs(), ew)
 }
 
 #[cfg(test)]
@@ -810,5 +922,102 @@ mod tests {
     fn test_name_similarity() {
         assert_eq!(name_similarity("paris", "Paris, Île-de-France, France"), 1.0);
         assert!(name_similarity("paris", "Paris, TX, US") > 0.5);
+    }
+
+    // ─── v0.6 Palestine + Helper Tests ──────────────────────────
+
+    #[test]
+    fn test_builtin_gaza() {
+        let loc = builtin_lookup("Gaza").unwrap();
+        assert_eq!(loc.name, "gaza");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+        assert_eq!(loc.tz, "Asia/Gaza");
+        assert!((loc.lat - 31.5017).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_builtin_ghazza_alias() {
+        let loc = builtin_lookup("ghazza").unwrap();
+        assert_eq!(loc.name, "gaza");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+    }
+
+    #[test]
+    fn test_builtin_jerusalem_is_ps() {
+        let loc = builtin_lookup("Jerusalem").unwrap();
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+    }
+
+    #[test]
+    fn test_builtin_al_quds() {
+        let loc = builtin_lookup("al-quds").unwrap();
+        assert_eq!(loc.name, "jerusalem");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+    }
+
+    #[test]
+    fn test_builtin_ramallah() {
+        let loc = builtin_lookup("ramallah").unwrap();
+        assert_eq!(loc.name, "ramallah");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+        assert_eq!(loc.tz, "Asia/Hebron");
+    }
+
+    #[test]
+    fn test_builtin_hebron() {
+        let loc = builtin_lookup("Hebron").unwrap();
+        assert_eq!(loc.name, "hebron");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+    }
+
+    #[test]
+    fn test_builtin_al_khalil() {
+        let loc = builtin_lookup("al-khalil").unwrap();
+        assert_eq!(loc.name, "hebron");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+    }
+
+    #[test]
+    fn test_builtin_nablus() {
+        let loc = builtin_lookup("nablus").unwrap();
+        assert_eq!(loc.name, "nablus");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+        assert_eq!(loc.tz, "Asia/Hebron");
+    }
+
+    #[test]
+    fn test_format_coords_ne() {
+        assert_eq!(format_coords(31.50, 34.47), "31.50\u{00B0}N, 34.47\u{00B0}E");
+    }
+
+    #[test]
+    fn test_format_coords_sw() {
+        assert_eq!(format_coords(-33.87, -151.21), "33.87\u{00B0}S, 151.21\u{00B0}W");
+    }
+
+    #[test]
+    fn test_format_coords_nw() {
+        assert_eq!(format_coords(40.71, -74.01), "40.71\u{00B0}N, 74.01\u{00B0}W");
+    }
+
+    #[test]
+    fn test_country_display_name_ps() {
+        assert_eq!(country_display_name("PS"), "Palestine");
+    }
+
+    #[test]
+    fn test_country_display_name_sa() {
+        assert_eq!(country_display_name("SA"), "Saudi Arabia");
+    }
+
+    #[test]
+    fn test_country_display_name_unknown() {
+        assert_eq!(country_display_name("ZZ"), "ZZ");
+    }
+
+    #[test]
+    fn test_country_display_name_case_insensitive() {
+        assert_eq!(country_display_name("ps"), "Palestine");
+        assert_eq!(country_display_name("sa"), "Saudi Arabia");
     }
 }

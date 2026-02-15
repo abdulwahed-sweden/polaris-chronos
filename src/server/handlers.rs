@@ -6,7 +6,8 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::Instant;
 
-use crate::location::{builtin_city_list, ResolveOptions};
+use crate::location::{builtin_city_list, ResolveOptions, country_display_name, format_coords};
+use crate::location::types::LocationError;
 use crate::schedule::GapStrategy;
 use crate::solver::Solver;
 
@@ -73,20 +74,41 @@ pub struct ResolveResponse {
     pub lat: f64,
     pub lon: f64,
     pub tz: String,
+    pub tz_label: String,
     pub country_code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub country: Option<String>,
+    pub formatted_coords: String,
     pub source: String,
     pub confidence: f64,
+}
+
+#[derive(Serialize)]
+struct AmbiguousOption {
+    name: String,
+    country: String,
+    country_code: String,
+    tz: String,
+    lat: f64,
+    lon: f64,
+}
+
+#[derive(Serialize)]
+struct AmbiguousResponse {
+    multiple: bool,
+    query: String,
+    options: Vec<AmbiguousOption>,
 }
 
 pub async fn resolve(
     State(state): State<Arc<AppState>>,
     Query(params): Query<ResolveQuery>,
-) -> Result<Json<ResolveResponse>, ApiError> {
+) -> Result<Json<ResolveResponse>, Response> {
     let start = Instant::now();
 
     let query = params.query.as_deref().unwrap_or("").trim();
     if query.is_empty() {
-        return Err(api_error(StatusCode::BAD_REQUEST, "Missing 'query' parameter"));
+        return Err(api_error(StatusCode::BAD_REQUEST, "Missing 'query' parameter").into_response());
     }
 
     let opts = ResolveOptions {
@@ -99,9 +121,27 @@ pub async fn resolve(
         resolver.resolve_city_with_opts(query, &opts)
     };
 
-    let resolved = resolved.map_err(|e| {
-        api_error(StatusCode::NOT_FOUND, format!("{}", e))
-    })?;
+    let resolved = match resolved {
+        Ok(r) => r,
+        Err(LocationError::Ambiguous { query: q, candidates }) => {
+            let resp = AmbiguousResponse {
+                multiple: true,
+                query: q,
+                options: candidates.iter().map(|c| AmbiguousOption {
+                    name: c.name.clone(),
+                    country: c.country_name.clone(),
+                    country_code: c.country.clone(),
+                    tz: c.tz.clone(),
+                    lat: c.lat,
+                    lon: c.lon,
+                }).collect(),
+            };
+            return Err((StatusCode::MULTIPLE_CHOICES, Json(resp)).into_response());
+        }
+        Err(e) => {
+            return Err(api_error(StatusCode::NOT_FOUND, format!("{}", e)).into_response());
+        }
+    };
 
     let elapsed = start.elapsed();
     eprintln!("[{}] GET /api/resolve?query={} -> {} ({:.1}ms)",
@@ -111,12 +151,20 @@ pub async fn resolve(
         elapsed.as_secs_f64() * 1000.0,
     );
 
+    let country = resolved.country_code.as_deref().and_then(|cc| {
+        let name = country_display_name(cc);
+        if name == cc { None } else { Some(name.to_string()) }
+    });
+
     Ok(Json(ResolveResponse {
-        name: resolved.name,
+        name: resolved.name.clone(),
         lat: resolved.lat,
         lon: resolved.lon,
-        tz: resolved.tz,
-        country_code: resolved.country_code,
+        tz: resolved.tz.clone(),
+        tz_label: format!("{} (Local Time)", resolved.tz),
+        country_code: resolved.country_code.clone(),
+        country,
+        formatted_coords: format_coords(resolved.lat, resolved.lon),
         source: format!("{}", resolved.source),
         confidence: resolved.resolver_confidence,
     }))
@@ -138,7 +186,7 @@ pub struct TimesQuery {
 pub async fn prayer_times(
     State(state): State<Arc<AppState>>,
     Query(params): Query<TimesQuery>,
-) -> Result<impl IntoResponse, ApiError> {
+) -> Result<impl IntoResponse, Response> {
     let start = Instant::now();
 
     // Resolve location
@@ -148,24 +196,40 @@ pub async fn prayer_times(
             topk: None,
         };
         let mut resolver = state.resolver.lock().unwrap();
-        resolver.resolve_city_with_opts(city, &opts).map_err(|e| {
-            api_error(StatusCode::NOT_FOUND, format!("{}", e))
-        })?
+        match resolver.resolve_city_with_opts(city, &opts) {
+            Ok(r) => r,
+            Err(LocationError::Ambiguous { query, candidates }) => {
+                let resp = AmbiguousResponse {
+                    multiple: true,
+                    query,
+                    options: candidates.iter().map(|c| AmbiguousOption {
+                        name: c.name.clone(),
+                        country: c.country_name.clone(),
+                        country_code: c.country.clone(),
+                        tz: c.tz.clone(),
+                        lat: c.lat,
+                        lon: c.lon,
+                    }).collect(),
+                };
+                return Err((StatusCode::MULTIPLE_CHOICES, Json(resp)).into_response());
+            }
+            Err(e) => return Err(api_error(StatusCode::NOT_FOUND, format!("{}", e)).into_response()),
+        }
     } else if let (Some(lat), Some(lon)) = (params.lat, params.lon) {
         if !(-90.0..=90.0).contains(&lat) || !(-180.0..=180.0).contains(&lon) {
             return Err(api_error(StatusCode::BAD_REQUEST,
-                "Invalid coordinates. Lat: -90..90, Lon: -180..180"));
+                "Invalid coordinates. Lat: -90..90, Lon: -180..180").into_response());
         }
         crate::location::LocationResolver::from_manual(lat, lon, params.tz.as_deref())
     } else {
         return Err(api_error(StatusCode::BAD_REQUEST,
-            "Provide 'city' or 'lat'+'lon' parameters"));
+            "Provide 'city' or 'lat'+'lon' parameters").into_response());
     };
 
     // Apply timezone override
     let final_resolved = if let Some(ref tz_str) = params.tz {
         let _: chrono_tz::Tz = tz_str.parse().map_err(|_| {
-            api_error(StatusCode::BAD_REQUEST, format!("Unknown timezone '{}'", tz_str))
+            api_error(StatusCode::BAD_REQUEST, format!("Unknown timezone '{}'", tz_str)).into_response()
         })?;
         crate::location::ResolvedLocation {
             tz: tz_str.clone(),
@@ -178,13 +242,13 @@ pub async fn prayer_times(
     // Parse date
     let date = match &params.date {
         Some(d) => NaiveDate::parse_from_str(d, "%Y-%m-%d").map_err(|e| {
-            api_error(StatusCode::BAD_REQUEST, format!("Invalid date '{}': {}", d, e))
+            api_error(StatusCode::BAD_REQUEST, format!("Invalid date '{}': {}", d, e)).into_response()
         })?,
         None => Utc::now().naive_utc().date(),
     };
 
     // Parse strategy
-    let strategy = parse_strategy(params.strategy.as_deref())?;
+    let strategy = parse_strategy(params.strategy.as_deref()).map_err(|e| e.into_response())?;
     let strategy_str = format!("{}", strategy);
 
     // Check cache
@@ -243,7 +307,7 @@ pub struct MonthQuery {
 pub async fn month_times(
     State(state): State<Arc<AppState>>,
     Query(params): Query<MonthQuery>,
-) -> Result<impl IntoResponse, ApiError> {
+) -> Result<impl IntoResponse, Response> {
     let start = Instant::now();
 
     // Resolve location
@@ -253,24 +317,40 @@ pub async fn month_times(
             topk: None,
         };
         let mut resolver = state.resolver.lock().unwrap();
-        resolver.resolve_city_with_opts(city, &opts).map_err(|e| {
-            api_error(StatusCode::NOT_FOUND, format!("{}", e))
-        })?
+        match resolver.resolve_city_with_opts(city, &opts) {
+            Ok(r) => r,
+            Err(LocationError::Ambiguous { query, candidates }) => {
+                let resp = AmbiguousResponse {
+                    multiple: true,
+                    query,
+                    options: candidates.iter().map(|c| AmbiguousOption {
+                        name: c.name.clone(),
+                        country: c.country_name.clone(),
+                        country_code: c.country.clone(),
+                        tz: c.tz.clone(),
+                        lat: c.lat,
+                        lon: c.lon,
+                    }).collect(),
+                };
+                return Err((StatusCode::MULTIPLE_CHOICES, Json(resp)).into_response());
+            }
+            Err(e) => return Err(api_error(StatusCode::NOT_FOUND, format!("{}", e)).into_response()),
+        }
     } else if let (Some(lat), Some(lon)) = (params.lat, params.lon) {
         if !(-90.0..=90.0).contains(&lat) || !(-180.0..=180.0).contains(&lon) {
             return Err(api_error(StatusCode::BAD_REQUEST,
-                "Invalid coordinates. Lat: -90..90, Lon: -180..180"));
+                "Invalid coordinates. Lat: -90..90, Lon: -180..180").into_response());
         }
         crate::location::LocationResolver::from_manual(lat, lon, params.tz.as_deref())
     } else {
         return Err(api_error(StatusCode::BAD_REQUEST,
-            "Provide 'city' or 'lat'+'lon' parameters"));
+            "Provide 'city' or 'lat'+'lon' parameters").into_response());
     };
 
     // Apply timezone override
     let final_resolved = if let Some(ref tz_str) = params.tz {
         let _: chrono_tz::Tz = tz_str.parse().map_err(|_| {
-            api_error(StatusCode::BAD_REQUEST, format!("Unknown timezone '{}'", tz_str))
+            api_error(StatusCode::BAD_REQUEST, format!("Unknown timezone '{}'", tz_str)).into_response()
         })?;
         crate::location::ResolvedLocation {
             tz: tz_str.clone(),
@@ -285,15 +365,15 @@ pub async fn month_times(
     let month = params.month.unwrap_or(today.month());
 
     if !(1..=12).contains(&month) {
-        return Err(api_error(StatusCode::BAD_REQUEST, "Month must be 1-12"));
+        return Err(api_error(StatusCode::BAD_REQUEST, "Month must be 1-12").into_response());
     }
 
-    let strategy = parse_strategy(params.strategy.as_deref())?;
+    let strategy = parse_strategy(params.strategy.as_deref()).map_err(|e| e.into_response())?;
     let strategy_str = format!("{}", strategy);
 
     // Compute all days in the month
     let first = NaiveDate::from_ymd_opt(year, month, 1)
-        .ok_or_else(|| api_error(StatusCode::BAD_REQUEST, format!("Invalid year/month: {}/{}", year, month)))?;
+        .ok_or_else(|| api_error(StatusCode::BAD_REQUEST, format!("Invalid year/month: {}/{}", year, month)).into_response())?;
 
     let days_in_month = if month == 12 {
         NaiveDate::from_ymd_opt(year + 1, 1, 1)

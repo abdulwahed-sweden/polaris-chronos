@@ -5,7 +5,7 @@ use polaris_chronos::location::{LocationResolver, ResolvedLocation, ResolveOptio
 use polaris_chronos::schedule::GapStrategy;
 use polaris_chronos::solver::{Solver, render_ascii_timeline};
 
-/// Polaris Chronos v0.5 — Adaptive Compensation Prayer Time Engine
+/// Polaris Chronos v0.6 — Adaptive Compensation Prayer Time Engine
 ///
 /// Computes prayer times for any location on Earth, including polar regions.
 /// Supports city names, auto-detection, and raw coordinates.
@@ -183,7 +183,7 @@ fn run_compute(cli: ComputeArgs) {
 
     // ── Print location banner ───────────────────────────────────
 
-    eprintln!("  \u{1F4CD} {}", final_resolved.display_line());
+    eprintln!("  {}", final_resolved.display_line());
     if final_resolved.disambiguated {
         if let Some(ref note) = final_resolved.disambiguation_note {
             eprintln!("  \u{26A0}\u{FE0F}  Disambiguated: {}", note);

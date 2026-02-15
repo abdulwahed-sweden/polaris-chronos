@@ -132,6 +132,7 @@
     if (!city) { showError('Please enter a city name.'); return; }
 
     showLoading();
+    hideDisambiguation();
 
     // Step 1: Resolve city
     var resolveParams = new URLSearchParams();
@@ -139,32 +140,106 @@
 
     fetch('/api/resolve?' + resolveParams.toString())
       .then(function (r) {
+        if (r.status === 300) {
+          return r.json().then(function (j) {
+            showDisambiguation(j);
+            return null;
+          });
+        }
         if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'City not found'); });
         return r.json();
       })
       .then(function (loc) {
-        // Step 2: Fetch times using resolved coordinates
-        var timesParams = new URLSearchParams();
-        timesParams.set('lat', loc.lat);
-        timesParams.set('lon', loc.lon);
-        timesParams.set('tz', loc.tz);
-        if (dateInput.value) timesParams.set('date', dateInput.value);
-        timesParams.set('strategy', currentStrategy);
-
-        return Promise.all([
-          Promise.resolve(loc),
-          fetch('/api/times?' + timesParams.toString()).then(function (r) {
-            if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Computation failed'); });
-            return r.json();
-          })
-        ]);
-      })
-      .then(function (pair) {
-        renderResults(pair[0], pair[1]);
+        if (!loc) return; // disambiguation shown
+        fetchTimesWithLoc(loc);
       })
       .catch(function (err) {
         showError(err.message);
       });
+  }
+
+  function fetchTimesWithLoc(loc) {
+    showLoading();
+
+    var timesParams = new URLSearchParams();
+    timesParams.set('lat', loc.lat);
+    timesParams.set('lon', loc.lon);
+    timesParams.set('tz', loc.tz);
+    if (dateInput.value) timesParams.set('date', dateInput.value);
+    timesParams.set('strategy', currentStrategy);
+
+    fetch('/api/times?' + timesParams.toString())
+      .then(function (r) {
+        if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Computation failed'); });
+        return r.json();
+      })
+      .then(function (data) {
+        renderResults(loc, data);
+      })
+      .catch(function (err) {
+        showError(err.message);
+      });
+  }
+
+  // ── Disambiguation UI ──────────────────────────────────────
+
+  function showDisambiguation(data) {
+    loadingState.style.display = 'none';
+    emptyState.style.display = 'none';
+    errorState.style.display = 'none';
+    results.style.display = 'none';
+
+    var container = document.getElementById('disambiguation');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'disambiguation';
+      container.className = 'disambiguation';
+      // Insert after loading state
+      loadingState.parentNode.insertBefore(container, loadingState.nextSibling);
+    }
+
+    var html = '<p>Multiple locations found for "<strong>' + escapeHtml(data.query) + '</strong>". Please select:</p>';
+    data.options.forEach(function (opt) {
+      html += '<button class="disambig-btn" data-cc="' + escapeHtml(opt.country_code) + '" ' +
+        'data-lat="' + opt.lat + '" data-lon="' + opt.lon + '" data-tz="' + escapeHtml(opt.tz) + '" ' +
+        'data-name="' + escapeHtml(opt.name) + '">' +
+        '<span class="disambig-name">' + escapeHtml(opt.name) + '</span>' +
+        '<span class="disambig-detail">' + escapeHtml(opt.country) + ' \u00B7 ' + escapeHtml(opt.tz) + '</span>' +
+        '</button>';
+    });
+
+    container.innerHTML = html;
+    container.style.display = 'block';
+
+    container.querySelectorAll('.disambig-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        hideDisambiguation();
+        var loc = {
+          name: btn.dataset.name,
+          lat: parseFloat(btn.dataset.lat),
+          lon: parseFloat(btn.dataset.lon),
+          tz: btn.dataset.tz,
+          country_code: btn.dataset.cc,
+          country: btn.querySelector('.disambig-detail').textContent.split(' \u00B7 ')[0],
+          tz_label: btn.dataset.tz + ' (Local Time)',
+          formatted_coords: '',
+          source: 'Nominatim',
+          confidence: 0.9,
+        };
+        fetchTimesWithLoc(loc);
+      });
+    });
+  }
+
+  function hideDisambiguation() {
+    var el = document.getElementById('disambiguation');
+    if (el) el.style.display = 'none';
+  }
+
+  function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
   }
 
   // ── State management ───────────────────────────────────────
@@ -173,6 +248,7 @@
     emptyState.style.display = 'none';
     errorState.style.display = 'none';
     results.style.display = 'none';
+    hideDisambiguation();
     loadingState.style.display = 'block';
   }
 
@@ -180,6 +256,7 @@
     emptyState.style.display = 'none';
     loadingState.style.display = 'none';
     results.style.display = 'none';
+    hideDisambiguation();
     errorMsg.textContent = msg;
     errorState.style.display = 'block';
   }
@@ -188,6 +265,7 @@
     emptyState.style.display = 'none';
     errorState.style.display = 'none';
     loadingState.style.display = 'none';
+    hideDisambiguation();
     results.style.display = 'block';
   }
 
@@ -199,12 +277,16 @@
 
     // Location banner
     var name = capitalize(loc.name);
-    if (loc.country_code) name += ', ' + loc.country_code;
+    if (loc.country) {
+      name += ', ' + loc.country;
+    } else if (loc.country_code) {
+      name += ', ' + loc.country_code;
+    }
     document.getElementById('loc-name').textContent = name;
-    document.getElementById('loc-tz').textContent = loc.tz;
+    document.getElementById('loc-tz').textContent = loc.tz_label || loc.tz;
     document.getElementById('loc-date').textContent = data.date;
     document.getElementById('loc-coords').textContent =
-      data.location.latitude.toFixed(2) + ', ' + data.location.longitude.toFixed(2);
+      data.location.formatted_coords || (data.location.latitude.toFixed(2) + ', ' + data.location.longitude.toFixed(2));
 
     var stateEl = document.getElementById('day-state');
     stateEl.textContent = data.state;

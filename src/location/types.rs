@@ -56,7 +56,18 @@ fn default_confidence() -> f64 {
 
 impl ResolvedLocation {
     pub fn display_line(&self) -> String {
-        format!("{} ({}) [{}]", self.name, self.tz, self.source)
+        let country_part = match &self.country_code {
+            Some(cc) => {
+                let name = super::providers::country_display_name(cc);
+                format!(" \u{2014} {}", name)
+            }
+            None => String::new(),
+        };
+        let coords = super::providers::format_coords(self.lat, self.lon);
+        format!(
+            "\u{1F4CD} {}{}\n  \u{1F552} {} (Local Time)\n  \u{1F4D0} {}",
+            self.name, country_part, self.tz, coords
+        )
     }
 }
 
@@ -85,10 +96,14 @@ pub enum LocationError {
 }
 
 /// A candidate shown to the user when disambiguation fails.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct AmbiguousCandidate {
     pub name: String,
     pub country: String,
+    pub country_name: String,
+    pub lat: f64,
+    pub lon: f64,
+    pub tz: String,
     pub score: f64,
 }
 
@@ -105,7 +120,10 @@ impl fmt::Display for LocationError {
                 writeln!(f)?;
                 writeln!(f, "  Multiple matches found:")?;
                 for (i, c) in candidates.iter().enumerate().take(5) {
-                    writeln!(f, "    {}. {} ({}) [score: {:.2}]", i + 1, c.name, c.country, c.score)?;
+                    let coords = super::providers::format_coords(c.lat, c.lon);
+                    writeln!(f, "    {}. \u{1F4CD} {} \u{2014} {}", i + 1, c.name, c.country_name)?;
+                    writeln!(f, "       \u{1F552} {} (Local Time)", c.tz)?;
+                    writeln!(f, "       \u{1F4D0} {}", coords)?;
                 }
                 writeln!(f)?;
                 write!(f, "  Hint: Try --city \"{}, {}\" or --country {}", query, candidates[0].country, candidates[0].country)

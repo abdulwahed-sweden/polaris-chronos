@@ -9,8 +9,8 @@
 <p align="center">
   <a href="#"><img src="https://img.shields.io/badge/Rust-2021_Edition-DEA584?logo=rust&logoColor=white" alt="Rust"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Tests-79_passing-brightgreen" alt="Tests"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Version-0.5.0-purple" alt="Version"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Tests-96_passing-brightgreen" alt="Tests"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Version-0.6.0-purple" alt="Version"></a>
 </p>
 
 <p align="center">
@@ -397,10 +397,75 @@
 
 <br>
 
+<h2 align="right">دعم المدن الفلسطينية</h2>
+
+<p align="right">
+يتضمن بولاريس 34 مدينة مدمجة، منها 5 مدن فلسطينية:
+</p>
+
+<table>
+<thead>
+<tr>
+<th align="right">المنطقة الزمنية</th>
+<th align="right">الأسماء البديلة</th>
+<th align="right">المدينة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">Asia/Jerusalem</td>
+<td align="right">القدس، al-quds</td>
+<td align="right"><strong>القدس</strong></td>
+</tr>
+<tr>
+<td align="right">Asia/Gaza</td>
+<td align="right">غزة، ghazza</td>
+<td align="right"><strong>غزة</strong></td>
+</tr>
+<tr>
+<td align="right">Asia/Hebron</td>
+<td align="right">—</td>
+<td align="right"><strong>رام الله</strong></td>
+</tr>
+<tr>
+<td align="right">Asia/Hebron</td>
+<td align="right">الخليل، al-khalil</td>
+<td align="right"><strong>الخليل</strong></td>
+</tr>
+<tr>
+<td align="right">Asia/Hebron</td>
+<td align="right">نابلس، nablous</td>
+<td align="right"><strong>نابلس</strong></td>
+</tr>
+</tbody>
+</table>
+
+<br>
+
+<pre dir="ltr" align="left"><code>polaris Gaza
+  📍 gaza — فلسطين
+  🕒 Asia/Gaza (Local Time)
+  📐 31.50°N, 34.47°E</code></pre>
+
+<br>
+
+<h2 align="right">التعامل مع تعدد المدن</h2>
+
+<p align="right">
+عندما يتطابق اسم المدينة مع مواقع في عدة دول، يعرض بولاريس خيارات للاختيار بينها.
+واجهة الويب تعرض أزرار اختيار تفاعلية، وواجهة API ترجع HTTP 300 مع خيارات منظمة.
+</p>
+
+<br>
+
+<hr>
+
+<br>
+
 <h2 align="right">الخلاصة</h2>
 
 <p align="right">
-سواء كنت في مكة أو ستوكهولم أو القطب الشمالي —
+سواء كنت في مكة أو غزة أو ستوكهولم أو القطب الشمالي —
 </p>
 
 <p align="right">

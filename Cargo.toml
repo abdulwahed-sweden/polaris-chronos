@@ -1,6 +1,6 @@
 [package]
 name = "polaris_chronos"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 description = "Virtual Horizon prayer time engine — solves the Polar Paradox via angular dynamics"
 license = "MIT"

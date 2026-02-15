@@ -9,8 +9,8 @@
 <p align="center">
   <a href="#installation"><img src="https://img.shields.io/badge/Rust-2021_Edition-DEA584?logo=rust&logoColor=white" alt="Rust"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
-  <a href="#testing"><img src="https://img.shields.io/badge/Tests-79_passing-brightgreen" alt="Tests"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Version-0.5.0-purple" alt="Version"></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/Tests-96_passing-brightgreen" alt="Tests"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Version-0.6.0-purple" alt="Version"></a>
 </p>
 
 <p align="center">
@@ -222,6 +222,13 @@ Binary: `target/release/polaris`
 # City name
 polaris Stockholm
 
+# Palestinian cities
+polaris Gaza
+polaris Jerusalem
+polaris Ramallah
+polaris Hebron
+polaris Nablus
+
 # City + date
 polaris --city "New York" --date 2026-03-20
 
@@ -240,6 +247,55 @@ polaris Stockholm --strategy strict
 
 # Debug geocoding
 polaris --city Paris --topk 5
+```
+
+### CLI Output
+
+```
+  📍 gaza — Palestine
+  🕒 Asia/Gaza (Local Time)
+  📐 31.50°N, 34.47°E
+```
+
+### Multi-City Disambiguation
+
+When a city name matches locations in multiple countries, Polaris shows a selection:
+
+```
+Ambiguous city name: 'Medina'
+
+  Multiple matches found:
+    1. 📍 Medina, Al Madinah, Saudi Arabia — Saudi Arabia
+       🕒 Asia/Riyadh (Local Time)
+       📐 24.47°N, 39.61°E
+    2. 📍 Medina, OH, US — United States
+       🕒 America/New_York (Local Time)
+       📐 41.14°N, 81.86°W
+
+  Hint: Try --city "Medina, SA" or --country SA
+```
+
+The web UI shows clickable buttons for disambiguation. The API returns HTTP 300 with structured options.
+
+### API Response
+
+```bash
+curl http://127.0.0.1:3000/api/resolve?query=Gaza
+```
+
+```json
+{
+  "name": "gaza",
+  "lat": 31.5017,
+  "lon": 34.4668,
+  "tz": "Asia/Gaza",
+  "tz_label": "Asia/Gaza (Local Time)",
+  "country_code": "PS",
+  "country": "Palestine",
+  "formatted_coords": "31.50°N, 34.47°E",
+  "source": "Built-in",
+  "confidence": 0.95
+}
 ```
 
 <br>
@@ -283,7 +339,7 @@ src/
     mod.rs             Module exports
     types.rs           ResolvedLocation, LocationError, confidence
     resolver.rs        Fallback chain: cache → built-in → Nominatim → IP
-    providers.rs       Nominatim geocoder, IP API, 30+ city dataset
+    providers.rs       Nominatim geocoder, IP API, 34 city dataset
     cache.rs           File-based location cache (30-day TTL)
 scripts/
   global_maghrib_test.py   Stress test: 30 cities × 3 dates + fuzz
@@ -294,8 +350,8 @@ scripts/
 <br>
 
 1. **File cache** &mdash; instant, offline
-2. **Built-in dataset** &mdash; fuzzy matching across 30+ major cities
-3. **Nominatim geocoding** &mdash; country filtering and disambiguation
+2. **Built-in dataset** &mdash; fuzzy matching across 34 cities (including Palestinian cities)
+3. **Nominatim geocoding** &mdash; country filtering, scoring, and interactive disambiguation
 4. **IP geolocation** &mdash; fallback
 
 </details>
@@ -313,7 +369,7 @@ Samples altitude at 1-minute resolution across 24 hours, then applies threshold 
 ## Testing
 
 ```bash
-# 79 unit tests — solar, schedule, solver, location
+# 96 unit tests — solar, schedule, solver, location, Palestine
 cargo test
 
 # Global stress test — 30 cities × 3 dates + fuzzy edge cases

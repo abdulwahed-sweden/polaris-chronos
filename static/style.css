@@ -693,6 +693,64 @@ td.time-cell.no-time {
   font-weight: 500;
 }
 
+/* ── Disambiguation ───────────────────────────────────────────── */
+
+.disambiguation {
+  background: var(--blue-bg);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-lg);
+  padding: var(--card-padding);
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.disambiguation p {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.disambig-btn {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  font-family: var(--font-sans);
+}
+
+.disambig-btn:last-child {
+  margin-bottom: 0;
+}
+
+.disambig-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+  box-shadow: var(--shadow);
+}
+
+.disambig-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.disambig-detail {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.disambig-btn:hover .disambig-name {
+  color: var(--primary);
+}
+
 /* ── Footer ───────────────────────────────────────────────────── */
 
 footer {

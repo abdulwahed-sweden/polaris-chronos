@@ -8,6 +8,6 @@ pub mod providers;
 pub mod resolver;
 pub mod types;
 
-pub use providers::{builtin_city_list, CityInfo};
+pub use providers::{builtin_city_list, CityInfo, country_display_name, country_display_name_ar, format_coords};
 pub use resolver::LocationResolver;
 pub use types::{LocationError, LocationSource, ResolvedLocation, ResolveOptions};

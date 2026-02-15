@@ -3,7 +3,7 @@
 //! Handles timezone conversion, current state detection,
 //! wave debug output, and ASCII visualization.
 
-use crate::location::{LocationSource, ResolvedLocation};
+use crate::location::{LocationSource, ResolvedLocation, country_display_name, format_coords};
 use crate::schedule::{self, DayState, Events, EventMethod, GapStrategy, PrayerEvent};
 use crate::solar;
 use chrono::{NaiveDate, Timelike, Utc, FixedOffset, Offset};
@@ -46,9 +46,13 @@ pub struct LocationInfo {
     pub latitude: f64,
     pub longitude: f64,
     pub timezone: String,
+    pub tz_label: String,
     pub source: LocationSource,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub country_code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub country: Option<String>,
+    pub formatted_coords: String,
     pub resolved_confidence: f64,
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub disambiguated: bool,
@@ -142,9 +146,15 @@ impl Solver {
                 name: r.name.clone(),
                 latitude: r.lat,
                 longitude: r.lon,
-                timezone: tz_name,
+                timezone: tz_name.clone(),
+                tz_label: format!("{} (Local Time)", tz_name),
                 source: r.source.clone(),
                 country_code: r.country_code.clone(),
+                country: r.country_code.as_deref().and_then(|cc| {
+                    let name = country_display_name(cc);
+                    if name == cc { None } else { Some(name.to_string()) }
+                }),
+                formatted_coords: format_coords(r.lat, r.lon),
                 resolved_confidence: r.resolver_confidence,
                 disambiguated: r.disambiguated,
                 disambiguation_note: r.disambiguation_note.clone(),
@@ -153,9 +163,12 @@ impl Solver {
                 name: format!("{:.4}, {:.4}", self.location.lat, self.location.lon),
                 latitude: self.location.lat,
                 longitude: self.location.lon,
-                timezone: tz_name,
+                timezone: tz_name.clone(),
+                tz_label: format!("{} (Local Time)", tz_name),
                 source: LocationSource::Manual,
                 country_code: None,
+                country: None,
+                formatted_coords: format_coords(self.location.lat, self.location.lon),
                 resolved_confidence: 1.0,
                 disambiguated: false,
                 disambiguation_note: None,

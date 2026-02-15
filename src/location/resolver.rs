@@ -98,6 +98,10 @@ impl LocationResolver {
                             Ok(c) => c.iter().take(5).map(|c| super::types::AmbiguousCandidate {
                                 name: c.display_name.clone(),
                                 country: c.country_code.clone(),
+                                country_name: providers::country_display_name(&c.country_code).to_string(),
+                                lat: c.lat,
+                                lon: c.lon,
+                                tz: providers::tz_from_coords(c.lat, c.lon),
                                 score: c.score,
                             }).collect(),
                             Err(_) => vec![],
@@ -429,5 +433,22 @@ mod tests {
         let loc = resolver.resolve_city("Medina, Saudi Arabia").unwrap();
         assert_eq!(loc.country_code, Some("SA".to_string()));
         assert!((loc.lat - 24.4686).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_resolve_gaza_offline() {
+        let (mut resolver, _dir) = offline_resolver();
+        let loc = resolver.resolve_city("Gaza").unwrap();
+        assert_eq!(loc.name, "gaza");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
+        assert_eq!(loc.tz, "Asia/Gaza");
+    }
+
+    #[test]
+    fn test_resolve_jerusalem_offline() {
+        let (mut resolver, _dir) = offline_resolver();
+        let loc = resolver.resolve_city("Jerusalem").unwrap();
+        assert_eq!(loc.name, "jerusalem");
+        assert_eq!(loc.country_code, Some("PS".to_string()));
     }
 }
