@@ -37,6 +37,7 @@ pub fn build_router() -> Router {
 
     Router::new()
         .route("/", get(handlers::index))
+        .route("/day", get(handlers::index))
         .route("/style.css", get(handlers::style))
         .route("/app.js", get(handlers::script))
         .merge(api_routes)

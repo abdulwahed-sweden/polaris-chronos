@@ -1,4 +1,4 @@
-/* Polaris Chronos — Islamic Green Theme */
+/* Polaris Chronos — Ramadan Calendar Theme */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -7,7 +7,7 @@
 }
 
 :root {
-  --bg: #f8f9fb;
+  --bg: #f9fafb;
   --surface: #ffffff;
   --surface2: #f1f3f5;
   --border: #e2e5ea;
@@ -16,23 +16,23 @@
   --text-secondary: #5c6370;
   --text-muted: #8b919a;
 
-  /* Islamic green palette */
-  --primary: #166534;
+  --primary: #14532d;
   --primary-light: #dcfce7;
   --primary-bg: #f0fdf4;
   --primary-border: #bbf7d0;
 
+  --accent: #16a34a;
   --green: #16a34a;
   --green-bg: #f0fdf4;
   --orange: #ea580c;
   --orange-bg: #fff7ed;
   --purple: #7c3aed;
   --purple-bg: #f5f3ff;
+  --iftar: #dc2626;
   --red: #dc2626;
   --red-bg: #fef2f2;
   --blue: #2563eb;
   --blue-bg: #eff6ff;
-  --yellow-bg: #fffbeb;
   --maghrib-bg: #fef3c7;
   --maghrib-border: #fde68a;
 
@@ -46,59 +46,52 @@
 
   --radius: 8px;
   --radius-lg: 12px;
-
-  --section-gap: 2rem;
-  --card-padding: 1.25rem;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.7;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem;
+  padding: 2rem 1.5rem;
 }
 
-/* ── Header ───────────────────────────────────────────────────── */
+/* ── Header ──────────────────────────────────────────────── */
 
 header {
   text-align: center;
-  margin-bottom: var(--section-gap);
+  margin-bottom: 1.5rem;
+}
+
+.logo-link {
+  text-decoration: none;
 }
 
 .logo {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--primary);
   letter-spacing: -0.03em;
 }
 
-.subtitle {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
-  font-weight: 400;
-}
-
-/* ── Controls ─────────────────────────────────────────────────── */
+/* ── Controls ────────────────────────────────────────────── */
 
 .controls {
-  margin-bottom: var(--section-gap);
+  margin-bottom: 1.5rem;
 }
 
 .input-row {
   display: flex;
   gap: 0.5rem;
   align-items: stretch;
-  flex-wrap: wrap;
 }
 
 .autocomplete-wrapper {
@@ -107,8 +100,8 @@ header {
   min-width: 200px;
 }
 
-input[type="text"],
-input[type="date"] {
+input[type="text"] {
+  width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);
@@ -121,48 +114,9 @@ input[type="date"] {
   box-shadow: var(--shadow-sm);
 }
 
-input[type="text"]:focus,
-input[type="date"]:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.12);
-}
-
-input[type="text"] { width: 100%; }
-input[type="date"] { min-width: 150px; }
-
-/* Strategy toggle */
-.strategy-toggle {
-  display: flex;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.strat-btn {
-  background: var(--surface);
-  border: none;
-  padding: 0.6rem 0.9rem;
-  font-size: 0.85rem;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-
-.strat-btn:not(:last-child) {
-  border-right: 1px solid var(--border);
-}
-
-.strat-btn.active {
-  background: var(--primary);
-  color: #fff;
-}
-
-.strat-btn:hover:not(.active) {
-  background: var(--surface2);
+input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
 }
 
 #go-btn {
@@ -181,9 +135,8 @@ input[type="date"] { min-width: 150px; }
 }
 
 #go-btn:hover { opacity: 0.9; }
-#go-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ── Autocomplete ─────────────────────────────────────────────── */
+/* ── Autocomplete ────────────────────────────────────────── */
 
 .autocomplete-list {
   position: absolute;
@@ -230,31 +183,7 @@ input[type="date"] { min-width: 150px; }
   color: var(--primary);
 }
 
-/* ── Empty state ──────────────────────────────────────────────── */
-
-.empty-state {
-  text-align: center;
-  padding: 3.5rem 1rem;
-  color: var(--text-muted);
-}
-
-.empty-icon {
-  font-size: 2.8rem;
-  margin-bottom: 0.75rem;
-  opacity: 0.6;
-}
-
-.empty-state p {
-  font-size: 1.05rem;
-  margin-bottom: 0.3rem;
-}
-
-.empty-hint {
-  font-size: 0.9rem !important;
-  color: var(--text-muted);
-}
-
-/* ── Error state ──────────────────────────────────────────────── */
+/* ── Error state ─────────────────────────────────────────── */
 
 .error-state {
   text-align: center;
@@ -276,15 +205,14 @@ input[type="date"] { min-width: 150px; }
   font-size: 1rem;
 }
 
-/* ── Loading skeleton ─────────────────────────────────────────── */
+/* ── Loading skeleton ────────────────────────────────────── */
 
 .loading-state {
   padding: 0;
 }
 
 .skeleton-banner,
-.skeleton-row,
-.skeleton-solar {
+.skeleton-card {
   background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
@@ -296,19 +224,14 @@ input[type="date"] { min-width: 150px; }
   margin-bottom: 1rem;
 }
 
-.skeleton-table {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
 }
 
-.skeleton-row {
-  height: 48px;
-}
-
-.skeleton-solar {
-  height: 100px;
+.skeleton-card {
+  height: 110px;
 }
 
 @keyframes shimmer {
@@ -316,13 +239,13 @@ input[type="date"] { min-width: 150px; }
   100% { background-position: 200% 0; }
 }
 
-/* ── Location banner ──────────────────────────────────────────── */
+/* ── Location banner ─────────────────────────────────────── */
 
 .location-banner {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--card-padding);
+  padding: 1rem 1.25rem;
   margin-bottom: 1rem;
   box-shadow: var(--shadow-sm);
 }
@@ -331,12 +254,12 @@ input[type="date"] { min-width: 150px; }
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
   flex-wrap: wrap;
 }
 
 .loc-name {
-  font-size: 1.65rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.01em;
@@ -378,36 +301,251 @@ input[type="date"] { min-width: 150px; }
   color: var(--primary);
 }
 
-/* Day state badges */
-.day-state {
-  display: inline-block;
-  padding: 0.15rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+/* ── Ramadan header ──────────────────────────────────────── */
+
+.ramadan-header {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
 }
 
-.day-state.normal {
-  background: var(--primary-bg);
+.ramadan-title {
+  font-size: 1.3rem;
+  font-weight: 700;
   color: var(--primary);
+  margin-bottom: 0.2rem;
+}
+
+.ramadan-dates {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* ── Now bar ─────────────────────────────────────────────── */
+
+.now-bar {
+  background: var(--primary-bg);
   border: 1px solid var(--primary-border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1.1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.day-state.midnightsun {
-  background: var(--yellow-bg);
-  color: #b45309;
-  border: 1px solid var(--maghrib-border);
+.now-left,
+.now-right {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--primary);
 }
 
-.day-state.polarnight {
-  background: var(--blue-bg);
-  color: var(--blue);
-  border: 1px solid #bfdbfe;
+.now-label-text {
+  font-weight: 400;
+  color: var(--text-muted);
 }
 
-/* ── Strategy note ───────────────────────────────────────────── */
+.now-prayer {
+  font-weight: 700;
+}
+
+.now-next {
+  font-weight: 600;
+}
+
+.now-in {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.now-countdown {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--accent);
+  min-width: 5.5rem;
+  text-align: right;
+}
+
+/* ── Calendar grid ───────────────────────────────────────── */
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.65rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Day card ────────────────────────────────────────────── */
+
+.day-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+
+.day-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.day-card.today {
+  border: 2px solid var(--accent);
+  background: rgba(22, 163, 74, 0.08);
+  box-shadow: 0 0 12px rgba(22, 163, 74, 0.15);
+}
+
+.card-header {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-ramadan-day {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.card-date {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+.card-times {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.card-time-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.card-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  min-width: 2.5rem;
+}
+
+.card-time {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.iftar-row .card-label {
+  color: var(--iftar);
+  font-weight: 600;
+}
+
+.iftar-time {
+  color: var(--iftar) !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+}
+
+/* Method dot */
+.method-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.method-dot.standard { background: var(--green); }
+.method-dot.projected { background: var(--orange); }
+.method-dot.virtual { background: var(--purple); }
+.method-dot.none { background: var(--text-muted); }
+
+/* ── Back link ───────────────────────────────────────────── */
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.back-link:hover {
+  color: var(--primary);
+}
+
+/* ── Day header ──────────────────────────────────────────── */
+
+.day-header {
+  margin-bottom: 1rem;
+}
+
+.day-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.day-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* ── Strategy toggle ─────────────────────────────────────── */
+
+.strategy-row {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1rem;
+  width: fit-content;
+  box-shadow: var(--shadow-sm);
+}
+
+.strat-btn {
+  background: var(--surface);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.strat-btn:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+
+.strat-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.strat-btn:hover:not(.active) {
+  background: var(--surface2);
+}
+
+/* ── Strategy note ───────────────────────────────────────── */
 
 .strategy-note {
   font-size: 0.85rem;
@@ -436,45 +574,7 @@ input[type="date"] { min-width: 150px; }
   flex-shrink: 0;
 }
 
-/* ── Now bar ──────────────────────────────────────────────────── */
-
-.now-bar {
-  background: var(--primary-bg);
-  border: 1px solid var(--primary-border);
-  border-radius: var(--radius);
-  padding: 0.65rem 1.1rem;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.now-label {
-  font-size: 0.9rem;
-  color: var(--primary);
-}
-
-.now-prayer {
-  font-weight: 600;
-}
-
-.now-sep {
-  margin: 0 0.35rem;
-  color: var(--primary-border);
-}
-
-.now-countdown {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--primary);
-}
-
-.now-countdown.urgent {
-  color: var(--red);
-}
-
-/* ── Prayer table ─────────────────────────────────────────────── */
+/* ── Prayer table ────────────────────────────────────────── */
 
 .table-wrapper {
   background: var(--surface);
@@ -488,17 +588,12 @@ input[type="date"] { min-width: 150px; }
 table {
   width: 100%;
   border-collapse: collapse;
-}
-
-thead {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  font-size: 15px;
 }
 
 th {
   text-align: left;
-  padding: 0.75rem 1rem;
+  padding: 12px 10px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -509,8 +604,7 @@ th {
 }
 
 td {
-  padding: 0.8rem 1rem;
-  font-size: 1rem;
+  padding: 12px 10px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -518,45 +612,40 @@ tr:last-child td {
   border-bottom: none;
 }
 
-/* Zebra striping */
 tbody tr:nth-child(even) {
   background: #fafafa;
 }
 
-/* Hover effect */
 tbody tr:hover {
   background: var(--primary-bg);
 }
 
-/* Current prayer highlight — red accent */
 tr.current-prayer {
-  background: var(--red-bg) !important;
+  background: var(--primary-bg) !important;
 }
 
 tr.current-prayer td:first-child {
   font-weight: 700;
-  color: var(--red);
+  color: var(--accent);
 }
 
-/* Maghrib special highlight */
 tr.maghrib-row {
   background: var(--maghrib-bg) !important;
 }
 
 tr.maghrib-row td:first-child {
   font-weight: 600;
+  color: var(--iftar);
 }
 
-/* Current prayer takes precedence over maghrib */
 tr.current-prayer.maghrib-row {
-  background: var(--red-bg) !important;
+  background: var(--primary-bg) !important;
 }
 
-/* Time column */
 td.time-cell {
   font-family: var(--font-mono);
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1rem;
   letter-spacing: 0.02em;
 }
 
@@ -632,13 +721,13 @@ td.time-cell.no-time {
   min-width: 2rem;
 }
 
-/* ── Solar panel ──────────────────────────────────────────────── */
+/* ── Solar panel ─────────────────────────────────────────── */
 
 .solar-panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--card-padding);
+  padding: 1rem 1.25rem;
   margin-bottom: 1rem;
   box-shadow: var(--shadow-sm);
 }
@@ -676,7 +765,7 @@ td.time-cell.no-time {
   color: var(--text);
 }
 
-/* ── Meta row ─────────────────────────────────────────────────── */
+/* ── Meta row ────────────────────────────────────────────── */
 
 .meta-row {
   display: flex;
@@ -684,7 +773,7 @@ td.time-cell.no-time {
   flex-wrap: wrap;
   font-size: 0.82rem;
   color: var(--text-muted);
-  margin-bottom: var(--section-gap);
+  margin-bottom: 2rem;
   padding: 0 0.25rem;
 }
 
@@ -693,13 +782,13 @@ td.time-cell.no-time {
   font-weight: 500;
 }
 
-/* ── Disambiguation ───────────────────────────────────────────── */
+/* ── Disambiguation ──────────────────────────────────────── */
 
 .disambiguation {
   background: var(--blue-bg);
   border: 1px solid #bfdbfe;
   border-radius: var(--radius-lg);
-  padding: var(--card-padding);
+  padding: 1rem 1.25rem;
   margin-bottom: 1rem;
   text-align: left;
 }
@@ -730,7 +819,7 @@ td.time-cell.no-time {
 }
 
 .disambig-btn:hover {
-  border-color: var(--primary);
+  border-color: var(--accent);
   background: var(--primary-bg);
   box-shadow: var(--shadow);
 }
@@ -751,7 +840,7 @@ td.time-cell.no-time {
   color: var(--primary);
 }
 
-/* ── Footer ───────────────────────────────────────────────────── */
+/* ── Footer ──────────────────────────────────────────────── */
 
 footer {
   text-align: center;
@@ -761,11 +850,21 @@ footer {
   border-top: 1px solid var(--border);
 }
 
-/* ── Responsive ───────────────────────────────────────────────── */
+/* ── Responsive ──────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 800px) {
+  .calendar-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .skeleton-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
   body {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .container {
@@ -776,35 +875,24 @@ footer {
     flex-direction: column;
   }
 
-  .autocomplete-wrapper,
-  input[type="date"] {
+  .autocomplete-wrapper {
     min-width: 100%;
-  }
-
-  .strategy-toggle {
-    width: 100%;
-  }
-
-  .strat-btn {
-    flex: 1;
-    text-align: center;
   }
 
   #go-btn {
     width: 100%;
   }
 
+  .calendar-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .skeleton-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .loc-name {
-    font-size: 1.35rem;
-  }
-
-  .solar-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .meta-row {
-    flex-direction: column;
-    gap: 0.3rem;
+    font-size: 1.25rem;
   }
 
   .now-bar {
@@ -812,22 +900,34 @@ footer {
     gap: 0.3rem;
     text-align: center;
   }
+
+  .meta-row {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .strategy-row {
+    width: 100%;
+  }
+
+  .strat-btn {
+    flex: 1;
+    text-align: center;
+  }
 }
 
-/* ── RTL / Arabic support ─────────────────────────────────────── */
+/* ── RTL / Arabic ────────────────────────────────────────── */
 
 [dir="rtl"] {
   font-family: var(--font-arabic);
+  font-size: 17px;
 }
 
 [dir="rtl"] table {
   direction: rtl;
 }
 
-[dir="rtl"] th {
-  text-align: right;
-}
-
+[dir="rtl"] th,
 [dir="rtl"] td {
   text-align: right;
 }
@@ -838,7 +938,9 @@ footer {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .now-bar {
+[dir="rtl"] .now-bar,
+[dir="rtl"] .now-left,
+[dir="rtl"] .now-right {
   flex-direction: row-reverse;
 }
 
@@ -854,6 +956,22 @@ footer {
   flex-direction: row-reverse;
 }
 
+[dir="rtl"] .card-time-row {
+  flex-direction: row-reverse;
+}
+
 [dir="rtl"] .solar-item {
   align-items: flex-end;
+}
+
+[dir="rtl"] .disambiguation {
+  text-align: right;
+}
+
+[dir="rtl"] .disambig-btn {
+  text-align: right;
+}
+
+[dir="rtl"] .back-link {
+  direction: rtl;
 }

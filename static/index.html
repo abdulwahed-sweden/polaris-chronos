@@ -12,86 +12,105 @@
 <body>
   <div class="container">
     <header>
-      <div class="logo">Polaris Chronos</div>
-      <p class="subtitle">Adaptive Prayer Time Engine</p>
+      <a href="/" class="logo-link"><div class="logo">Polaris Chronos</div></a>
     </header>
 
+    <!-- Search -->
     <div class="controls">
       <div class="input-row">
         <div class="autocomplete-wrapper">
           <input type="text" id="city-input" placeholder="Search city..." autocomplete="off" spellcheck="false">
           <div id="autocomplete-list" class="autocomplete-list"></div>
         </div>
-        <input type="date" id="date-input">
-        <div class="strategy-toggle">
-          <button id="strategy-projected" class="strat-btn active" data-value="projected45">Projected</button>
-          <button id="strategy-strict" class="strat-btn" data-value="strict">Strict</button>
-        </div>
         <button id="go-btn">Search</button>
       </div>
     </div>
 
-    <!-- Empty state -->
-    <div id="empty-state" class="empty-state">
-      <div class="empty-icon">&#127760;</div>
-      <p>Enter a city name to view prayer times</p>
-      <p class="empty-hint">Try Stockholm, Mecca, or Tromso</p>
-    </div>
-
-    <!-- Error state -->
-    <div id="error-state" class="error-state" style="display:none;">
+    <!-- Error -->
+    <div id="error-state" class="error-state" style="display:none">
       <div class="error-icon">&#9888;</div>
       <p id="error-msg"></p>
     </div>
 
-    <!-- Loading skeleton -->
-    <div id="loading-state" class="loading-state" style="display:none;">
+    <!-- Loading -->
+    <div id="loading-state" class="loading-state" style="display:none">
       <div class="skeleton-banner"></div>
-      <div class="skeleton-table">
-        <div class="skeleton-row"></div>
-        <div class="skeleton-row"></div>
-        <div class="skeleton-row"></div>
-        <div class="skeleton-row"></div>
-        <div class="skeleton-row"></div>
-        <div class="skeleton-row"></div>
+      <div class="skeleton-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
-      <div class="skeleton-solar"></div>
     </div>
 
-    <!-- Results -->
-    <div id="results" style="display:none;">
+    <!-- ===== CALENDAR VIEW ===== -->
+    <div id="calendar-view" style="display:none">
       <div class="location-banner">
         <div class="loc-main">
-          <span id="loc-name" class="loc-name"></span>
-          <span id="day-state" class="day-state"></span>
+          <span id="cal-loc-name" class="loc-name"></span>
         </div>
         <div class="loc-meta">
-          <span id="loc-tz" class="loc-tz"></span>
+          <span id="cal-loc-tz" class="loc-tz"></span>
           <span class="loc-sep">&middot;</span>
-          <span id="loc-date" class="loc-date"></span>
-          <span class="loc-sep">&middot;</span>
-          <span id="loc-coords" class="loc-coords" title="Click to copy"></span>
+          <span id="cal-loc-coords" class="loc-coords" title="Click to copy"></span>
         </div>
       </div>
 
-      <!-- Strategy note -->
-      <div id="strategy-note" class="strategy-note" style="display:none;">
-        <span class="strategy-note-icon"></span>
-        <span id="strategy-note-text"></span>
+      <div class="ramadan-header">
+        <h2 id="ramadan-title" class="ramadan-title"></h2>
+        <p id="ramadan-dates" class="ramadan-dates"></p>
       </div>
 
-      <!-- Now indicator -->
-      <div id="now-bar" class="now-bar" style="display:none;">
-        <div class="now-label">
+      <div id="now-bar" class="now-bar" style="display:none">
+        <div class="now-left">
+          <span class="now-label-text">Now:</span>
           <span id="now-prayer" class="now-prayer"></span>
-          <span class="now-sep">&mdash;</span>
-          <span id="now-next"></span>
         </div>
-        <div id="now-countdown" class="now-countdown"></div>
+        <div class="now-right">
+          <span class="now-label-text">Next:</span>
+          <span id="now-next" class="now-next"></span>
+          <span class="now-in">in</span>
+          <span id="now-countdown" class="now-countdown"></span>
+        </div>
+      </div>
+
+      <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
+
+    <!-- ===== DAY DETAIL VIEW ===== -->
+    <div id="day-view" style="display:none">
+      <a href="/" id="back-link" class="back-link">&larr; Back to Calendar</a>
+
+      <div class="location-banner">
+        <div class="loc-main">
+          <span id="day-loc-name" class="loc-name"></span>
+        </div>
+        <div class="loc-meta">
+          <span id="day-loc-tz" class="loc-tz"></span>
+          <span class="loc-sep">&middot;</span>
+          <span id="day-loc-coords" class="loc-coords" title="Click to copy"></span>
+        </div>
+      </div>
+
+      <div class="day-header">
+        <h2 id="day-title"></h2>
+        <p id="day-subtitle" class="day-subtitle"></p>
+      </div>
+
+      <div class="strategy-row">
+        <button class="strat-btn active" data-value="projected45">Projected</button>
+        <button class="strat-btn" data-value="strict">Strict</button>
+      </div>
+
+      <div id="day-strategy-note" class="strategy-note" style="display:none">
+        <span class="strategy-note-icon"></span>
+        <span id="day-strategy-text"></span>
       </div>
 
       <div class="table-wrapper">
-        <table id="prayer-table">
+        <table>
           <thead>
             <tr>
               <th>Prayer</th>
@@ -133,9 +152,7 @@
       </div>
     </div>
 
-    <footer>
-      Polaris Chronos &mdash; Virtual Horizon Prayer Time Engine
-    </footer>
+    <footer>Polaris Chronos &mdash; Virtual Horizon Prayer Time Engine</footer>
   </div>
   <script src="/app.js?v=0.6.0"></script>
 </body>
