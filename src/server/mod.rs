@@ -38,6 +38,7 @@ pub fn build_router() -> Router {
     Router::new()
         .route("/", get(handlers::index))
         .route("/day", get(handlers::index))
+        .route("/docs", get(handlers::index))
         .route("/style.css", get(handlers::style))
         .route("/app.js", get(handlers::script))
         .merge(api_routes)
@@ -63,6 +64,7 @@ pub async fn start(host: &str, port: u16) {
     eprintln!("  Cache: fresh (in-memory, 6h TTL)");
     eprintln!();
     eprintln!("  Local:     {}", base);
+    eprintln!("  Docs:      {}/docs", base);
     eprintln!();
     eprintln!("  API:");
     eprintln!("    {}/api/resolve?query=stockholm", base);

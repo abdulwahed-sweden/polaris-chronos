@@ -5,7 +5,7 @@ use polaris_chronos::location::{LocationResolver, ResolvedLocation, ResolveOptio
 use polaris_chronos::schedule::GapStrategy;
 use polaris_chronos::solver::{Solver, render_ascii_timeline};
 
-/// Polaris Chronos v0.7 — Adaptive Compensation Prayer Time Engine
+/// Polaris Chronos v1.0 — Adaptive Compensation Prayer Time Engine
 ///
 /// Computes prayer times for any location on Earth, including polar regions.
 /// Supports city names, auto-detection, and raw coordinates.
