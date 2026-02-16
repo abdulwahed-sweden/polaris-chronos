@@ -638,9 +638,9 @@ body {
 
 .horizon-dial {
   width: 100%;
-  max-width: 600px;
+  max-width: 780px;
   margin: 0 auto;
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
 }
 
 .horizon-dial svg {
@@ -650,40 +650,79 @@ body {
 
 .horizon-dial .dial-horizon {
   stroke: var(--border-medium);
-  stroke-width: 1.5;
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
 }
 
-.horizon-dial .dial-arc {
-  stroke: var(--border-light);
+.horizon-dial .dial-horizon-solid {
+  stroke: var(--text-muted);
   stroke-width: 1;
-  fill: none;
+}
+
+.horizon-dial .dial-sky-fill {
+  fill: rgba(22, 163, 74, 0.03);
+}
+
+.horizon-dial .dial-ground-fill {
+  fill: rgba(156, 163, 175, 0.04);
 }
 
 .horizon-dial .dial-sun-path {
   stroke: var(--accent-500);
-  stroke-width: 2.5;
+  stroke-width: 3;
   fill: none;
-  opacity: 0.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.horizon-dial .dial-marker {
-  transition: opacity 0.2s;
+.horizon-dial .dial-sun-area {
+  fill: rgba(245, 158, 11, 0.06);
 }
 
-.horizon-dial .dial-marker:hover {
-  opacity: 0.8;
+.horizon-dial .dial-marker-line {
+  stroke: var(--border-light);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.horizon-dial .dial-marker-dot {
+  stroke: var(--bg-surface);
+  stroke-width: 2.5;
 }
 
 .horizon-dial .dial-marker-label {
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
+  fill: var(--text-primary);
+}
+
+.horizon-dial .dial-marker-time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
   fill: var(--text-secondary);
+}
+
+.horizon-dial .dial-zone-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  fill: var(--text-muted);
+}
+
+.horizon-dial .dial-horizon-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--text-muted);
 }
 
 .horizon-dial .dial-sun {
   fill: var(--accent-500);
-  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5));
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
 }
 
 .dial-sun-pulse {
@@ -691,14 +730,8 @@ body {
 }
 
 @keyframes sunPulse {
-  0%, 100% { r: 8; opacity: 1; }
-  50% { r: 11; opacity: 0.7; }
-}
-
-.horizon-dial .dial-note {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  fill: var(--text-muted);
+  0%, 100% { r: 10; opacity: 1; }
+  50% { r: 13; opacity: 0.7; }
 }
 
 /* ── Solar Panel ────────────────────────────────────────── */

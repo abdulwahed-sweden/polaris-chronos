@@ -778,7 +778,6 @@
     var dial = $('horizon-dial');
     dial.innerHTML = '';
 
-    // Check if we have enough data
     var prayerTimes = [];
     PRAYER_NAMES.forEach(function (name) {
       var ev = data.events[name];
@@ -790,7 +789,6 @@
     });
 
     if (prayerTimes.length < 2) {
-      // Polar night / not enough data
       container.style.display = 'block';
       dial.innerHTML = '<div style="text-align:center;padding:2rem;color:#9CA3AF;">' +
         'Insufficient solar data for horizon visualization (polar conditions).</div>';
@@ -798,137 +796,172 @@
     }
 
     container.style.display = 'block';
+    prayerTimes.sort(function (a, b) { return a.hours - b.hours; });
 
-    var W = 600, H = 320;
-    var CX = 300, CY = 260;
-    var R = 220;
+    // Chart dimensions
+    var W = 800, H = 420;
+    var PAD_L = 60, PAD_R = 40, PAD_T = 55, PAD_B = 70;
+    var chartW = W - PAD_L - PAD_R;
+    var chartH = H - PAD_T - PAD_B;
+    var horizonY = PAD_T + chartH * 0.55; // horizon line at 55% down
 
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    var firstHour = prayerTimes[0].hours;
+    var lastHour = prayerTimes[prayerTimes.length - 1].hours;
+    var timeSpan = lastHour - firstHour;
+    if (timeSpan <= 0) timeSpan = 1;
+    var timePad = timeSpan * 0.06;
+    var tMin = firstHour - timePad;
+    var tMax = lastHour + timePad;
+    var tRange = tMax - tMin;
+
+    function timeToX(h) { return PAD_L + ((h - tMin) / tRange) * chartW; }
+
+    // Altitude curve: parabolic arc peaking at solar noon
+    var sunriseIdx = -1, sunsetIdx = -1;
+    for (var i = 0; i < prayerTimes.length; i++) {
+      if (prayerTimes[i].name === 'sunrise') sunriseIdx = i;
+      if (prayerTimes[i].name === 'maghrib') sunsetIdx = i;
+    }
+    var riseH = sunriseIdx >= 0 ? prayerTimes[sunriseIdx].hours : firstHour;
+    var setH = sunsetIdx >= 0 ? prayerTimes[sunsetIdx].hours : lastHour;
+    var noonH = (riseH + setH) / 2;
+    var daySpan = setH - riseH;
+    if (daySpan <= 0) daySpan = 1;
+
+    function altitudeY(h) {
+      var fromNoon = (h - noonH) / (daySpan / 2);
+      var alt = 1 - fromNoon * fromNoon; // parabola: 1 at noon, 0 at rise/set
+      var aboveSpace = horizonY - PAD_T - 15;
+      var belowSpace = 50;
+      if (alt >= 0) {
+        return horizonY - alt * aboveSpace;
+      } else {
+        return horizonY - alt * belowSpace;
+      }
+    }
+
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
-    // Background gradient
-    var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    var grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-    grad.setAttribute('id', 'skyGrad');
-    grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
-    grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
-    var stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stop1.setAttribute('offset', '0%');
-    stop1.setAttribute('style', 'stop-color:rgba(22,163,74,0.04)');
-    var stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stop2.setAttribute('offset', '100%');
-    stop2.setAttribute('style', 'stop-color:rgba(248,250,251,0)');
-    grad.appendChild(stop1);
-    grad.appendChild(stop2);
-    defs.appendChild(grad);
-    svg.appendChild(defs);
+    // Sky zone (above horizon)
+    var skyRect = document.createElementNS(ns, 'rect');
+    skyRect.setAttribute('x', PAD_L); skyRect.setAttribute('y', PAD_T);
+    skyRect.setAttribute('width', chartW); skyRect.setAttribute('height', horizonY - PAD_T);
+    skyRect.setAttribute('class', 'dial-sky-fill');
+    svg.appendChild(skyRect);
 
-    // Sky area
-    var skyPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    skyPath.setAttribute('d', 'M ' + (CX - R) + ' ' + CY + ' A ' + R + ' ' + R + ' 0 0 1 ' + (CX + R) + ' ' + CY + ' Z');
-    skyPath.setAttribute('fill', 'url(#skyGrad)');
-    svg.appendChild(skyPath);
+    // Ground zone (below horizon)
+    var gndRect = document.createElementNS(ns, 'rect');
+    gndRect.setAttribute('x', PAD_L); gndRect.setAttribute('y', horizonY);
+    gndRect.setAttribute('width', chartW); gndRect.setAttribute('height', PAD_T + chartH - horizonY);
+    gndRect.setAttribute('class', 'dial-ground-fill');
+    svg.appendChild(gndRect);
+
+    // Zone labels
+    var skyLabel = document.createElementNS(ns, 'text');
+    skyLabel.setAttribute('x', PAD_L + 8); skyLabel.setAttribute('y', PAD_T + 18);
+    skyLabel.setAttribute('class', 'dial-zone-label');
+    skyLabel.textContent = 'ABOVE HORIZON';
+    svg.appendChild(skyLabel);
+
+    var gndLabel = document.createElementNS(ns, 'text');
+    gndLabel.setAttribute('x', PAD_L + 8); gndLabel.setAttribute('y', horizonY + 18);
+    gndLabel.setAttribute('class', 'dial-zone-label');
+    gndLabel.textContent = 'BELOW HORIZON';
+    svg.appendChild(gndLabel);
 
     // Horizon line
-    var horizon = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    horizon.setAttribute('x1', CX - R - 20);
-    horizon.setAttribute('y1', CY);
-    horizon.setAttribute('x2', CX + R + 20);
-    horizon.setAttribute('y2', CY);
-    horizon.setAttribute('class', 'dial-horizon');
-    svg.appendChild(horizon);
+    var hLine = document.createElementNS(ns, 'line');
+    hLine.setAttribute('x1', PAD_L); hLine.setAttribute('y1', horizonY);
+    hLine.setAttribute('x2', PAD_L + chartW); hLine.setAttribute('y2', horizonY);
+    hLine.setAttribute('class', 'dial-horizon');
+    svg.appendChild(hLine);
 
-    // Horizon labels
-    var eastLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    eastLabel.setAttribute('x', CX - R - 15);
-    eastLabel.setAttribute('y', CY + 18);
-    eastLabel.setAttribute('text-anchor', 'middle');
-    eastLabel.setAttribute('class', 'dial-note');
-    eastLabel.textContent = 'E';
-    svg.appendChild(eastLabel);
+    var hLabel = document.createElementNS(ns, 'text');
+    hLabel.setAttribute('x', PAD_L - 8); hLabel.setAttribute('y', horizonY + 4);
+    hLabel.setAttribute('text-anchor', 'end');
+    hLabel.setAttribute('class', 'dial-horizon-label');
+    hLabel.textContent = '0\u00B0';
+    svg.appendChild(hLabel);
 
-    var westLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    westLabel.setAttribute('x', CX + R + 15);
-    westLabel.setAttribute('y', CY + 18);
-    westLabel.setAttribute('text-anchor', 'middle');
-    westLabel.setAttribute('class', 'dial-note');
-    westLabel.textContent = 'W';
-    svg.appendChild(westLabel);
-
-    // Arc guide lines
-    [0.25, 0.5, 0.75].forEach(function (frac) {
-      var r = R * frac;
-      var arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      arc.setAttribute('d', 'M ' + (CX - r) + ' ' + CY + ' A ' + r + ' ' + r + ' 0 0 1 ' + (CX + r) + ' ' + CY);
-      arc.setAttribute('class', 'dial-arc');
-      arc.setAttribute('stroke-dasharray', '4 6');
-      svg.appendChild(arc);
-    });
-
-    // Compute angle range: map fajr-to-isha across 180 degrees (left to right)
-    prayerTimes.sort(function (a, b) { return a.hours - b.hours; });
-    var firstHour = prayerTimes[0].hours;
-    var lastHour = prayerTimes[prayerTimes.length - 1].hours;
-    var range = lastHour - firstHour;
-    if (range <= 0) range = 1;
-
-    // Sun path arc
-    var pathPoints = [];
-    for (var t = 0; t <= 1; t += 0.02) {
-      var angle = Math.PI * (1 - t); // left (pi) to right (0)
-      var alt = Math.sin(Math.PI * t); // parabolic altitude
-      var pr = R * (0.15 + 0.85 * alt);
-      var px = CX + pr * Math.cos(angle);
-      var py = CY - pr * Math.sin(angle);
-      pathPoints.push((t === 0 ? 'M' : 'L') + ' ' + px.toFixed(1) + ' ' + py.toFixed(1));
+    // Sun path: smooth curve with filled area
+    var curvePoints = [];
+    var steps = 80;
+    for (var s = 0; s <= steps; s++) {
+      var t = tMin + (s / steps) * tRange;
+      var cx = timeToX(t);
+      var cy = altitudeY(t);
+      cy = Math.max(PAD_T, Math.min(PAD_T + chartH, cy));
+      curvePoints.push({ x: cx, y: cy });
     }
-    var sunPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    sunPath.setAttribute('d', pathPoints.join(' '));
-    sunPath.setAttribute('class', 'dial-sun-path');
-    svg.appendChild(sunPath);
+
+    // Filled area between curve and horizon
+    var areaPath = 'M ' + curvePoints[0].x.toFixed(1) + ' ' + horizonY;
+    for (var k = 0; k < curvePoints.length; k++) {
+      areaPath += ' L ' + curvePoints[k].x.toFixed(1) + ' ' + curvePoints[k].y.toFixed(1);
+    }
+    areaPath += ' L ' + curvePoints[curvePoints.length - 1].x.toFixed(1) + ' ' + horizonY + ' Z';
+    var area = document.createElementNS(ns, 'path');
+    area.setAttribute('d', areaPath);
+    area.setAttribute('class', 'dial-sun-area');
+    svg.appendChild(area);
+
+    // Sun path line
+    var linePath = 'M ' + curvePoints[0].x.toFixed(1) + ' ' + curvePoints[0].y.toFixed(1);
+    for (var k = 1; k < curvePoints.length; k++) {
+      linePath += ' L ' + curvePoints[k].x.toFixed(1) + ' ' + curvePoints[k].y.toFixed(1);
+    }
+    var sunLine = document.createElementNS(ns, 'path');
+    sunLine.setAttribute('d', linePath);
+    sunLine.setAttribute('class', 'dial-sun-path');
+    svg.appendChild(sunLine);
 
     // Prayer markers
-    prayerTimes.forEach(function (pt) {
-      var frac = (pt.hours - firstHour) / range;
-      var angle = Math.PI * (1 - frac);
-      var alt = Math.sin(Math.PI * frac);
-      var mr = R * (0.15 + 0.85 * alt);
-      var mx = CX + mr * Math.cos(angle);
-      var my = CY - mr * Math.sin(angle);
+    var labelSlots = []; // collision avoidance for labels
 
-      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      g.setAttribute('class', 'dial-marker');
+    prayerTimes.forEach(function (pt, idx) {
+      var mx = timeToX(pt.hours);
+      var my = altitudeY(pt.hours);
+      my = Math.max(PAD_T + 5, Math.min(PAD_T + chartH - 5, my));
+      var color = METHOD_COLORS[pt.method] || '#9CA3AF';
 
-      var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', mx);
-      circle.setAttribute('cy', my);
-      circle.setAttribute('r', 6);
-      circle.setAttribute('fill', METHOD_COLORS[pt.method] || '#64748b');
-      circle.setAttribute('stroke', '#fff');
-      circle.setAttribute('stroke-width', 1);
-      g.appendChild(circle);
+      // Vertical guide line from bottom to dot
+      var vLine = document.createElementNS(ns, 'line');
+      vLine.setAttribute('x1', mx); vLine.setAttribute('y1', H - PAD_B + 5);
+      vLine.setAttribute('x2', mx); vLine.setAttribute('y2', my);
+      vLine.setAttribute('class', 'dial-marker-line');
+      svg.appendChild(vLine);
 
-      var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', mx);
-      label.setAttribute('y', my - 14);
-      label.setAttribute('text-anchor', 'middle');
-      label.setAttribute('class', 'dial-marker-label');
-      label.textContent = capitalize(pt.name);
-      g.appendChild(label);
+      // Dot on the curve
+      var dot = document.createElementNS(ns, 'circle');
+      dot.setAttribute('cx', mx); dot.setAttribute('cy', my);
+      dot.setAttribute('r', 7);
+      dot.setAttribute('fill', color);
+      dot.setAttribute('class', 'dial-marker-dot');
+      svg.appendChild(dot);
 
-      // Time label below
-      var timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      timeLabel.setAttribute('x', mx);
-      timeLabel.setAttribute('y', my + 20);
-      timeLabel.setAttribute('text-anchor', 'middle');
-      timeLabel.setAttribute('class', 'dial-note');
+      // Prayer name label (above the chart)
+      var nameY = H - PAD_B + 22;
+      var nameLabel = document.createElementNS(ns, 'text');
+      nameLabel.setAttribute('x', mx); nameLabel.setAttribute('y', nameY);
+      nameLabel.setAttribute('text-anchor', 'middle');
+      nameLabel.setAttribute('class', 'dial-marker-label');
+      nameLabel.textContent = capitalize(pt.name);
+      svg.appendChild(nameLabel);
+
+      // Time label (below the name)
       var hh = Math.floor(pt.hours);
       var mm = Math.round((pt.hours - hh) * 60);
-      timeLabel.textContent = pad2(hh) + ':' + pad2(mm);
-      g.appendChild(timeLabel);
+      var timeStr = pad2(hh) + ':' + pad2(mm);
 
-      svg.appendChild(g);
+      var timeLabel = document.createElementNS(ns, 'text');
+      timeLabel.setAttribute('x', mx); timeLabel.setAttribute('y', nameY + 17);
+      timeLabel.setAttribute('text-anchor', 'middle');
+      timeLabel.setAttribute('class', 'dial-marker-time');
+      timeLabel.textContent = timeStr;
+      svg.appendChild(timeLabel);
     });
 
     // Current sun position (if today)
@@ -936,18 +969,15 @@
     if (data.date === todayStr) {
       var now = new Date();
       var nowHours = now.getHours() + now.getMinutes() / 60;
-      if (nowHours >= firstHour && nowHours <= lastHour) {
-        var frac = (nowHours - firstHour) / range;
-        var angle = Math.PI * (1 - frac);
-        var alt = Math.sin(Math.PI * frac);
-        var sr = R * (0.15 + 0.85 * alt);
-        var sx = CX + sr * Math.cos(angle);
-        var sy = CY - sr * Math.sin(angle);
+      if (nowHours >= tMin && nowHours <= tMax) {
+        var sx = timeToX(nowHours);
+        var sy = altitudeY(nowHours);
+        sy = Math.max(PAD_T + 5, Math.min(PAD_T + chartH - 5, sy));
 
-        var sunCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        var sunCircle = document.createElementNS(ns, 'circle');
         sunCircle.setAttribute('cx', sx);
         sunCircle.setAttribute('cy', sy);
-        sunCircle.setAttribute('r', 8);
+        sunCircle.setAttribute('r', 10);
         sunCircle.setAttribute('class', 'dial-sun dial-sun-pulse');
         svg.appendChild(sunCircle);
       }
