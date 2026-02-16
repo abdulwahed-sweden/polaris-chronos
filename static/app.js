@@ -20,10 +20,10 @@
   };
 
   var METHOD_COLORS = {
-    'Standard': '#10b981',
-    'Projected': '#f59e0b',
-    'Virtual': '#a78bfa',
-    'None': '#64748b'
+    'Standard': '#16A34A',
+    'Projected': '#D97706',
+    'Virtual': '#7C3AED',
+    'None': '#9CA3AF'
   };
 
   // ═══════════════════════════════════════════════════════════
@@ -792,7 +792,7 @@
     if (prayerTimes.length < 2) {
       // Polar night / not enough data
       container.style.display = 'block';
-      dial.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">' +
+      dial.innerHTML = '<div style="text-align:center;padding:2rem;color:#9CA3AF;">' +
         'Insufficient solar data for horizon visualization (polar conditions).</div>';
       return;
     }
@@ -815,10 +815,10 @@
     grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
     var stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     stop1.setAttribute('offset', '0%');
-    stop1.setAttribute('style', 'stop-color:rgba(6,78,59,0.15)');
+    stop1.setAttribute('style', 'stop-color:rgba(22,163,74,0.04)');
     var stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     stop2.setAttribute('offset', '100%');
-    stop2.setAttribute('style', 'stop-color:rgba(15,23,42,0)');
+    stop2.setAttribute('style', 'stop-color:rgba(248,250,251,0)');
     grad.appendChild(stop1);
     grad.appendChild(stop2);
     defs.appendChild(grad);
@@ -905,7 +905,7 @@
       circle.setAttribute('cy', my);
       circle.setAttribute('r', 6);
       circle.setAttribute('fill', METHOD_COLORS[pt.method] || '#64748b');
-      circle.setAttribute('stroke', 'rgba(0,0,0,0.3)');
+      circle.setAttribute('stroke', '#fff');
       circle.setAttribute('stroke-width', 1);
       g.appendChild(circle);
 
@@ -1020,7 +1020,7 @@
       '</div>';
 
     endpoints.forEach(function (ep) {
-      html += '<div class="glass-card docs-endpoint mb-4">' +
+      html += '<div class="polaris-card docs-endpoint mb-4">' +
         '<div class="endpoint-badge get">GET ' + escapeHtml(ep.path) + '</div>' +
         '<p class="endpoint-description">' + escapeHtml(ep.desc) + '</p>';
 
@@ -1049,7 +1049,7 @@
     // Concepts section
     html += '<div class="docs-concepts">' +
       '<h3>Concepts</h3>' +
-      '<div class="glass-card mb-3">' +
+      '<div class="polaris-card mb-3">' +
       '<p class="mb-3"><span class="concept-badge">DayState</span> Describes the solar condition for a given day at the location.</p>' +
       '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
       '<li><strong>Normal</strong> \u2014 Standard sunrise/sunset cycle. All times are astronomically computed.</li>' +

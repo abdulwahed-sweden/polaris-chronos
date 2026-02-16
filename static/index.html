@@ -7,14 +7,14 @@
   <meta name="description" content="Virtual Horizon Prayer Time Engine — Adaptive prayer times for any location on Earth">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/style.css?v=1.0.0">
 </head>
 <body>
 
   <!-- ===== NAVBAR ===== -->
-  <nav class="polaris-nav navbar navbar-expand navbar-dark sticky-top">
+  <nav class="polaris-nav navbar navbar-expand sticky-top">
     <div class="container">
       <a class="navbar-brand polaris-brand" href="/">Polaris Chronos</a>
       <ul class="navbar-nav ms-auto">
@@ -89,7 +89,7 @@
 
     <!-- ===== CALENDAR VIEW ===== -->
     <div id="calendar-view" style="display:none">
-      <div class="glass-card location-card mb-3">
+      <div class="polaris-card location-card mb-3">
         <div class="loc-main">
           <span id="cal-loc-name" class="loc-name"></span>
         </div>
@@ -111,7 +111,7 @@
         <span class="legend-item"><span class="method-badge virtual-h">Virtual</span></span>
       </div>
 
-      <div class="glass-card table-card">
+      <div class="polaris-card table-card">
         <div class="table-responsive">
           <table class="table polaris-table mb-0">
             <thead>
@@ -134,7 +134,7 @@
 
     <!-- ===== DAY DETAIL VIEW ===== -->
     <div id="day-view" style="display:none">
-      <div class="glass-card location-card mb-3">
+      <div class="polaris-card location-card mb-3">
         <div class="loc-main">
           <span id="day-loc-name" class="loc-name"></span>
         </div>
@@ -161,12 +161,12 @@
       </div>
 
       <!-- Horizon Dial SVG -->
-      <div class="glass-card mb-3" id="horizon-dial-container" style="display:none">
+      <div class="polaris-card mb-3" id="horizon-dial-container" style="display:none">
         <div id="horizon-dial" class="horizon-dial"></div>
       </div>
 
       <!-- Prayer Table -->
-      <div class="glass-card table-card mb-3">
+      <div class="polaris-card table-card mb-3">
         <div class="table-responsive">
           <table class="table polaris-table mb-0">
             <thead>
@@ -183,7 +183,7 @@
       </div>
 
       <!-- Solar Panel -->
-      <div class="glass-card solar-panel mb-3">
+      <div class="polaris-card solar-panel mb-3">
         <div class="solar-title">Solar Data</div>
         <div class="row">
           <div class="col-6 col-md-3">

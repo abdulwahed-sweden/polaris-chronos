@@ -1,4 +1,4 @@
-/* Polaris Chronos v1.0 — Emerald & Gold Observatory Theme */
+/* Polaris Chronos v1.0 — Design System */
 
 /* ── Reset ──────────────────────────────────────────────── */
 
@@ -11,77 +11,64 @@
 /* ── Design Tokens ──────────────────────────────────────── */
 
 :root {
-  /* Emerald palette */
-  --emerald-deep: #064e3b;
-  --emerald-mid: #065f46;
-  --emerald-light: #10b981;
-  --emerald-bg: rgba(16, 185, 129, 0.08);
-  --emerald-border: rgba(16, 185, 129, 0.25);
+  /* Backgrounds */
+  --bg-primary: #F8FAFB;
+  --bg-surface: #FFFFFF;
+  --bg-secondary: #F1F5F9;
 
-  /* Gold palette */
-  --gold: #d4af37;
-  --gold-light: #f0d060;
-  --gold-border: rgba(212, 175, 55, 0.4);
-  --gold-bg: rgba(212, 175, 55, 0.08);
+  /* Primary — Emerald Green */
+  --primary-500: #22C55E;
+  --primary-600: #16A34A;
+  --primary-700: #15803D;
+  --primary-900: #064E3B;
 
-  /* Charcoal palette */
-  --charcoal-deep: #0f172a;
-  --charcoal: #1e293b;
-  --charcoal-light: #334155;
+  /* Accent — Amber/Gold */
+  --accent-500: #F59E0B;
+  --accent-600: #D97706;
 
-  /* Surface / text */
-  --surface: rgba(30, 41, 59, 0.6);
-  --surface-solid: #1e293b;
-  --text: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
 
-  /* Semantic */
-  --green: #10b981;
-  --green-bg: rgba(16, 185, 129, 0.12);
-  --orange: #f59e0b;
-  --orange-bg: rgba(245, 158, 11, 0.12);
-  --purple: #a78bfa;
-  --purple-bg: rgba(167, 139, 250, 0.12);
-  --red: #ef4444;
-  --red-bg: rgba(239, 68, 68, 0.12);
-  --blue: #3b82f6;
-  --blue-bg: rgba(59, 130, 246, 0.12);
+  /* Status */
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --danger: #DC2626;
+  --info: #3B82F6;
+
+  /* Borders */
+  --border-light: #E5E7EB;
+  --border-medium: #D1D5DB;
+
+  /* Iftar highlight */
+  --iftar-bg: rgba(245, 158, 11, 0.06);
 
   /* Typography */
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-arabic: 'Amiri', 'Plus Jakarta Sans', serif;
-  --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: 'DM Sans', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35);
-  --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.15);
+  /* Shadows — subtle only */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.06);
 
   /* Radius */
   --radius: 8px;
   --radius-lg: 12px;
-  --radius-xl: 16px;
-
-  /* Glass */
-  --glass-bg: rgba(30, 41, 59, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 12px;
+  --radius-btn: 10px;
 }
 
 /* ── Base ───────────────────────────────────────────────── */
 
 body {
-  background: var(--charcoal-deep);
-  background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(6, 78, 59, 0.3) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
-  background-attachment: fixed;
-  color: var(--text);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -89,125 +76,124 @@ body {
 /* ── Navbar ─────────────────────────────────────────────── */
 
 .polaris-nav {
-  background: var(--emerald-deep) !important;
-  border-bottom: 1px solid var(--gold-border);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
   padding: 0.6rem 0;
   z-index: 1050;
 }
 
 .polaris-brand {
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-weight: 700;
   font-size: 1.35rem;
   letter-spacing: -0.02em;
-  color: var(--gold) !important;
-  text-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+  color: var(--primary-900) !important;
 }
 
 .polaris-nav .nav-link {
-  color: rgba(241, 245, 249, 0.7) !important;
+  color: var(--text-secondary) !important;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   padding: 0.5rem 1rem !important;
   border-radius: var(--radius);
   transition: color 0.2s, background 0.2s;
 }
 
 .polaris-nav .nav-link:hover {
-  color: var(--gold) !important;
-  background: rgba(212, 175, 55, 0.1);
+  color: var(--primary-700) !important;
+  background: rgba(22, 163, 74, 0.06);
 }
 
 .polaris-nav .nav-link.active {
-  color: var(--gold) !important;
-  background: rgba(212, 175, 55, 0.15);
+  color: var(--primary-700) !important;
+  background: rgba(22, 163, 74, 0.08);
+  font-weight: 600;
 }
 
 /* ── Now Dashboard ──────────────────────────────────────── */
 
 .now-dashboard {
-  background: linear-gradient(135deg, var(--emerald-deep) 0%, var(--emerald-mid) 100%);
-  border-bottom: 1px solid var(--gold-border);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
   padding: 1.25rem 0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .now-label {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgba(212, 175, 55, 0.7);
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
   margin-bottom: 0.15rem;
 }
 
 .now-prayer-name {
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--primary-900);
 }
 
 .now-next-name {
-  font-size: 1.2rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
   margin-right: 0.75rem;
 }
 
 .now-countdown {
   font-family: var(--font-mono);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--gold);
-  text-shadow: 0 0 16px rgba(212, 175, 55, 0.4);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--primary-600);
   letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Search ─────────────────────────────────────────────── */
 
 .polaris-input {
-  background: var(--glass-bg) !important;
-  border: 1px solid var(--glass-border) !important;
-  color: var(--text) !important;
-  backdrop-filter: blur(8px);
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-medium) !important;
+  color: var(--text-primary) !important;
   font-family: var(--font-sans);
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius) !important;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .polaris-input:focus {
-  border-color: var(--gold-border) !important;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
-  background: var(--glass-bg) !important;
-  color: var(--text) !important;
+  border-color: var(--primary-500) !important;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1) !important;
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
 }
 
 .polaris-input::placeholder {
   color: var(--text-muted) !important;
 }
 
-/* Date input color scheme */
-input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
-  filter: invert(0.7);
-}
-
 .polaris-btn-primary {
-  background: var(--emerald-mid) !important;
-  border: 1px solid var(--gold-border) !important;
-  color: var(--gold) !important;
+  background: var(--primary-600) !important;
+  border: 1px solid var(--primary-600) !important;
+  color: #fff !important;
   font-weight: 600;
   font-family: var(--font-sans);
-  padding: 0.5rem 1.5rem;
-  transition: all 0.2s;
+  font-size: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-btn) !important;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .polaris-btn-primary:hover {
-  background: var(--emerald-deep) !important;
-  border-color: var(--gold) !important;
-  box-shadow: var(--shadow-gold);
-  color: var(--gold-light) !important;
+  background: var(--primary-700) !important;
+  border-color: var(--primary-700) !important;
+  box-shadow: var(--shadow-md);
+  color: #fff !important;
 }
 
 /* ── Autocomplete ───────────────────────────────────────── */
@@ -221,15 +207,14 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: var(--charcoal);
-  border: 1px solid var(--glass-border);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   max-height: 280px;
   overflow-y: auto;
   z-index: 1100;
   display: none;
-  backdrop-filter: blur(16px);
 }
 
 .autocomplete-list.active { display: block; }
@@ -237,13 +222,13 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 .autocomplete-item {
   padding: 0.6rem 0.9rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--text);
+  color: var(--text-primary);
   transition: background 0.15s;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .autocomplete-item:last-child {
@@ -252,8 +237,8 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 
 .autocomplete-item:hover,
 .autocomplete-item.selected {
-  background: var(--emerald-bg);
-  color: var(--emerald-light);
+  background: rgba(22, 163, 74, 0.06);
+  color: var(--primary-700);
 }
 
 .autocomplete-item .country-badge {
@@ -261,31 +246,29 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   font-family: var(--font-mono);
   font-weight: 500;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-secondary);
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
 }
 
 .autocomplete-item:hover .country-badge,
 .autocomplete-item.selected .country-badge {
-  color: var(--emerald-light);
-  background: rgba(16, 185, 129, 0.15);
+  color: var(--primary-700);
+  background: rgba(22, 163, 74, 0.08);
 }
 
-/* ── Glass Card ─────────────────────────────────────────── */
+/* ── Cards ──────────────────────────────────────────────── */
 
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
+.polaris-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: 1.25rem;
   box-shadow: var(--shadow);
 }
 
 .location-card {
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--primary-600);
 }
 
 .table-card {
@@ -304,9 +287,10 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .loc-name {
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
@@ -314,22 +298,22 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
 }
 
 .loc-sep {
-  color: var(--charcoal-light);
+  color: var(--border-medium);
 }
 
 .loc-tz {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
 }
 
 .loc-coords {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   cursor: pointer;
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
@@ -337,27 +321,28 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .loc-coords:hover {
-  background: var(--emerald-bg);
-  color: var(--emerald-light);
+  background: rgba(22, 163, 74, 0.06);
+  color: var(--primary-700);
 }
 
 .loc-coords.copied {
-  background: var(--green-bg);
-  color: var(--green);
+  background: rgba(22, 163, 74, 0.08);
+  color: var(--success);
 }
 
 /* ── Ramadan Header ─────────────────────────────────────── */
 
 .ramadan-title {
-  font-size: 1.4rem;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--gold);
-  text-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+  color: var(--primary-900);
+  letter-spacing: -0.01em;
   margin-bottom: 0.2rem;
 }
 
 .ramadan-dates {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
   margin-bottom: 0;
 }
@@ -372,7 +357,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .legend-item {
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
 }
 
 /* ── Method Badges ──────────────────────────────────────── */
@@ -381,35 +366,35 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 0.2rem 0.6rem;
-  border-radius: 20px;
+  border-radius: 12px;
   letter-spacing: 0.02em;
 }
 
 .method-badge.standard {
-  color: var(--green);
-  background: var(--green-bg);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--success);
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.15);
 }
 
 .method-badge.projected {
-  color: var(--orange);
-  background: var(--orange-bg);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--accent-600);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.15);
 }
 
 .method-badge.virtual-h {
-  color: var(--purple);
-  background: var(--purple-bg);
-  border: 1px solid rgba(167, 139, 250, 0.25);
+  color: #7C3AED;
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.15);
 }
 
 .method-badge.none {
   color: var(--text-muted);
-  background: rgba(100, 116, 139, 0.12);
-  border: 1px solid rgba(100, 116, 139, 0.2);
+  background: rgba(156, 163, 175, 0.1);
+  border: 1px solid rgba(156, 163, 175, 0.15);
 }
 
 .method-icon {
@@ -419,27 +404,30 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 /* ── Tables ─────────────────────────────────────────────── */
 
 .polaris-table {
-  color: var(--text);
-  font-size: 0.92rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
   margin: 0;
 }
 
 .polaris-table thead th {
-  background: var(--charcoal);
-  color: var(--gold);
-  font-size: 0.72rem;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.85rem 0.75rem;
-  border-bottom: 2px solid var(--gold-border) !important;
+  letter-spacing: 0.08em;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-medium) !important;
   border-top: none;
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .polaris-table tbody td {
-  padding: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
   vertical-align: middle;
 }
 
@@ -447,29 +435,36 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   transition: background 0.15s;
 }
 
+/* Zebra striping */
+.polaris-table tbody tr:nth-child(even) {
+  background: var(--bg-primary);
+}
+
 .polaris-table tbody tr:hover {
-  background: rgba(16, 185, 129, 0.06);
+  background: rgba(22, 163, 74, 0.04);
 }
 
 /* Calendar-specific cells */
 .polaris-table td.cal-day-num {
   font-weight: 700;
-  color: var(--gold);
+  color: var(--primary-900);
   text-align: center;
   width: 50px;
+  font-variant-numeric: tabular-nums;
 }
 
 .polaris-table td.cal-date {
   white-space: nowrap;
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.875rem;
 }
 
 .polaris-table td.time-cell {
   font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 500;
+  font-size: 0.875rem;
   letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .polaris-table td.time-cell.no-time {
@@ -478,8 +473,9 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .polaris-table td.iftar-cell {
-  color: var(--gold) !important;
+  color: var(--accent-600) !important;
   font-weight: 700;
+  background: var(--iftar-bg);
 }
 
 /* Clickable rows */
@@ -489,37 +485,36 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 
 /* Today row highlight */
 .polaris-table tbody tr.today-row {
-  background: rgba(16, 185, 129, 0.1) !important;
-  border-left: 3px solid var(--emerald-light);
-  box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.05);
+  background: rgba(22, 163, 74, 0.05) !important;
+  border-left: 3px solid var(--primary-500);
 }
 
 .polaris-table tbody tr.today-row td.cal-day-num {
-  color: var(--emerald-light);
+  color: var(--primary-600);
 }
 
 /* Current prayer highlight */
 .polaris-table tbody tr.current-prayer {
-  background: var(--emerald-bg) !important;
+  background: rgba(22, 163, 74, 0.06) !important;
 }
 
 .polaris-table tbody tr.current-prayer td:first-child {
   font-weight: 700;
-  color: var(--emerald-light);
+  color: var(--primary-700);
 }
 
-/* Maghrib row */
+/* Maghrib row (day detail view) */
 .polaris-table tbody tr.maghrib-row {
-  background: var(--gold-bg) !important;
+  background: var(--iftar-bg) !important;
 }
 
 .polaris-table tbody tr.maghrib-row td:first-child {
   font-weight: 600;
-  color: var(--gold);
+  color: var(--accent-600);
 }
 
 .polaris-table tbody tr.current-prayer.maghrib-row {
-  background: var(--emerald-bg) !important;
+  background: rgba(22, 163, 74, 0.06) !important;
 }
 
 /* ── Confidence Bars ────────────────────────────────────── */
@@ -533,7 +528,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 .confidence-bar {
   width: 55px;
   height: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-light);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -544,27 +539,30 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   transition: width 0.3s ease;
 }
 
-.confidence-fill.high { background: var(--green); }
-.confidence-fill.medium { background: var(--orange); }
-.confidence-fill.low { background: var(--red); }
+.confidence-fill.high { background: var(--success); }
+.confidence-fill.medium { background: var(--warning); }
+.confidence-fill.low { background: var(--danger); }
 
 .confidence-value {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   min-width: 2rem;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Day Header ─────────────────────────────────────────── */
 
 .day-title {
-  font-size: 1.3rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .day-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
   margin-top: 0.15rem;
   margin-bottom: 0;
@@ -574,7 +572,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 
 .strategy-row {
   display: flex;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius);
   overflow: hidden;
   width: fit-content;
@@ -582,36 +580,36 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .strat-btn {
-  background: var(--glass-bg);
+  background: var(--bg-surface);
   border: none;
   padding: 0.5rem 1.2rem;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-family: var(--font-sans);
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .strat-btn:not(:last-child) {
-  border-right: 1px solid var(--glass-border);
+  border-right: 1px solid var(--border-light);
 }
 
 .strat-btn.active {
-  background: var(--emerald-mid);
-  color: var(--gold);
+  background: var(--primary-600);
+  color: #fff;
 }
 
 .strat-btn:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 /* ── Strategy Note ──────────────────────────────────────── */
 
 .strategy-note {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   padding: 0.7rem 1rem;
   border-radius: var(--radius);
   display: flex;
@@ -620,15 +618,15 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .strategy-note.all-standard {
-  background: var(--green-bg);
-  color: var(--green);
-  border: 1px solid var(--emerald-border);
+  background: rgba(22, 163, 74, 0.06);
+  color: var(--success);
+  border: 1px solid rgba(22, 163, 74, 0.15);
 }
 
 .strategy-note.has-projected {
-  background: var(--orange-bg);
-  color: var(--orange);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.06);
+  color: var(--accent-600);
+  border: 1px solid rgba(245, 158, 11, 0.15);
 }
 
 .strategy-note-icon {
@@ -651,21 +649,21 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .horizon-dial .dial-horizon {
-  stroke: var(--gold-border);
+  stroke: var(--border-medium);
   stroke-width: 1.5;
 }
 
 .horizon-dial .dial-arc {
-  stroke: rgba(255, 255, 255, 0.15);
-  stroke-width: 2;
+  stroke: var(--border-light);
+  stroke-width: 1;
   fill: none;
 }
 
 .horizon-dial .dial-sun-path {
-  stroke: var(--gold);
+  stroke: var(--accent-500);
   stroke-width: 2.5;
   fill: none;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .horizon-dial .dial-marker {
@@ -684,8 +682,8 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .horizon-dial .dial-sun {
-  fill: var(--gold);
-  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+  fill: var(--accent-500);
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5));
 }
 
 .dial-sun-pulse {
@@ -706,14 +704,14 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 /* ── Solar Panel ────────────────────────────────────────── */
 
 .solar-panel .solar-title {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--gold);
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
   margin-bottom: 0.8rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .solar-item {
@@ -731,8 +729,9 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 .solar-value {
   font-family: var(--font-mono);
   font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Meta Row ───────────────────────────────────────────── */
@@ -741,7 +740,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   padding: 0 0.25rem;
 }
@@ -756,8 +755,8 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 .error-state {
   text-align: center;
   padding: 2rem 1.25rem;
-  background: var(--red-bg);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(220, 38, 38, 0.04);
+  border: 1px solid rgba(220, 38, 38, 0.12);
   border-radius: var(--radius-lg);
   margin-bottom: 1rem;
 }
@@ -765,11 +764,11 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 .error-icon {
   font-size: 2rem;
   margin-bottom: 0.5rem;
-  color: var(--red);
+  color: var(--danger);
 }
 
 .error-state p {
-  color: var(--red);
+  color: var(--danger);
   font-size: 1rem;
   margin: 0;
 }
@@ -782,7 +781,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 
 .skeleton-banner,
 .skeleton-table {
-  background: linear-gradient(90deg, var(--charcoal-light) 25%, var(--charcoal) 50%, var(--charcoal-light) 75%);
+  background: linear-gradient(90deg, var(--border-light) 25%, var(--bg-surface) 50%, var(--border-light) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius);
@@ -805,8 +804,8 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 /* ── Disambiguation ─────────────────────────────────────── */
 
 .disambiguation {
-  background: var(--blue-bg);
-  border: 1px solid rgba(59, 130, 246, 0.25);
+  background: rgba(59, 130, 246, 0.04);
+  border: 1px solid rgba(59, 130, 246, 0.12);
   border-radius: var(--radius-lg);
   padding: 1.25rem;
   margin-bottom: 1rem;
@@ -814,8 +813,8 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .disambiguation p {
-  font-size: 0.95rem;
-  color: var(--text);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
   margin-bottom: 0.75rem;
 }
 
@@ -824,15 +823,15 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   flex-direction: column;
   width: 100%;
   text-align: left;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius);
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
   font-family: var(--font-sans);
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 .disambig-btn:last-child {
@@ -840,25 +839,25 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .disambig-btn:hover {
-  border-color: var(--gold-border);
-  background: var(--gold-bg);
+  border-color: var(--primary-500);
+  background: rgba(22, 163, 74, 0.04);
   box-shadow: var(--shadow);
 }
 
 .disambig-name {
   font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
 }
 
 .disambig-detail {
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   margin-top: 0.15rem;
 }
 
 .disambig-btn:hover .disambig-name {
-  color: var(--gold);
+  color: var(--primary-700);
 }
 
 /* ── Docs View ──────────────────────────────────────────── */
@@ -869,9 +868,11 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .docs-header h1 {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--gold);
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
   margin-bottom: 0.5rem;
 }
 
@@ -889,73 +890,73 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 .endpoint-badge {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 500;
   padding: 0.35rem 0.8rem;
   border-radius: var(--radius);
   margin-bottom: 0.75rem;
 }
 
 .endpoint-badge.get {
-  background: var(--green-bg);
-  color: var(--green);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(22, 163, 74, 0.08);
+  color: var(--success);
+  border: 1px solid rgba(22, 163, 74, 0.15);
 }
 
 .endpoint-description {
-  font-size: 0.92rem;
+  font-size: 0.9375rem;
   color: var(--text-secondary);
   margin-bottom: 1rem;
 }
 
 .docs-param-table {
   width: 100%;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   margin-bottom: 1rem;
 }
 
 .docs-param-table th {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--gold);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   font-weight: 600;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--border-medium);
 }
 
 .docs-param-table td {
   padding: 0.55rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border-light);
   color: var(--text-secondary);
 }
 
 .docs-param-table code {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--emerald-light);
-  background: rgba(16, 185, 129, 0.1);
+  font-size: 0.8125rem;
+  color: var(--primary-700);
+  background: rgba(22, 163, 74, 0.06);
   padding: 0.1rem 0.35rem;
   border-radius: 3px;
 }
 
 .docs-code-block {
-  background: var(--charcoal-deep);
-  border: 1px solid var(--glass-border);
+  background: #1E293B;
+  border: 1px solid var(--border-light);
   border-radius: var(--radius);
   padding: 1rem;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   line-height: 1.6;
-  color: var(--text-secondary);
+  color: #E2E8F0;
   overflow-x: auto;
   margin-bottom: 0.75rem;
   white-space: pre;
 }
 
 .docs-code-label {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -968,22 +969,24 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 .docs-concepts h3 {
-  font-size: 1.1rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
   margin-bottom: 1rem;
 }
 
 .concept-badge {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 500;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
-  background: var(--purple-bg);
-  color: var(--purple);
-  border: 1px solid rgba(167, 139, 250, 0.2);
+  background: rgba(124, 58, 237, 0.08);
+  color: #7C3AED;
+  border: 1px solid rgba(124, 58, 237, 0.12);
   margin-right: 0.5rem;
   margin-bottom: 0.3rem;
 }
@@ -993,23 +996,18 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 .polaris-footer {
   text-align: center;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   padding: 1.5rem 0;
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--border-light);
   margin-top: 2rem;
 }
 
 .footer-sep {
   margin: 0 0.5rem;
-  color: var(--charcoal-light);
+  color: var(--border-medium);
 }
 
-/* ── RTL / Arabic ───────────────────────────────────────── */
-
-[dir="rtl"] {
-  font-family: var(--font-arabic);
-  font-size: 17px;
-}
+/* ── RTL ────────────────────────────────────────────────── */
 
 [dir="rtl"] .polaris-table {
   direction: rtl;
@@ -1056,23 +1054,23 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 
 [dir="rtl"] .location-card {
   border-left: none;
-  border-right: 3px solid var(--gold);
+  border-right: 3px solid var(--primary-600);
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .polaris-table {
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
   }
 
   .polaris-table thead th {
-    padding: 0.65rem 0.5rem;
-    font-size: 0.68rem;
+    padding: 10px 12px;
+    font-size: 0.6875rem;
   }
 
   .polaris-table tbody td {
-    padding: 0.6rem 0.5rem;
+    padding: 10px 12px;
   }
 
   .now-prayer-name {
@@ -1080,7 +1078,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   }
 
   .now-countdown {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
   }
 
   .now-dashboard .text-md-end {
@@ -1094,10 +1092,6 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
 }
 
 @media (max-width: 576px) {
-  body {
-    font-size: 15px;
-  }
-
   .polaris-nav {
     padding: 0.4rem 0;
   }
@@ -1107,7 +1101,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   }
 
   .polaris-nav .nav-link {
-    font-size: 0.8rem;
+    font-size: 0.8125rem;
     padding: 0.4rem 0.6rem !important;
   }
 
@@ -1124,11 +1118,19 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   }
 
   .polaris-table {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .polaris-table thead th {
+    padding: 8px 10px;
+  }
+
+  .polaris-table tbody td {
+    padding: 8px 10px;
   }
 
   .loc-name {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 
   .now-dashboard {
@@ -1136,11 +1138,11 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   }
 
   .now-prayer-name {
-    font-size: 1.1rem;
+    font-size: 1.125rem;
   }
 
   .now-countdown {
-    font-size: 1.2rem;
+    font-size: 1.125rem;
   }
 
   .meta-row {
@@ -1161,7 +1163,7 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
     gap: 0.5rem;
   }
 
-  .glass-card {
+  .polaris-card {
     padding: 1rem;
   }
 
@@ -1171,42 +1173,11 @@ input[type="date"].polaris-input::-webkit-calendar-picker-indicator {
   }
 }
 
-/* ── Animations ─────────────────────────────────────────── */
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.glass-card {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* ── Scrollbar ──────────────────────────────────────────── */
-
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--charcoal-deep);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--charcoal-light);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
-
 /* ── Bootstrap overrides ────────────────────────────────── */
 
 .table > :not(caption) > * > * {
   background-color: transparent;
-  border-bottom-color: rgba(255, 255, 255, 0.04);
+  border-bottom-color: var(--border-light);
 }
 
 .table-responsive {
