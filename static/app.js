@@ -18,7 +18,7 @@
 
   var METHOD_COLORS = {
     'Standard': '#059669',
-    'Projected': '#b8972e',
+    'Projected': '#d97706',
     'Virtual': '#7C3AED',
     'None': '#9CA3AF'
   };
@@ -1084,7 +1084,7 @@
 
     if (prayerTimes.length < 2) {
       container.style.display = 'block';
-      dial.innerHTML = '<div style="text-align:center;padding:2rem;color:#7a7a72;">' +
+      dial.innerHTML = '<div style="text-align:center;padding:2rem;color:#6b7280;">' +
         'Insufficient solar data for horizon visualization (polar conditions).</div>';
       return;
     }

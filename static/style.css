@@ -1,4 +1,4 @@
-/* Polaris Chronos v2.0 — Premium Light Islamic Theme */
+/* Polaris Chronos — Abdulwahed's Design System, Green Edition */
 
 /* ── Reset ──────────────────────────────────────────────── */
 
@@ -13,62 +13,52 @@
 /* ── Design Tokens ──────────────────────────────────────── */
 
 :root {
-  /* Background — Warm Cream */
-  --bg-primary: #f9f9f7;
+  /* Background — Cool Soft Gray */
+  --bg-primary: #f8f9fb;
   --bg-surface: #ffffff;
-  --bg-secondary: #f3f2ef;
-  --bg-warm: #faf8f5;
+  --bg-secondary: #f1f3f5;
 
-  /* Primary — Deep Emerald */
-  --primary-400: #34d399;
-  --primary-500: #10b981;
-  --primary-600: #059669;
-  --primary-700: #047857;
-  --primary-800: #065f46;
-  --primary-900: #064e3b;
+  /* Brand — Emerald Green */
+  --color-accent: #059669;
+  --color-accent-h: #047857;
+  --color-accent-lt: #d1fae5;
+  --color-accent-dk: #065f46;
 
-  /* Accent — Gold/Sand */
-  --accent-400: #f0c75e;
-  --accent-500: #d4af37;
-  --accent-600: #b8972e;
-  --accent-700: #9a7d25;
-
-  /* Text */
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-muted: #7a7a72;
-  --text-light: #a0a09a;
+  /* Text — AAA Contrast */
+  --text-primary: #1a1d23;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
 
   /* Status */
   --success: #059669;
-  --warning: #d4af37;
+  --warning: #d97706;
   --danger: #dc2626;
   --info: #3b82f6;
 
   /* Borders */
-  --border-light: #e8e6e1;
-  --border-medium: #d4d2cd;
-  --border-gold: rgba(212, 175, 55, 0.3);
+  --border-light: #e8eaed;
+  --border-medium: #d1d5db;
 
-  /* Iftar highlight */
-  --iftar-bg: rgba(212, 175, 55, 0.08);
+  /* Navbar */
+  --navbar-bg: #111318;
 
   /* Typography */
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-arabic: 'Readex Pro', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-arabic: 'Readex Pro', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
   /* Shadows */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
-  --shadow-gold: 0 4px 16px rgba(212, 175, 55, 0.12);
 
   /* Radius */
   --radius: 8px;
-  --radius-lg: 14px;
+  --radius-lg: 12px;
   --radius-xl: 20px;
   --radius-btn: 10px;
 }
@@ -78,8 +68,8 @@
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 1rem;
+  font-family: var(--font-body);
+  font-size: 15px;
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -91,12 +81,10 @@ body {
   padding-bottom: 2rem;
 }
 
-/* ── Header ─────────────────────────────────────────────── */
+/* ── Header / Navbar ───────────────────────────────────── */
 
 .polaris-header {
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-light);
-  box-shadow: var(--shadow-xs);
+  background: var(--navbar-bg);
   padding: 0.75rem 0;
   position: sticky;
   top: 0;
@@ -110,11 +98,11 @@ body {
 }
 
 .polaris-brand {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-weight: 800;
   font-size: 1.3rem;
   letter-spacing: -0.03em;
-  color: var(--primary-900) !important;
+  color: #ffffff !important;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -122,12 +110,12 @@ body {
 }
 
 .polaris-brand:hover {
-  color: var(--primary-800) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
   text-decoration: none;
 }
 
 .brand-icon {
-  color: var(--accent-500);
+  color: var(--color-accent);
   font-size: 1.2rem;
 }
 
@@ -138,24 +126,25 @@ body {
 }
 
 .header-nav .nav-link {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 15px;
   padding: 0.45rem 0.9rem;
   border-radius: var(--radius);
   text-decoration: none;
   transition: color 0.2s, background 0.2s;
+  border-bottom: 2px solid transparent;
 }
 
 .header-nav .nav-link:hover {
-  color: var(--primary-800);
-  background: rgba(6, 78, 59, 0.05);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .header-nav .nav-link.active {
-  color: var(--primary-900);
-  background: rgba(6, 78, 59, 0.08);
+  color: #ffffff;
   font-weight: 600;
+  border-bottom-color: var(--color-accent);
 }
 
 .header-nav .nav-link-external::after {
@@ -168,7 +157,7 @@ body {
 /* ── Now Dashboard ──────────────────────────────────────── */
 
 .now-dashboard {
-  background: var(--primary-900);
+  background: var(--color-accent-dk);
   padding: 1rem 0;
 }
 
@@ -182,7 +171,7 @@ body {
 
 .now-label {
   display: block;
-  font-size: 0.65rem;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -191,7 +180,7 @@ body {
 }
 
 .now-prayer-name {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
@@ -212,7 +201,7 @@ body {
   font-family: var(--font-mono);
   font-size: 1.5rem;
   font-weight: 500;
-  color: var(--accent-400);
+  color: var(--color-accent-lt);
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
 }
@@ -251,8 +240,8 @@ body {
   background: var(--bg-surface);
   border: 2px solid var(--border-light);
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 1rem;
+  font-family: var(--font-body);
+  font-size: 15px;
   font-weight: 500;
   padding: 0.8rem 1rem 0.8rem 2.8rem;
   border-radius: var(--radius-lg);
@@ -261,8 +250,8 @@ body {
 }
 
 .search-input:focus {
-  border-color: var(--primary-600);
-  box-shadow: 0 0 0 4px rgba(6, 78, 59, 0.08);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
 }
 
 .search-input::placeholder {
@@ -285,14 +274,14 @@ body {
 }
 
 .gps-btn:hover {
-  border-color: var(--primary-600);
-  color: var(--primary-700);
-  background: rgba(6, 78, 59, 0.03);
+  border-color: var(--color-accent);
+  color: var(--color-accent-h);
+  background: rgba(5, 150, 105, 0.03);
 }
 
 .gps-btn.locating {
-  border-color: var(--accent-500);
-  color: var(--accent-500);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
   animation: gpsPulse 1.2s ease-in-out infinite;
 }
 
@@ -305,8 +294,8 @@ body {
   background: var(--bg-surface);
   border: 2px solid var(--border-light);
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
+  font-family: var(--font-body);
+  font-size: 15px;
   padding: 0.7rem 0.75rem;
   border-radius: var(--radius-lg);
   outline: none;
@@ -314,26 +303,26 @@ body {
 }
 
 .date-input:focus {
-  border-color: var(--primary-600);
-  box-shadow: 0 0 0 4px rgba(6, 78, 59, 0.08);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
 }
 
 .search-btn {
-  background: var(--primary-900);
+  background: var(--color-accent);
   border: none;
   color: #fff;
   font-weight: 600;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-family: var(--font-body);
+  font-size: 15px;
   padding: 0.8rem 1.5rem;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-btn);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .search-btn:hover {
-  background: var(--primary-800);
+  background: var(--color-accent-h);
   box-shadow: var(--shadow-md);
 }
 
@@ -361,7 +350,7 @@ body {
 .autocomplete-item {
   padding: 0.7rem 1rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -376,12 +365,12 @@ body {
 
 .autocomplete-item:hover,
 .autocomplete-item.selected {
-  background: rgba(6, 78, 59, 0.04);
-  color: var(--primary-900);
+  background: rgba(5, 150, 105, 0.04);
+  color: var(--color-accent-dk);
 }
 
 .autocomplete-item .country-badge {
-  font-size: 0.75rem;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-muted);
   background: var(--bg-secondary);
@@ -391,8 +380,8 @@ body {
 
 .autocomplete-item:hover .country-badge,
 .autocomplete-item.selected .country-badge {
-  color: var(--primary-800);
-  background: rgba(6, 78, 59, 0.06);
+  color: var(--color-accent-dk);
+  background: rgba(5, 150, 105, 0.06);
 }
 
 /* ── City Dashboard ────────────────────────────────────── */
@@ -400,7 +389,7 @@ body {
 .city-dashboard {
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
-  border-left: 4px solid var(--primary-700);
+  border-left: 4px solid var(--color-accent);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin-bottom: 1.25rem;
@@ -417,10 +406,10 @@ body {
 }
 
 .city-name {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--primary-900);
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   line-height: 1.2;
   margin: 0;
@@ -431,7 +420,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.35rem;
-  font-size: 0.85rem;
+  font-size: 15px;
   color: var(--text-muted);
 }
 
@@ -441,12 +430,12 @@ body {
 
 .city-tz {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 13px;
 }
 
 .city-coords {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 13px;
   cursor: pointer;
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
@@ -454,12 +443,12 @@ body {
 }
 
 .city-coords:hover {
-  background: rgba(6, 78, 59, 0.06);
-  color: var(--primary-700);
+  background: rgba(5, 150, 105, 0.06);
+  color: var(--color-accent-h);
 }
 
 .city-coords.copied {
-  background: rgba(6, 78, 59, 0.08);
+  background: rgba(5, 150, 105, 0.08);
   color: var(--success);
 }
 
@@ -475,19 +464,19 @@ body {
   text-align: center;
   padding: 0.6rem 1rem;
   border-radius: var(--radius);
-  background: var(--bg-warm);
+  background: var(--bg-primary);
   border: 1px solid var(--border-light);
   min-width: 110px;
 }
 
 .date-hijri {
-  border-color: var(--border-gold);
-  background: rgba(212, 175, 55, 0.05);
+  border-color: rgba(5, 150, 105, 0.25);
+  background: rgba(5, 150, 105, 0.03);
 }
 
 .date-label {
   display: block;
-  font-size: 0.65rem;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -497,15 +486,15 @@ body {
 
 .date-value-ar {
   font-family: var(--font-arabic);
-  font-size: 0.95rem;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--primary-900);
+  color: var(--color-accent-dk);
   display: block;
 }
 
 .date-value {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-family: var(--font-body);
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   display: block;
@@ -523,16 +512,16 @@ body {
 }
 
 .ramadan-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--primary-900);
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin: 0;
 }
 
 .ramadan-dates {
-  font-size: 0.875rem;
+  font-size: 15px;
   color: var(--text-muted);
   margin: 0.15rem 0 0 0;
 }
@@ -545,8 +534,8 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 600;
   padding: 0.5rem 1rem;
   border-radius: var(--radius-btn);
@@ -555,9 +544,9 @@ body {
 }
 
 .share-btn:hover {
-  border-color: var(--primary-600);
-  color: var(--primary-700);
-  background: rgba(6, 78, 59, 0.03);
+  border-color: var(--color-accent);
+  color: var(--color-accent-h);
+  background: rgba(5, 150, 105, 0.03);
 }
 
 .share-btn.copied {
@@ -588,8 +577,8 @@ body {
   background: var(--bg-surface);
   border: none;
   padding: 0.5rem 1.25rem;
-  font-size: 0.85rem;
-  font-family: var(--font-sans);
+  font-size: 15px;
+  font-family: var(--font-body);
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
@@ -602,7 +591,7 @@ body {
 }
 
 .view-tab.active {
-  background: var(--primary-900);
+  background: var(--color-accent);
   color: #fff;
 }
 
@@ -647,7 +636,7 @@ body {
 }
 
 .hijri-toggle input:checked + .toggle-slider {
-  background: var(--primary-700);
+  background: var(--color-accent);
 }
 
 .hijri-toggle input:checked + .toggle-slider::after {
@@ -655,7 +644,7 @@ body {
 }
 
 .toggle-label {
-  font-size: 0.8rem;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);
 }
@@ -670,7 +659,7 @@ body {
 }
 
 .legend-item {
-  font-size: 0.8rem;
+  font-size: 13px;
 }
 
 /* ── Method Badges ──────────────────────────────────────── */
@@ -679,7 +668,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.7rem;
+  font-size: 11px;
   font-weight: 600;
   padding: 0.2rem 0.55rem;
   border-radius: 10px;
@@ -693,9 +682,9 @@ body {
 }
 
 .method-badge.projected {
-  color: var(--accent-600);
-  background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: var(--warning);
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px solid rgba(217, 119, 6, 0.2);
 }
 
 .method-badge.virtual-h {
@@ -711,7 +700,7 @@ body {
 }
 
 .method-icon {
-  font-size: 0.65rem;
+  font-size: 11px;
 }
 
 /* ── Cards ──────────────────────────────────────────────── */
@@ -740,7 +729,7 @@ body {
 .polaris-table {
   width: 100%;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 15px;
   margin: 0;
   border-collapse: collapse;
 }
@@ -748,7 +737,7 @@ body {
 .polaris-table thead th {
   background: var(--bg-secondary);
   color: var(--text-secondary);
-  font-size: 0.7rem;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -773,17 +762,17 @@ body {
 
 /* Zebra striping */
 .polaris-table tbody tr:nth-child(even) {
-  background: var(--bg-warm);
+  background: var(--bg-primary);
 }
 
 .polaris-table tbody tr:hover {
-  background: rgba(6, 78, 59, 0.03);
+  background: rgba(5, 150, 105, 0.03);
 }
 
 /* Calendar cells */
 .polaris-table td.cal-day-num {
   font-weight: 800;
-  color: var(--primary-900);
+  color: var(--text-primary);
   text-align: center;
   width: 50px;
   font-variant-numeric: tabular-nums;
@@ -793,13 +782,13 @@ body {
 .polaris-table td.cal-date {
   white-space: nowrap;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 15px;
 }
 
 .polaris-table td.time-cell {
   font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: 700;
+  font-size: 18px;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
@@ -810,9 +799,9 @@ body {
 }
 
 .polaris-table td.iftar-cell {
-  color: var(--accent-600) !important;
+  color: var(--color-accent-dk) !important;
   font-weight: 700;
-  background: var(--iftar-bg);
+  background: rgba(5, 150, 105, 0.05);
 }
 
 /* Clickable rows */
@@ -822,43 +811,44 @@ body {
 
 /* Today row */
 .polaris-table tbody tr.today-row {
-  background: rgba(6, 78, 59, 0.04) !important;
-  border-left: 4px solid var(--primary-600);
-  box-shadow: inset 0 0 0 1px rgba(6, 78, 59, 0.06);
+  background: var(--color-accent-lt) !important;
+  border-left: 4px solid var(--color-accent);
+  box-shadow: inset 0 0 0 1px rgba(5, 150, 105, 0.06);
 }
 
 .polaris-table tbody tr.today-row td.cal-day-num {
-  color: var(--primary-600);
+  color: var(--color-accent);
 }
 
 /* Current prayer pulse */
 .polaris-table tbody tr.current-prayer {
-  background: rgba(6, 78, 59, 0.06) !important;
+  background: var(--color-accent-lt) !important;
+  border-left: 4px solid var(--color-accent);
   animation: prayerPulse 2.5s ease-in-out infinite;
 }
 
 @keyframes prayerPulse {
-  0%, 100% { background: rgba(6, 78, 59, 0.06); }
-  50% { background: rgba(6, 78, 59, 0.10); }
+  0%, 100% { background: #d1fae5; }
+  50% { background: #a7f3d0; }
 }
 
 .polaris-table tbody tr.current-prayer td:first-child {
   font-weight: 700;
-  color: var(--primary-700);
+  color: var(--color-accent-h);
 }
 
 /* Maghrib row */
 .polaris-table tbody tr.maghrib-row {
-  background: var(--iftar-bg) !important;
+  background: rgba(5, 150, 105, 0.04) !important;
 }
 
 .polaris-table tbody tr.maghrib-row td:first-child {
   font-weight: 600;
-  color: var(--accent-600);
+  color: var(--color-accent-dk);
 }
 
 .polaris-table tbody tr.current-prayer.maghrib-row {
-  background: rgba(6, 78, 59, 0.06) !important;
+  background: var(--color-accent-lt) !important;
 }
 
 /* ── Confidence Bars ────────────────────────────────────── */
@@ -884,12 +874,12 @@ body {
 }
 
 .confidence-fill.high { background: var(--success); }
-.confidence-fill.medium { background: var(--accent-500); }
+.confidence-fill.medium { background: var(--warning); }
 .confidence-fill.low { background: var(--danger); }
 
 .confidence-value {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 13px;
   color: var(--text-muted);
   min-width: 2rem;
   font-variant-numeric: tabular-nums;
@@ -907,16 +897,16 @@ body {
 }
 
 .day-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: 1.35rem;
   font-weight: 700;
-  color: var(--primary-900);
+  color: var(--text-primary);
   letter-spacing: -0.01em;
   margin: 0;
 }
 
 .day-subtitle {
-  font-size: 0.875rem;
+  font-size: 15px;
   color: var(--text-muted);
   margin: 0.15rem 0 0 0;
 }
@@ -937,8 +927,8 @@ body {
   background: var(--bg-surface);
   border: none;
   padding: 0.5rem 1.2rem;
-  font-size: 0.85rem;
-  font-family: var(--font-sans);
+  font-size: 15px;
+  font-family: var(--font-body);
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
@@ -951,7 +941,7 @@ body {
 }
 
 .strat-btn.active {
-  background: var(--primary-900);
+  background: var(--color-accent);
   color: #fff;
 }
 
@@ -963,7 +953,7 @@ body {
 /* ── Strategy Note ─────────────────────────────────────── */
 
 .strategy-note {
-  font-size: 0.875rem;
+  font-size: 15px;
   padding: 0.7rem 1rem;
   border-radius: var(--radius);
   display: flex;
@@ -979,9 +969,9 @@ body {
 }
 
 .strategy-note.has-projected {
-  background: rgba(212, 175, 55, 0.06);
-  color: var(--accent-600);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  background: rgba(217, 119, 6, 0.06);
+  color: var(--warning);
+  border: 1px solid rgba(217, 119, 6, 0.15);
 }
 
 .strategy-note-icon {
@@ -1010,7 +1000,7 @@ body {
 }
 
 .horizon-dial .dial-sky-fill {
-  fill: rgba(6, 78, 59, 0.02);
+  fill: rgba(5, 150, 105, 0.02);
 }
 
 .horizon-dial .dial-ground-fill {
@@ -1018,7 +1008,7 @@ body {
 }
 
 .horizon-dial .dial-sun-path {
-  stroke: var(--accent-500);
+  stroke: var(--color-accent);
   stroke-width: 3;
   fill: none;
   stroke-linecap: round;
@@ -1026,7 +1016,7 @@ body {
 }
 
 .horizon-dial .dial-sun-area {
-  fill: rgba(212, 175, 55, 0.06);
+  fill: rgba(5, 150, 105, 0.04);
 }
 
 .horizon-dial .dial-marker-line {
@@ -1041,7 +1031,7 @@ body {
 }
 
 .horizon-dial .dial-marker-label {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
   fill: var(--text-primary);
@@ -1055,7 +1045,7 @@ body {
 }
 
 .horizon-dial .dial-zone-label {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1064,15 +1054,15 @@ body {
 }
 
 .horizon-dial .dial-horizon-label {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: 600;
   fill: var(--text-light);
 }
 
 .horizon-dial .dial-sun {
-  fill: var(--accent-500);
-  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+  fill: var(--color-accent);
+  filter: drop-shadow(0 0 8px rgba(5, 150, 105, 0.5));
 }
 
 .dial-sun-pulse {
@@ -1087,7 +1077,7 @@ body {
 /* ── Solar Panel ──────────────────────────────────────── */
 
 .solar-panel .solar-title {
-  font-size: 0.7rem;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1110,7 +1100,7 @@ body {
 }
 
 .solar-label {
-  font-size: 0.7rem;
+  font-size: 11px;
   color: var(--text-light);
   font-weight: 500;
 }
@@ -1129,7 +1119,7 @@ body {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
-  font-size: 0.8rem;
+  font-size: 13px;
   color: var(--text-muted);
   padding: 0 0.25rem;
   margin-bottom: 1.5rem;
@@ -1199,15 +1189,15 @@ body {
 /* ── Disambiguation ────────────────────────────────────── */
 
 .disambiguation {
-  background: rgba(6, 78, 59, 0.02);
-  border: 1px solid rgba(6, 78, 59, 0.1);
+  background: rgba(5, 150, 105, 0.02);
+  border: 1px solid rgba(5, 150, 105, 0.1);
   border-radius: var(--radius-lg);
   padding: 1.25rem;
   margin-bottom: 1rem;
 }
 
 .disambiguation p {
-  font-size: 0.95rem;
+  font-size: 15px;
   color: var(--text-primary);
   margin-bottom: 0.75rem;
 }
@@ -1224,7 +1214,7 @@ body {
   margin-bottom: 0.5rem;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   color: var(--text-primary);
 }
 
@@ -1233,25 +1223,25 @@ body {
 }
 
 .disambig-btn:hover {
-  border-color: var(--primary-600);
-  background: rgba(6, 78, 59, 0.02);
+  border-color: var(--color-accent);
+  background: rgba(5, 150, 105, 0.02);
   box-shadow: var(--shadow);
 }
 
 .disambig-name {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 15px;
   color: var(--text-primary);
 }
 
 .disambig-detail {
-  font-size: 0.8rem;
+  font-size: 13px;
   color: var(--text-muted);
   margin-top: 0.15rem;
 }
 
 .disambig-btn:hover .disambig-name {
-  color: var(--primary-800);
+  color: var(--color-accent-dk);
 }
 
 /* ── Docs View ─────────────────────────────────────────── */
@@ -1262,10 +1252,10 @@ body {
 }
 
 .docs-header h1 {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: 2rem;
   font-weight: 800;
-  color: var(--primary-900);
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
 }
@@ -1284,7 +1274,7 @@ body {
 .endpoint-badge {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.875rem;
+  font-size: 15px;
   font-weight: 500;
   padding: 0.35rem 0.8rem;
   border-radius: var(--radius);
@@ -1298,14 +1288,14 @@ body {
 }
 
 .endpoint-description {
-  font-size: 0.95rem;
+  font-size: 15px;
   color: var(--text-secondary);
   margin-bottom: 1rem;
 }
 
 .docs-param-table {
   width: 100%;
-  font-size: 0.875rem;
+  font-size: 15px;
   margin-bottom: 1rem;
   border-collapse: collapse;
 }
@@ -1314,7 +1304,7 @@ body {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   font-weight: 600;
-  font-size: 0.7rem;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.6rem 0.75rem;
@@ -1329,9 +1319,9 @@ body {
 
 .docs-param-table code {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--primary-800);
-  background: rgba(6, 78, 59, 0.05);
+  font-size: 13px;
+  color: var(--color-accent-dk);
+  background: rgba(5, 150, 105, 0.05);
   padding: 0.1rem 0.35rem;
   border-radius: 3px;
 }
@@ -1342,7 +1332,7 @@ body {
   border-radius: var(--radius);
   padding: 1rem;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 13px;
   line-height: 1.6;
   color: #e2e8f0;
   overflow-x: auto;
@@ -1351,7 +1341,7 @@ body {
 }
 
 .docs-code-label {
-  font-size: 0.7rem;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1364,10 +1354,10 @@ body {
 }
 
 .docs-concepts h3 {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--primary-900);
+  color: var(--text-primary);
   letter-spacing: -0.01em;
   margin-bottom: 1rem;
 }
@@ -1375,13 +1365,13 @@ body {
 .concept-badge {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 13px;
   font-weight: 500;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
-  background: rgba(124, 58, 237, 0.06);
-  color: #7c3aed;
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  background: rgba(5, 150, 105, 0.06);
+  color: var(--color-accent-dk);
+  border: 1px solid rgba(5, 150, 105, 0.12);
   margin-right: 0.5rem;
   margin-bottom: 0.3rem;
 }
@@ -1391,7 +1381,7 @@ body {
 .polaris-footer {
   text-align: center;
   color: var(--text-light);
-  font-size: 0.75rem;
+  font-size: 13px;
   padding: 1.5rem 0;
   border-top: 1px solid var(--border-light);
   margin-top: 2rem;
@@ -1420,7 +1410,7 @@ body {
 
 [dir='rtl'] .city-dashboard {
   border-left: 1px solid var(--border-light);
-  border-right: 4px solid var(--primary-700);
+  border-right: 4px solid var(--color-accent);
 }
 
 [dir='rtl'] .city-meta,
@@ -1460,16 +1450,20 @@ body {
 
 @media (max-width: 768px) {
   .polaris-table {
-    font-size: 0.8125rem;
+    font-size: 13px;
   }
 
   .polaris-table thead th {
     padding: 10px 12px;
-    font-size: 0.65rem;
+    font-size: 10px;
   }
 
   .polaris-table tbody td {
     padding: 10px 12px;
+  }
+
+  .polaris-table td.time-cell {
+    font-size: 15px;
   }
 
   .now-inner {
@@ -1509,7 +1503,7 @@ body {
   }
 
   .header-nav .nav-link {
-    font-size: 0.8rem;
+    font-size: 13px;
     padding: 0.35rem 0.6rem;
   }
 
@@ -1531,7 +1525,7 @@ body {
   }
 
   .polaris-table {
-    font-size: 0.75rem;
+    font-size: 12px;
   }
 
   .polaris-table thead th {
@@ -1540,6 +1534,10 @@ body {
 
   .polaris-table tbody td {
     padding: 8px 10px;
+  }
+
+  .polaris-table td.time-cell {
+    font-size: 14px;
   }
 
   .city-name {
@@ -1595,7 +1593,7 @@ body {
   }
 
   .docs-code-block {
-    font-size: 0.7rem;
+    font-size: 11px;
     padding: 0.75rem;
   }
 
