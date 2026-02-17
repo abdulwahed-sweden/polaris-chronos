@@ -1,4 +1,4 @@
-# Abdulwahed's Design System — Green Edition v4.0.0
+# Abdulwahed's Design System — Green Edition
 
 Design system reference for the Polaris Chronos frontend.
 
@@ -8,6 +8,28 @@ Design system reference for the Polaris Chronos frontend.
 - **Lucide Icons** (CDN) — professional SVG icon set replacing emoji/inline SVG. Call `lucide.createIcons()` after dynamic DOM updates
 - **style.css** (~350 lines) — CSS custom properties, JS-dependent class definitions, SVG dial styles, keyframe animations, toggle pseudo-elements, RTL overrides, responsive table overrides
 - No Bootstrap — fully replaced by Tailwind
+
+### Static Files
+
+All frontend assets are embedded at compile time via `include_str!` in `src/server/static_files.rs`. After editing any file in `static/`, run:
+
+```bash
+touch src/server/static_files.rs   # Force recompile of embedded files
+cargo build --release
+```
+
+### Deployment
+
+- **Local**: `./target/release/polaris server --port 3000`
+- **Docker**: Multi-stage build (`rust:1.83-slim` builder + `debian:bookworm-slim` runtime), port 7860
+- **Hugging Face Spaces**: Docker SDK, auto-deploys on `git push hf main`
+- **Live**: [abdulwahed-sweden-polaris-chronos.hf.space](https://abdulwahed-sweden-polaris-chronos.hf.space)
+
+### Calendar Logic
+
+- All code paths use `fetchGregorianMonth()` — the Hijri toggle only changes header display, never refetches data
+- `findTodayIndex()` shared helper determines the starting row for week/day views
+- `fetchRamadanMonth()` exists but is unused — kept for potential future use
 
 ---
 
@@ -100,7 +122,9 @@ Design system reference for the Polaris Chronos frontend.
 ### Tables
 - White background, rounded corners, subtle shadow
 - Header: uppercase, bold, tracking-wide, `#f1f3f5` bg
+- 9-column layout: Day | Gregorian | Hijri | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha
 - Zebra striping: `#f8f9fb` on even rows
+- Friday rows: subtle emerald tint (`friday-row` class)
 - Current prayer: green left border + `#d1fae5` bg
 - Prayer times: 18px bold mono
 
@@ -119,4 +143,4 @@ Design system reference for the Polaris Chronos frontend.
 5. **Emerald Green** is the sole brand color — no gold/sand accents
 6. **Tailwind for layout** — use utility classes in HTML, not CSS, for spacing/colors/typography
 7. **Lucide for icons** — call `lucide.createIcons()` after any DOM update that adds `<i data-lucide>` elements
-8. **Search bar max-width** — `max-w-[600px]` centered, not full-width
+8. **Cache busting** — bump `?v=X.Y.Z` in index.html when updating CSS/JS to prevent stale browser cache

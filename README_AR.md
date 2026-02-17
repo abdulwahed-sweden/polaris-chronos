@@ -1,5 +1,5 @@
 <h1 align="center">
-  بولاريس
+  بولاريس كرونوس
 </h1>
 
 <p align="center">
@@ -10,16 +10,22 @@
   <a href="#"><img src="https://img.shields.io/badge/Rust-2021_Edition-DEA584?logo=rust&logoColor=white" alt="Rust"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
   <a href="#"><img src="https://img.shields.io/badge/Tests-96_passing-brightgreen" alt="Tests"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Version-0.7.0-purple" alt="Version"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Version-1.0.0-purple" alt="Version"></a>
+  <a href="https://huggingface.co/spaces/abdulwahed-sweden/polaris-chronos"><img src="https://img.shields.io/badge/تجربة_مباشرة-HF_Spaces-yellow?logo=huggingface" alt="Live Demo"></a>
 </p>
 
 <p align="center">
   محرك فلكي عالي الدقة مكتوب بلغة Rust<br>
-  يحسب أوقات الصلاة لأي مكان على وجه الأرض — بما في ذلك المناطق القطبية
+  يحسب أوقات الصلاة لأي مكان على وجه الأرض — بما في ذلك المناطق القطبية<br>
+  يتضمن لوحة تحكم ويب وواجهة برمجية RESTful
 </p>
 
 <p align="center">
   <a href="README.md"><strong>English</strong></a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="README_AR.md"><strong>العربية</strong></a>
+</p>
+
+<p align="center">
+  <strong>تجربة مباشرة:</strong> <a href="https://abdulwahed-sweden-polaris-chronos.hf.space">abdulwahed-sweden-polaris-chronos.hf.space</a>
 </p>
 
 <br>
@@ -74,12 +80,12 @@
 <tr>
 <td align="right">لا يوجد مغرب ولا عشاء — خطأ أو فراغ</td>
 <td align="right">الشمس لا تغرب لأسابيع</td>
-<td align="right"><strong>شمس منتصف الليل</strong> ☀️</td>
+<td align="right"><strong>شمس منتصف الليل</strong></td>
 </tr>
 <tr>
 <td align="right">لا يوجد فجر ولا شروق — خطأ أو فراغ</td>
 <td align="right">الشمس لا تشرق لأسابيع</td>
-<td align="right"><strong>الليل القطبي</strong> 🌑</td>
+<td align="right"><strong>الليل القطبي</strong></td>
 </tr>
 </tbody>
 </table>
@@ -112,9 +118,9 @@
 <p align="right">هذا يعني:</p>
 
 <p align="right">
-◂ حتى لو الشمس لم تغرب — <strong>النظام يعرف أين "كان يجب" أن تغرب</strong>
+حتى لو الشمس لم تغرب — <strong>النظام يعرف أين "كان يجب" أن تغرب</strong>
 <br><br>
-◂ حتى لو لم يكن هناك شفق — <strong>النظام يحسب متى "كان سيظهر" الشفق</strong>
+حتى لو لم يكن هناك شفق — <strong>النظام يحسب متى "كان سيظهر" الشفق</strong>
 </p>
 
 <br>
@@ -151,19 +157,19 @@
 <td align="right">حساب فلكي مباشر — نفس المنهج المستخدم في معظم التطبيقات</td>
 <td align="right">الشمس تشرق وتغرب بشكل طبيعي</td>
 <td align="center"><code>1.0</code></td>
-<td align="right">🟢 <strong>Standard</strong></td>
+<td align="right"><strong>Standard</strong></td>
 </tr>
 <tr>
 <td align="right">اشتقاق الوقت من أدنى نقطة في الموجة — "منتصف الليل الفلكي"</td>
 <td align="right">لا توجد زاوية كافية للفجر أو العشاء</td>
 <td align="center"><code>0.7</code></td>
-<td align="right">🟡 <strong>Virtual</strong></td>
+<td align="right"><strong>Virtual</strong></td>
 </tr>
 <tr>
 <td align="right">إسقاط نسب اليوم من خط عرض معتدل (~45°–55°) على موقعك</td>
 <td align="right">لا يوجد شروق أو غروب إطلاقاً</td>
 <td align="center"><code>0.5</code></td>
-<td align="right">🔴 <strong>Projected</strong></td>
+<td align="right"><strong>Projected</strong></td>
 </tr>
 </tbody>
 </table>
@@ -256,27 +262,39 @@
 
 <br>
 
-<details>
-<summary align="right"><strong>ماذا حدث هنا؟</strong></summary>
+<hr>
+
+<br>
+
+<h2 align="right">لوحة تحكم الويب</h2>
+
+<p align="right">
+بولاريس يتضمن لوحة تحكم ويب مدمجة تشمل:
+</p>
+
+<p align="right">
+<strong>تحديد الموقع تلقائياً</strong> عبر GPS — يجد أقرب مدينة أو يستخدم الإحداثيات الدقيقة
+<br>
+<strong>عرض أسبوعي / شهري / يومي</strong> يبدأ دائماً من اليوم
+<br>
+<strong>ثلاثة أعمدة للتاريخ</strong> — اسم اليوم، التاريخ الميلادي، التاريخ الهجري
+<br>
+<strong>تمييز يوم الجمعة</strong> بلون أخضر فاتح
+<br>
+<strong>لوحة الصلاة الحالية</strong> مع العد التنازلي للصلاة التالية
+<br>
+<strong>مخطط الأفق</strong> — رسم بياني SVG لمسار الشمس
+<br>
+<strong>بحث المدن</strong> مع الإكمال التلقائي وخيارات التوضيح
+<br>
+<strong>توثيق API</strong> — صفحة مطورين مدمجة على <code>/docs</code>
+</p>
+
 <br>
 
 <p align="right">
-الشمس بقيت فوق الأفق 24 ساعة كاملة. لا يوجد غروب حقيقي ولا شروق.
+<strong>تجربة مباشرة:</strong> <a href="https://abdulwahed-sweden-polaris-chronos.hf.space">abdulwahed-sweden-polaris-chronos.hf.space</a>
 </p>
-
-<p align="right">
-◂ <strong>الظهر والعصر:</strong> حُسبا بشكل طبيعي — الشمس لا تزال تصل لذروتها وتلقي ظلاً
-<br><br>
-◂ <strong>الشروق والمغرب:</strong> أُسقطا من خط عرض معتدل (54.7°) — لا توجد لحظة عبور حقيقية للأفق
-<br><br>
-◂ <strong>الفجر والعشاء:</strong> اشتُقا من الموجة لأن زاوية الشفق لم تتحقق
-</p>
-
-<p align="right">
-كل قيمة مرفقة بـ: <strong>الطريقة + درجة الثقة.</strong> لا شيء مخفي.
-</p>
-
-</details>
 
 <br>
 
@@ -298,28 +316,28 @@
 </thead>
 <tbody>
 <tr>
-<td align="center">✅ جدول كامل دائماً</td>
-<td align="center">❌ يفشل أو يعطي نتائج خاطئة</td>
+<td align="center">جدول كامل دائماً</td>
+<td align="center">يفشل أو يعطي نتائج خاطئة</td>
 <td align="right">يعمل في المناطق القطبية</td>
 </tr>
 <tr>
-<td align="center">✅ كل وقت موسوم بطريقته</td>
-<td align="center">❌ نتيجة بدون تفسير</td>
+<td align="center">كل وقت موسوم بطريقته</td>
+<td align="center">نتيجة بدون تفسير</td>
 <td align="right">يوضح طريقة الحساب</td>
 </tr>
 <tr>
-<td align="center">✅ درجة ثقة لكل وقت</td>
-<td align="center">❌ كل النتائج تبدو متساوية</td>
+<td align="center">درجة ثقة لكل وقت</td>
+<td align="center">كل النتائج تبدو متساوية</td>
 <td align="right">يميز الحقيقي من التقديري</td>
 </tr>
 <tr>
-<td align="center">✅ محاكاة موقع الشمس (SPA)</td>
-<td align="center">❌ معادلات مبسطة</td>
+<td align="center">محاكاة موقع الشمس (SPA)</td>
+<td align="center">معادلات مبسطة</td>
 <td align="right">يعتمد على الفيزياء الفلكية</td>
 </tr>
 <tr>
-<td align="center">✅ قاعدة بيانات مدمجة + كاش</td>
-<td align="center">❌ يحتاج اتصال غالباً</td>
+<td align="center">قاعدة بيانات مدمجة + كاش</td>
+<td align="center">يحتاج اتصال غالباً</td>
 <td align="right">يعمل بدون إنترنت</td>
 </tr>
 </tbody>
@@ -362,34 +380,25 @@
 
 <br>
 
-<h2 align="right">مبادئ التصميم</h2>
+<h2 align="right">النشر والتشغيل</h2>
 
-<br>
+<h3 align="right">التشغيل المحلي</h3>
 
-<table>
-<tbody>
-<tr>
-<td align="right">موقع الشمس يُحسب فلكياً — لا تقريب ولا ترميز ثابت</td>
-<td align="right"><strong>الفيزياء أولاً</strong></td>
-</tr>
-<tr>
-<td align="right">كل قيمة تشرح كيف تم اشتقاقها</td>
-<td align="right"><strong>الشفافية</strong></td>
-</tr>
-<tr>
-<td align="right">يعمل بنفس الطريقة من مكة (21° ش) إلى سفالبارد (78° ش)</td>
-<td align="right"><strong>العالمية</strong></td>
-</tr>
-<tr>
-<td align="right">نفس الإحداثيات + نفس التاريخ = نفس النتيجة دائماً</td>
-<td align="right"><strong>الحتمية</strong></td>
-</tr>
-<tr>
-<td align="right">عندما تنخفض الدقة — تنخفض درجة الثقة معها</td>
-<td align="right"><strong>الصدق</strong></td>
-</tr>
-</tbody>
-</table>
+<pre dir="ltr" align="left"><code>cargo build --release
+./target/release/polaris server --port 3000
+# افتح http://localhost:3000</code></pre>
+
+<h3 align="right">Docker</h3>
+
+<pre dir="ltr" align="left"><code>docker build -t polaris-chronos .
+docker run -p 7860:7860 polaris-chronos
+# افتح http://localhost:7860</code></pre>
+
+<h3 align="right">Hugging Face Spaces</h3>
+
+<p align="right">
+المشروع منشور على Hugging Face Spaces مع Dockerfile جاهز للنشر التلقائي.
+</p>
 
 <br>
 
@@ -443,18 +452,9 @@
 <br>
 
 <pre dir="ltr" align="left"><code>polaris Gaza
-  📍 gaza — فلسطين
-  🕒 Asia/Gaza (Local Time)
-  📐 31.50°N, 34.47°E</code></pre>
-
-<br>
-
-<h2 align="right">التعامل مع تعدد المدن</h2>
-
-<p align="right">
-عندما يتطابق اسم المدينة مع مواقع في عدة دول، يعرض بولاريس خيارات للاختيار بينها.
-واجهة الويب تعرض أزرار اختيار تفاعلية، وواجهة API ترجع HTTP 300 مع خيارات منظمة.
-</p>
+  gaza — فلسطين
+  Asia/Gaza (Local Time)
+  31.50°N, 34.47°E</code></pre>
 
 <br>
 
@@ -462,60 +462,44 @@
 
 <br>
 
-<h2 align="right">ضمان البيانات الحديثة</h2>
+<h2 align="right">مبادئ التصميم</h2>
 
-<p align="right">
-كل استجابة من واجهة API تتضمن ترويسات تمنع عرض بيانات قديمة:
-</p>
+<br>
 
 <table>
-<thead>
-<tr>
-<th align="right">القيمة</th>
-<th align="right">الترويسة</th>
-</tr>
-</thead>
 <tbody>
 <tr>
-<td align="right"><code>no-store, no-cache, must-revalidate, max-age=0</code></td>
-<td align="right"><code>Cache-Control</code></td>
+<td align="right">موقع الشمس يُحسب فلكياً — لا تقريب ولا ترميز ثابت</td>
+<td align="right"><strong>الفيزياء أولاً</strong></td>
 </tr>
 <tr>
-<td align="right"><code>no-cache</code></td>
-<td align="right"><code>Pragma</code></td>
+<td align="right">كل قيمة تشرح كيف تم اشتقاقها</td>
+<td align="right"><strong>الشفافية</strong></td>
 </tr>
 <tr>
-<td align="right">رقم الإصدار الحالي (مثلاً <code>0.7.0</code>)</td>
-<td align="right"><code>x-polaris-version</code></td>
+<td align="right">يعمل بنفس الطريقة من مكة (21° ش) إلى سفالبارد (78° ش)</td>
+<td align="right"><strong>العالمية</strong></td>
+</tr>
+<tr>
+<td align="right">نفس الإحداثيات + نفس التاريخ = نفس النتيجة دائماً</td>
+<td align="right"><strong>الحتمية</strong></td>
+</tr>
+<tr>
+<td align="right">عندما تنخفض الدقة — تنخفض درجة الثقة معها</td>
+<td align="right"><strong>الصدق</strong></td>
 </tr>
 </tbody>
 </table>
 
-<p align="right">
-الملفات الثابتة (<code>style.css</code>، <code>app.js</code>) تستخدم روابط مختومة بالإصدار (<code>?v=0.7.0</code>).
-واجهة المستخدم تستخدم <code>cache: "no-store"</code> في كل طلبات الشبكة.
-ذاكرة التخزين المؤقتة (6 ساعات) تُعاد من الصفر عند كل إعادة تشغيل للخادم.
-</p>
-
 <br>
 
 <hr>
 
 <br>
 
-<h2 align="right">الخلاصة</h2>
+<h2 align="right">الرخصة</h2>
 
-<p align="right">
-سواء كنت في مكة أو غزة أو ستوكهولم أو القطب الشمالي —
-</p>
-
-<p align="right">
-بولاريس يعطيك جدول صلاة <strong>كامل، مفهوم، وصادق علمياً.</strong>
-</p>
-
-<br>
-
-<hr>
+<p align="right">MIT</p>
 
 <br>
 
