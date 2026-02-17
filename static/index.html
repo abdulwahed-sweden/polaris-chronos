@@ -50,7 +50,7 @@
 
   <!-- ===== HEADER ===== -->
   <header class="bg-navbar sticky top-0 z-[1050] py-3">
-    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1400px] w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between">
         <a class="font-heading font-extrabold text-[1.3rem] tracking-tight text-white no-underline flex items-center gap-1.5 hover:text-white/85" href="/">
           <span class="text-brand text-[1.2rem]">&#9734;</span>
@@ -74,7 +74,7 @@
 
   <!-- ===== NOW DASHBOARD ===== -->
   <section id="now-dashboard" class="now-dashboard bg-brand-dark py-4" style="display:none">
-    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1400px] w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
           <span class="block text-[11px] font-semibold uppercase tracking-wider text-white/50 mb-0.5">Current</span>
@@ -90,24 +90,24 @@
   </section>
 
   <!-- ===== MAIN CONTENT ===== -->
-  <main class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8">
+  <main class="max-w-[1400px] w-[90%] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8">
 
     <!-- Hero Search Section -->
     <section id="search-section" class="mb-6">
-      <div class="flex items-center gap-2 max-w-[600px] mx-auto search-bar-row">
+      <div class="flex items-center gap-2.5 search-bar-row">
         <div class="relative flex-1 search-input-wrap">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-txt-light pointer-events-none">
-            <i data-lucide="search" class="w-[18px] h-[18px]"></i>
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-txt-light pointer-events-none">
+            <i data-lucide="search" class="w-5 h-5"></i>
           </span>
-          <input type="text" id="city-input" class="w-full bg-surface border-2 border-border-light text-txt font-body text-[15px] font-medium py-3 pl-11 pr-4 rounded-card outline-none transition-all duration-200 focus:border-brand focus:ring-4 focus:ring-brand/10 placeholder:text-txt-light" placeholder="Search any city..." autocomplete="off" spellcheck="false">
+          <input type="text" id="city-input" class="w-full bg-surface border-2 border-border-light text-txt font-body text-[16px] font-medium py-3.5 pl-12 pr-4 rounded-card outline-none transition-all duration-200 focus:border-brand focus:ring-4 focus:ring-brand/10 placeholder:text-txt-light" placeholder="Search any city..." autocomplete="off" spellcheck="false">
           <div id="autocomplete-list" class="autocomplete-list"></div>
         </div>
-        <button id="gps-btn" class="gps-btn flex items-center gap-2 bg-surface border-2 border-border-light rounded-full text-txt-muted cursor-pointer transition-all duration-200 shrink-0 px-4 py-2.5 text-[14px] font-medium hover:border-brand hover:text-brand-hover hover:bg-brand/[0.03]" title="Auto-detect location">
+        <button id="gps-btn" class="gps-btn flex items-center gap-2 bg-surface border-2 border-border-light rounded-full text-txt-muted cursor-pointer transition-all duration-200 shrink-0 px-5 py-3 text-[14px] font-medium hover:border-brand hover:text-brand-hover hover:bg-brand/[0.03]" title="Auto-detect location">
           <i data-lucide="map-pin" class="w-4 h-4"></i>
           <span>My Location</span>
         </button>
-        <input type="date" id="date-input" class="bg-surface border-2 border-border-light text-txt font-body text-[15px] py-2.5 px-3 rounded-card outline-none transition-all duration-200 focus:border-brand focus:ring-4 focus:ring-brand/10">
-        <button id="go-btn" class="bg-brand border-none text-white font-semibold font-body text-[15px] py-3 px-6 rounded-btn cursor-pointer transition-all duration-200 whitespace-nowrap hover:bg-brand-hover hover:shadow-md">Search</button>
+        <input type="date" id="date-input" class="bg-surface border-2 border-border-light text-txt font-body text-[15px] py-3 px-3.5 rounded-card outline-none transition-all duration-200 focus:border-brand focus:ring-4 focus:ring-brand/10">
+        <button id="go-btn" class="bg-brand border-none text-white font-semibold font-body text-[15px] py-3.5 px-7 rounded-btn cursor-pointer transition-all duration-200 whitespace-nowrap hover:bg-brand-hover hover:shadow-md">Search</button>
       </div>
     </section>
 
@@ -153,11 +153,6 @@
         </div>
       </div>
 
-      <!-- Today Hero Banner -->
-      <div id="today-hero" class="today-hero text-center py-4 mb-5 rounded-card" style="display:none">
-        <p id="today-hero-text" class="font-heading text-[1.4rem] font-bold text-brand-dark tracking-tight m-0"></p>
-      </div>
-
       <!-- Ramadan Header -->
       <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
@@ -197,7 +192,8 @@
           <table class="polaris-table w-full text-txt text-[15px] border-collapse">
             <thead>
               <tr>
-                <th class="bg-muted text-txt-secondary text-[11px] font-bold uppercase tracking-wider py-3.5 px-[18px] border-b-2 border-border-light whitespace-nowrap sticky top-0 z-10 text-left">Date</th>
+                <th class="bg-muted text-txt-secondary text-[11px] font-bold uppercase tracking-wider py-3.5 px-[18px] border-b-2 border-border-light whitespace-nowrap sticky top-0 z-10 text-left">Day</th>
+                <th class="bg-muted text-txt-secondary text-[11px] font-bold uppercase tracking-wider py-3.5 px-[18px] border-b-2 border-border-light whitespace-nowrap sticky top-0 z-10 text-left">Gregorian</th>
                 <th class="bg-muted text-txt-secondary text-[11px] font-bold uppercase tracking-wider py-3.5 px-[18px] border-b-2 border-border-light whitespace-nowrap sticky top-0 z-10 text-center">Hijri</th>
                 <th class="bg-muted text-txt-secondary text-[11px] font-bold uppercase tracking-wider py-3.5 px-[18px] border-b-2 border-border-light whitespace-nowrap sticky top-0 z-10 text-center">Fajr</th>
                 <th class="bg-muted text-txt-secondary text-[11px] font-bold uppercase tracking-wider py-3.5 px-[18px] border-b-2 border-border-light whitespace-nowrap sticky top-0 z-10 text-center">Sunrise</th>
@@ -310,7 +306,7 @@
 
   <!-- ===== FOOTER ===== -->
   <footer class="text-center text-txt-light text-[13px] py-6 border-t border-border-light mt-8">
-    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1400px] w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
       <span class="font-semibold text-txt-muted">Polaris Chronos v4.0.0</span>
       <span class="mx-2 text-border-medium">&middot;</span>
       <span>Universal Prayer Time Engine</span>

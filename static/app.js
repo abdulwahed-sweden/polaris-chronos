@@ -654,8 +654,7 @@
     docsView.style.display = 'none';
 
     var params = new URLSearchParams(window.location.search);
-    var city = params.get('city') || DEFAULT_CITY;
-    cityInput.value = city;
+    var explicitCity = params.get('city');
 
     goBtn.onclick = function () {
       if (dateInput.value && state.currentLoc) {
@@ -711,7 +710,59 @@
       shareBtn.addEventListener('click', function () { handleShare(this); });
     }
 
-    loadCalendarForCity(city);
+    // If user specified a city in URL, use it directly
+    if (explicitCity) {
+      cityInput.value = explicitCity;
+      loadCalendarForCity(explicitCity);
+      return;
+    }
+
+    // Otherwise: try GPS auto-detect, fall back to DEFAULT_CITY
+    if (navigator.geolocation) {
+      showLoading();
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          var lat = pos.coords.latitude;
+          var lon = pos.coords.longitude;
+          autoSelectNearest(lat, lon);
+        },
+        function () {
+          // GPS denied/failed — fall back
+          cityInput.value = DEFAULT_CITY;
+          loadCalendarForCity(DEFAULT_CITY);
+        },
+        { timeout: 5000, enableHighAccuracy: false }
+      );
+    } else {
+      cityInput.value = DEFAULT_CITY;
+      loadCalendarForCity(DEFAULT_CITY);
+    }
+  }
+
+  function autoSelectNearest(lat, lon) {
+    var nearest = findNearestCities(lat, lon, 1);
+    if (nearest.length > 0 && nearest[0].distance < 200) {
+      // Close enough to a known city — use it
+      var city = nearest[0].city;
+      cityInput.value = capitalize(city.name);
+      loadCalendarForCity(city.name);
+    } else {
+      // No nearby city — use exact coords
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      var loc = {
+        name: formatCoords(lat, lon),
+        lat: lat, lon: lon, tz: tz,
+        tz_label: tz + ' (Local Time)',
+        formatted_coords: formatCoords(lat, lon),
+        source: 'GPS', confidence: 1.0
+      };
+      cityInput.value = loc.name;
+      if (state.hijriMode) {
+        fetchRamadanMonth(loc);
+      } else {
+        fetchGregorianMonth(loc);
+      }
+    }
   }
 
   function loadCalendarForCity(city) {
@@ -884,22 +935,6 @@
       weekday: 'short', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    // Today Hero Banner
-    var todayHero = $('today-hero');
-    var todayHeroText = $('today-hero-text');
-    if (todayHero && todayHeroText) {
-      var now = new Date();
-      var gregPart = now.toLocaleDateString('en', {
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-      });
-      var hijriPart = '';
-      if (state.hijriData && state.hijriData.hijri_date) {
-        hijriPart = formatHijriDate(state.hijriData.hijri_date);
-      }
-      todayHeroText.textContent = gregPart + (hijriPart ? ' \u2014 ' + hijriPart : '');
-      todayHero.style.display = 'block';
-    }
-
     // Ramadan header
     var meta = state.ramadanMeta;
     $('ramadan-title').textContent = state.hijriMode ?
@@ -912,11 +947,14 @@
     }
 
     // Determine which days to show based on view mode
-    var visibleDays = days;
+    var visibleDays;
     if (state.viewMode === 'week') {
       visibleDays = getWeekDays(days);
     } else if (state.viewMode === 'day') {
       visibleDays = getTodayDay(days);
+    } else {
+      // Month mode: start from today, show remaining days
+      visibleDays = getDaysFromToday(days);
     }
 
     // Calendar table
@@ -928,56 +966,51 @@
     visibleDays.forEach(function (day, idx) {
       var dateObj = new Date(day.date + 'T12:00:00');
 
-      // Month transition dividers
-      if (idx > 0) {
-        if (state.hijriMode) {
-          // In Hijri mode, check Gregorian month change
-          var curMonth = dateObj.getMonth();
-          if (prevMonth !== -1 && curMonth !== prevMonth) {
-            var monthLabel = dateObj.toLocaleDateString('en', { month: 'long', year: 'numeric' });
-            tbody.appendChild(createTransitionRow(monthLabel, 8));
-          }
-        } else {
-          // In Gregorian mode, check if Ramadan starts on this day
-          if (state.ramadanMeta) {
-            var ramStart = isoDate(state.ramadanMeta.startDate);
-            var ramEnd = state.ramadanMeta.shawwalStart;
-            if (day.date === ramStart) {
-              tbody.appendChild(createTransitionRow('Start of Ramadan ' + state.ramadanMeta.hijriYear + ' AH', 8));
-            } else if (ramEnd && day.date === ramEnd) {
-              tbody.appendChild(createTransitionRow('Eid al-Fitr \u2014 Shawwal ' + state.ramadanMeta.hijriYear + ' AH', 8));
-            }
-          }
+      // Month transition dividers (Hijri mode only — Gregorian month boundaries)
+      if (idx > 0 && state.hijriMode) {
+        var curMonth = dateObj.getMonth();
+        if (prevMonth !== -1 && curMonth !== prevMonth) {
+          var monthLabel = dateObj.toLocaleDateString('en', { month: 'long', year: 'numeric' });
+          tbody.appendChild(createTransitionRow(monthLabel, 9));
         }
       }
       prevMonth = dateObj.getMonth();
 
       var tr = document.createElement('tr');
-      if (day.date === todayStr) tr.className = 'today-row';
+      if (day.date === todayStr) tr.classList.add('today-row');
 
-      var dayName = dateObj.toLocaleDateString('en', { weekday: 'short' });
-      var monthDay = dateObj.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+      var dayNameFull = dateObj.toLocaleDateString('en', { weekday: 'long' });
+      var dayNameShort = dateObj.toLocaleDateString('en', { weekday: 'short' });
+      var gregDate = dateObj.getDate() + ' ' + dateObj.toLocaleDateString('en', { month: 'short' });
 
-      // Column 1: Date (Day Name + Gregorian Date)
-      var tdDate = document.createElement('td');
-      tdDate.className = 'cal-date';
-      tdDate.innerHTML = '<span class="cal-date-day">' + escapeHtml(dayName) + '</span>, ' +
-        '<span class="cal-date-greg">' + escapeHtml(monthDay) + '</span>';
-      tr.appendChild(tdDate);
+      // Friday (Jumu'ah) highlight
+      if (dateObj.getDay() === 5) tr.classList.add('friday-row');
 
-      // Column 2: Hijri
+      // Column 1: Day Name
+      var tdDay = document.createElement('td');
+      tdDay.className = 'cal-day-name';
+      tdDay.textContent = dayNameFull;
+      tr.appendChild(tdDay);
+
+      // Column 2: Gregorian Date
+      var tdGreg = document.createElement('td');
+      tdGreg.className = 'cal-greg-date';
+      tdGreg.textContent = gregDate;
+      tr.appendChild(tdGreg);
+
+      // Column 3: Hijri
       var tdHijri = document.createElement('td');
       tdHijri.className = 'cal-hijri-cell';
       var hijriInfo = getHijriForDate(day.date);
       if (hijriInfo) {
+        var hijriMonthName = HIJRI_MONTH_NAMES[hijriInfo.month] || '';
         if (hijriInfo.day === 1) {
-          var monthName = HIJRI_MONTH_NAMES[hijriInfo.month] || '';
-          tdHijri.innerHTML = '<span class="hijri-badge">1 ' + escapeHtml(monthName) + '</span>';
+          tdHijri.innerHTML = '<span class="hijri-badge">1 ' + escapeHtml(hijriMonthName) + '</span>';
         } else {
-          tdHijri.textContent = hijriInfo.day;
+          tdHijri.textContent = hijriInfo.day + ' ' + hijriMonthName;
         }
       } else if (day.ramadanDay) {
-        tdHijri.textContent = day.ramadanDay;
+        tdHijri.textContent = day.ramadanDay + ' Ramadan';
       } else {
         tdHijri.textContent = '';
       }
@@ -1042,6 +1075,14 @@
       if (days[i].date === todayStr) return [days[i]];
     }
     return days.length > 0 ? [days[0]] : [];
+  }
+
+  function getDaysFromToday(days) {
+    var todayStr = isoDate(new Date());
+    for (var i = 0; i < days.length; i++) {
+      if (days[i].date >= todayStr) return days.slice(i);
+    }
+    return days;
   }
 
   // ═══════════════════════════════════════════════════════════
