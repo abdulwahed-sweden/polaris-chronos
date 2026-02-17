@@ -2,7 +2,9 @@
 
 /* ── Reset ──────────────────────────────────────────────── */
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -12,34 +14,34 @@
 
 :root {
   /* Backgrounds */
-  --bg-primary: #F8FAFB;
-  --bg-surface: #FFFFFF;
-  --bg-secondary: #F1F5F9;
+  --bg-primary: #f8fafb;
+  --bg-surface: #ffffff;
+  --bg-secondary: #f1f5f9;
 
   /* Primary — Emerald Green */
-  --primary-500: #22C55E;
-  --primary-600: #16A34A;
-  --primary-700: #15803D;
-  --primary-900: #064E3B;
+  --primary-500: #22c55e;
+  --primary-600: #16a34a;
+  --primary-700: #15803d;
+  --primary-900: #064e3b;
 
   /* Accent — Amber/Gold */
-  --accent-500: #F59E0B;
-  --accent-600: #D97706;
+  --accent-500: #f59e0b;
+  --accent-600: #d97706;
 
   /* Text */
   --text-primary: #111827;
-  --text-secondary: #4B5563;
-  --text-muted: #9CA3AF;
+  --text-secondary: #4b5563;
+  --text-muted: #6c7687;
 
   /* Status */
-  --success: #16A34A;
-  --warning: #F59E0B;
-  --danger: #DC2626;
-  --info: #3B82F6;
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --info: #3b82f6;
 
   /* Borders */
-  --border-light: #E5E7EB;
-  --border-medium: #D1D5DB;
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
 
   /* Iftar highlight */
   --iftar-bg: rgba(245, 158, 11, 0.06);
@@ -97,7 +99,9 @@ body {
   font-size: 0.875rem;
   padding: 0.5rem 1rem !important;
   border-radius: var(--radius);
-  transition: color 0.2s, background 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s;
 }
 
 .polaris-nav .nav-link:hover {
@@ -162,7 +166,9 @@ body {
   font-size: 1rem;
   padding: 0.75rem 1rem;
   border-radius: var(--radius) !important;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .polaris-input:focus {
@@ -217,7 +223,9 @@ body {
   display: none;
 }
 
-.autocomplete-list.active { display: block; }
+.autocomplete-list.active {
+  display: block;
+}
 
 .autocomplete-item {
   padding: 0.6rem 0.9rem;
@@ -317,7 +325,9 @@ body {
   cursor: pointer;
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .loc-coords:hover {
@@ -386,7 +396,7 @@ body {
 }
 
 .method-badge.virtual-h {
-  color: #7C3AED;
+  color: #7c3aed;
   background: rgba(124, 58, 237, 0.08);
   border: 1px solid rgba(124, 58, 237, 0.15);
 }
@@ -539,9 +549,15 @@ body {
   transition: width 0.3s ease;
 }
 
-.confidence-fill.high { background: var(--success); }
-.confidence-fill.medium { background: var(--warning); }
-.confidence-fill.low { background: var(--danger); }
+.confidence-fill.high {
+  background: var(--success);
+}
+.confidence-fill.medium {
+  background: var(--warning);
+}
+.confidence-fill.low {
+  background: var(--danger);
+}
 
 .confidence-value {
   font-family: var(--font-mono);
@@ -730,8 +746,15 @@ body {
 }
 
 @keyframes sunPulse {
-  0%, 100% { r: 10; opacity: 1; }
-  50% { r: 13; opacity: 0.7; }
+  0%,
+  100% {
+    r: 10;
+    opacity: 1;
+  }
+  50% {
+    r: 13;
+    opacity: 0.7;
+  }
 }
 
 /* ── Solar Panel ────────────────────────────────────────── */
@@ -814,7 +837,12 @@ body {
 
 .skeleton-banner,
 .skeleton-table {
-  background: linear-gradient(90deg, var(--border-light) 25%, var(--bg-surface) 50%, var(--border-light) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--border-light) 25%,
+    var(--bg-surface) 50%,
+    var(--border-light) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius);
@@ -830,8 +858,12 @@ body {
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* ── Disambiguation ─────────────────────────────────────── */
@@ -862,7 +894,10 @@ body {
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
   font-family: var(--font-sans);
   color: var(--text-primary);
 }
@@ -975,14 +1010,14 @@ body {
 }
 
 .docs-code-block {
-  background: #1E293B;
+  background: #1e293b;
   border: 1px solid var(--border-light);
   border-radius: var(--radius);
   padding: 1rem;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   line-height: 1.6;
-  color: #E2E8F0;
+  color: #e2e8f0;
   overflow-x: auto;
   margin-bottom: 0.75rem;
   white-space: pre;
@@ -1018,7 +1053,7 @@ body {
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
   background: rgba(124, 58, 237, 0.08);
-  color: #7C3AED;
+  color: #7c3aed;
   border: 1px solid rgba(124, 58, 237, 0.12);
   margin-right: 0.5rem;
   margin-bottom: 0.3rem;
@@ -1042,50 +1077,50 @@ body {
 
 /* ── RTL ────────────────────────────────────────────────── */
 
-[dir="rtl"] .polaris-table {
+[dir='rtl'] .polaris-table {
   direction: rtl;
 }
 
-[dir="rtl"] .polaris-table th,
-[dir="rtl"] .polaris-table td {
+[dir='rtl'] .polaris-table th,
+[dir='rtl'] .polaris-table td {
   text-align: right;
 }
 
-[dir="rtl"] .loc-main,
-[dir="rtl"] .loc-meta,
-[dir="rtl"] .meta-row {
+[dir='rtl'] .loc-main,
+[dir='rtl'] .loc-meta,
+[dir='rtl'] .meta-row {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .now-dashboard .row {
+[dir='rtl'] .now-dashboard .row {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .autocomplete-item {
+[dir='rtl'] .autocomplete-item {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .confidence-cell {
+[dir='rtl'] .confidence-cell {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .strategy-note {
+[dir='rtl'] .strategy-note {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .solar-item {
+[dir='rtl'] .solar-item {
   align-items: flex-end;
 }
 
-[dir="rtl"] .disambiguation {
+[dir='rtl'] .disambiguation {
   text-align: right;
 }
 
-[dir="rtl"] .disambig-btn {
+[dir='rtl'] .disambig-btn {
   text-align: right;
 }
 
-[dir="rtl"] .location-card {
+[dir='rtl'] .location-card {
   border-left: none;
   border-right: 3px solid var(--primary-600);
 }
