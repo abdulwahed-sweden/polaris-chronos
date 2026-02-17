@@ -22,6 +22,7 @@ pub fn build_router() -> Router {
         .route("/api/times", get(handlers::prayer_times))
         .route("/api/month", get(handlers::month_times))
         .route("/api/cities", get(handlers::city_list))
+        .route("/api/hijri", get(handlers::hijri_info))
         .layer(SetResponseHeaderLayer::overriding(
             axum::http::header::CACHE_CONTROL,
             HeaderValue::from_static("no-store, no-cache, must-revalidate, max-age=0"),
@@ -70,6 +71,7 @@ pub async fn start(host: &str, port: u16) {
     eprintln!("    {}/api/resolve?query=stockholm", base);
     eprintln!("    {}/api/times?city=stockholm", base);
     eprintln!("    {}/api/month?city=stockholm", base);
+    eprintln!("    {}/api/hijri?lat=21.42&lon=39.83&tz=Asia/Riyadh", base);
     eprintln!("    {}/api/cities", base);
     eprintln!();
     eprintln!("  Press Ctrl+C to stop.");

@@ -5,9 +5,6 @@
   //  1. CONFIG & CONSTANTS
   // ═══════════════════════════════════════════════════════════
 
-  var RAMADAN_START = new Date(2026, 1, 17); // Feb 17, 2026
-  var RAMADAN_DAYS = 30;
-  var RAMADAN_YEAR = '1447 AH';
   var DEFAULT_CITY = 'Troms\u00f8';
 
   var PRAYER_NAMES = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -36,6 +33,7 @@
     currentRoute: 'calendar',
     calendarData: null,
     dayData: null,
+    ramadanMeta: null,
     selectedIndex: -1,
     countdownInterval: null
   };
@@ -149,6 +147,16 @@
       return fetch('/api/month?' + q, { cache: 'no-store' })
         .then(function (r) {
           if (!r.ok) throw new Error('Failed to fetch month data');
+          return r.json();
+        });
+    },
+    hijri: function (params) {
+      var q = 'lat=' + params.lat + '&lon=' + params.lon +
+        '&tz=' + encodeURIComponent(params.tz);
+      if (params.hijri_year) q += '&hijri_year=' + params.hijri_year;
+      return fetch('/api/hijri?' + q, { cache: 'no-store' })
+        .then(function (r) {
+          if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Failed'); });
           return r.json();
         });
     },
@@ -438,18 +446,50 @@
   }
 
   function fetchRamadanMonth(loc) {
-    var p1 = api.month({ lat: loc.lat, lon: loc.lon, tz: loc.tz, year: 2026, month: 2 });
-    var p2 = api.month({ lat: loc.lat, lon: loc.lon, tz: loc.tz, year: 2026, month: 3 });
+    // First fetch Hijri data to get dynamic Ramadan start/end
+    api.hijri({ lat: loc.lat, lon: loc.lon, tz: loc.tz })
+      .then(function (hijriData) {
+        var meta = hijriData.ramadan;
+        var startDate = new Date(meta.start + 'T12:00:00');
+        var endDate = new Date(meta.end + 'T12:00:00');
+        var days = meta.days;
 
-    Promise.all([p1, p2])
+        state.ramadanMeta = {
+          startDate: startDate,
+          endDate: endDate,
+          days: days,
+          hijriYear: meta.hijri_year,
+          conjunction: meta.conjunction,
+          visibility: meta.visibility,
+          shawwalStart: meta.shawwal_start
+        };
+
+        // Determine which Gregorian months we need to fetch
+        var startMonth = startDate.getMonth() + 1;
+        var startYear = startDate.getFullYear();
+        var endMonth = endDate.getMonth() + 1;
+        var endYear = endDate.getFullYear();
+
+        var monthPromises = [];
+        var y = startYear, m = startMonth;
+        while (y < endYear || (y === endYear && m <= endMonth)) {
+          monthPromises.push(api.month({ lat: loc.lat, lon: loc.lon, tz: loc.tz, year: y, month: m }));
+          m++;
+          if (m > 12) { m = 1; y++; }
+        }
+
+        return Promise.all(monthPromises);
+      })
       .then(function (results) {
         var allDays = {};
-        results[0].forEach(function (d) { allDays[d.date] = d; });
-        results[1].forEach(function (d) { allDays[d.date] = d; });
+        results.forEach(function (monthData) {
+          monthData.forEach(function (d) { allDays[d.date] = d; });
+        });
 
         var ramadanData = [];
-        for (var i = 0; i < RAMADAN_DAYS; i++) {
-          var date = new Date(RAMADAN_START);
+        var meta = state.ramadanMeta;
+        for (var i = 0; i < meta.days; i++) {
+          var date = new Date(meta.startDate);
           date.setDate(date.getDate() + i);
           var dateStr = isoDate(date);
           if (allDays[dateStr]) {
@@ -487,10 +527,11 @@
     $('cal-loc-coords').textContent = loc.formatted_coords || formatCoords(loc.lat, loc.lon);
 
     // Ramadan header
-    $('ramadan-title').textContent = 'Ramadan ' + RAMADAN_YEAR;
-    var endDate = new Date(RAMADAN_START);
-    endDate.setDate(endDate.getDate() + RAMADAN_DAYS - 1);
-    $('ramadan-dates').textContent = displayDate(RAMADAN_START) + ' \u2014 ' + displayDate(endDate);
+    var meta = state.ramadanMeta;
+    $('ramadan-title').textContent = 'Ramadan ' + (meta ? meta.hijriYear + ' AH' : '');
+    if (meta) {
+      $('ramadan-dates').textContent = displayDate(meta.startDate) + ' \u2014 ' + displayDate(meta.endDate);
+    }
 
     // Calendar table
     var tbody = $('calendar-tbody');
@@ -591,8 +632,9 @@
 
     // Day header
     var dateObj = new Date(date + 'T12:00:00');
-    var ramadanDay = Math.round((dateObj - RAMADAN_START) / 86400000) + 1;
-    var dayLabel = (ramadanDay >= 1 && ramadanDay <= 30) ?
+    var meta = state.ramadanMeta;
+    var ramadanDay = meta ? Math.round((dateObj - meta.startDate) / 86400000) + 1 : -1;
+    var dayLabel = (meta && ramadanDay >= 1 && ramadanDay <= meta.days) ?
       'Ramadan ' + ramadanDay : dateObj.toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' });
 
     $('day-title').textContent = dayLabel + ' \u2014 ' + locDisplayName;

@@ -49,11 +49,11 @@ pub fn julian_date(dt: &NaiveDateTime) -> f64 {
         - 1524.5
 }
 
-fn julian_century(jd: f64) -> f64 {
+pub fn julian_century(jd: f64) -> f64 {
     (jd - 2451545.0) / 36525.0
 }
 
-fn normalize_degrees(deg: f64) -> f64 {
+pub fn normalize_degrees(deg: f64) -> f64 {
     let mut d = deg % 360.0;
     if d < 0.0 {
         d += 360.0;
@@ -93,7 +93,7 @@ fn mean_obliquity(t: f64) -> f64 {
     23.0 + (26.0 + (21.448 - t * (46.815 + t * (0.00059 - t * 0.001813))) / 60.0) / 60.0
 }
 
-fn obliquity_corrected(t: f64) -> f64 {
+pub fn obliquity_corrected(t: f64) -> f64 {
     let omega = 125.04 - 1934.136 * t;
     mean_obliquity(t) + 0.00256 * (omega * DEG).cos()
 }
@@ -118,6 +118,13 @@ fn equation_of_time(t: f64) -> f64 {
         - 1.25 * ecc * ecc * (2.0 * m).sin();
 
     4.0 * eq / DEG
+}
+
+/// Compute the Sun's ecliptic longitude for a given UTC datetime.
+pub fn sun_ecliptic_longitude(dt: &NaiveDateTime) -> f64 {
+    let jd = julian_date(dt);
+    let t = julian_century(jd);
+    sun_apparent_longitude(t)
 }
 
 /// Compute the solar position for a given UTC datetime, latitude, and longitude.

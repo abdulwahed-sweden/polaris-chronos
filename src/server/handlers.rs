@@ -412,6 +412,83 @@ pub async fn month_times(
     Ok(Json(results))
 }
 
+// ─── GET /api/hijri ──────────────────────────────────────────────
+
+#[derive(Deserialize)]
+pub struct HijriQuery {
+    pub lat: f64,
+    pub lon: f64,
+    pub tz: String,
+    pub hijri_year: Option<u32>,
+}
+
+#[derive(Serialize)]
+pub struct HijriResponse {
+    pub hijri_date: HijriDateInfo,
+    pub ramadan: crate::hijri::RamadanInfo,
+    pub location: HijriLocation,
+}
+
+#[derive(Serialize)]
+pub struct HijriDateInfo {
+    pub year: u32,
+    pub month: u32,
+    pub day: u32,
+}
+
+#[derive(Serialize)]
+pub struct HijriLocation {
+    pub lat: f64,
+    pub lon: f64,
+    pub tz: String,
+}
+
+pub async fn hijri_info(
+    Query(params): Query<HijriQuery>,
+) -> Result<impl IntoResponse, Response> {
+    let start = Instant::now();
+
+    if !(-90.0..=90.0).contains(&params.lat) || !(-180.0..=180.0).contains(&params.lon) {
+        return Err(api_error(StatusCode::BAD_REQUEST,
+            "Invalid coordinates. Lat: -90..90, Lon: -180..180").into_response());
+    }
+
+    let _tz: chrono_tz::Tz = params.tz.parse().map_err(|_| {
+        api_error(StatusCode::BAD_REQUEST, format!("Unknown timezone '{}'", params.tz)).into_response()
+    })?;
+
+    let today = Utc::now().naive_utc().date();
+    let hijri_today = crate::hijri::gregorian_to_hijri(today);
+
+    let hijri_year = params.hijri_year.unwrap_or_else(|| {
+        crate::hijri::current_hijri_year_for_ramadan()
+    });
+
+    let ramadan = crate::hijri::find_ramadan(hijri_year, params.lat, params.lon);
+
+    let elapsed = start.elapsed();
+    eprintln!("[{}] GET /api/hijri lat={:.2} lon={:.2} -> Ramadan {} starts {} ({:.1}ms)",
+        Utc::now().format("%H:%M:%S"),
+        params.lat, params.lon,
+        hijri_year, ramadan.start,
+        elapsed.as_secs_f64() * 1000.0,
+    );
+
+    Ok(Json(HijriResponse {
+        hijri_date: HijriDateInfo {
+            year: hijri_today.year,
+            month: hijri_today.month,
+            day: hijri_today.day,
+        },
+        ramadan,
+        location: HijriLocation {
+            lat: params.lat,
+            lon: params.lon,
+            tz: params.tz,
+        },
+    }))
+}
+
 // ─── GET /api/cities ─────────────────────────────────────────────
 
 pub async fn city_list() -> Json<Vec<crate::location::CityInfo>> {
