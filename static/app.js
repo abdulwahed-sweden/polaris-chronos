@@ -952,12 +952,7 @@
         var h = state.hijriData.hijri_date;
         var monthName = HIJRI_MONTH_NAMES[h.month] || '';
         $('ramadan-title').textContent = monthName + ' ' + h.year + ' AH';
-        if (meta && todayCheck < meta.startDate) {
-          var daysUntil = Math.ceil((meta.startDate - todayCheck) / 86400000);
-          $('ramadan-dates').textContent = 'Ramadan begins ' + displayDate(meta.startDate) + ' (' + daysUntil + ' days)';
-        } else {
-          $('ramadan-dates').textContent = '';
-        }
+        $('ramadan-dates').textContent = '';
       } else {
         $('ramadan-title').textContent = 'Hijri Calendar';
         $('ramadan-dates').textContent = '';
