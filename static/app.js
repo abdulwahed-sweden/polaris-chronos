@@ -1101,33 +1101,35 @@
     updateNowDashboard(days);
   }
 
-  function getWeekDays(days) {
+  function findTodayIndex(days) {
     var todayStr = isoDate(new Date());
-    var todayIdx = -1;
+    // Exact match first
     for (var i = 0; i < days.length; i++) {
-      if (days[i].date === todayStr) { todayIdx = i; break; }
+      if (days[i].date === todayStr) return i;
     }
-    if (todayIdx === -1) todayIdx = 0;
+    // Fallback: first date >= today (nearest future day)
+    for (var j = 0; j < days.length; j++) {
+      if (days[j].date >= todayStr) return j;
+    }
+    // Last resort: last day in the array (all dates are in the past)
+    return days.length - 1;
+  }
 
-    var start = Math.max(0, todayIdx);
+  function getWeekDays(days) {
+    if (!days.length) return [];
+    var start = findTodayIndex(days);
     var end = Math.min(days.length, start + 7);
     return days.slice(start, end);
   }
 
   function getTodayDay(days) {
-    var todayStr = isoDate(new Date());
-    for (var i = 0; i < days.length; i++) {
-      if (days[i].date === todayStr) return [days[i]];
-    }
-    return days.length > 0 ? [days[0]] : [];
+    if (!days.length) return [];
+    return [days[findTodayIndex(days)]];
   }
 
   function getDaysFromToday(days) {
-    var todayStr = isoDate(new Date());
-    for (var i = 0; i < days.length; i++) {
-      if (days[i].date >= todayStr) return days.slice(i);
-    }
-    return days;
+    if (!days.length) return [];
+    return days.slice(findTodayIndex(days));
   }
 
   // ═══════════════════════════════════════════════════════════
