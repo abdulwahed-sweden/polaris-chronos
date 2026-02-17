@@ -1084,7 +1084,7 @@
 
     if (prayerTimes.length < 2) {
       container.style.display = 'block';
-      dial.innerHTML = '<div style="text-align:center;padding:2rem;color:#6b7280;">' +
+      dial.innerHTML = '<div class="text-center py-8 text-txt-muted">' +
         'Insufficient solar data for horizon visualization (polar conditions).</div>';
       return;
     }
@@ -1368,36 +1368,37 @@
     html += '<div class="docs-concepts">' +
       '<h3>Concepts</h3>' +
       '<div class="polaris-card">' +
-      '<p style="margin-bottom:1rem;"><span class="concept-badge">DayState</span> Describes the solar condition for a given day at the location.</p>' +
-      '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
+      '<p class="mb-4"><span class="concept-badge">DayState</span> Describes the solar condition for a given day at the location.</p>' +
+      '<ul class="text-txt-secondary ml-6 mb-4 list-disc">' +
       '<li><strong>Normal</strong> \u2014 Standard sunrise/sunset cycle. All times are astronomically computed.</li>' +
       '<li><strong>WhiteNight</strong> \u2014 Sun dips below horizon but not far enough for twilight-based events.</li>' +
       '<li><strong>PolarDay</strong> \u2014 Sun never sets (midnight sun). Sunset/twilight events require compensation.</li>' +
       '<li><strong>PolarNight</strong> \u2014 Sun never rises. Sunrise/daytime events require compensation.</li>' +
       '</ul>' +
-      '<p style="margin-bottom:1rem;"><span class="concept-badge">EventMethod</span> How each prayer time was determined.</p>' +
-      '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
+      '<p class="mb-4"><span class="concept-badge">EventMethod</span> How each prayer time was determined.</p>' +
+      '<ul class="text-txt-secondary ml-6 mb-4 list-disc">' +
       '<li><strong>Standard</strong> \u2014 Real astronomical calculation from sun position.</li>' +
       '<li><strong>Projected</strong> \u2014 Interpolated from the nearest latitude (45\u00B0) where the event occurs naturally.</li>' +
       '<li><strong>Virtual</strong> \u2014 Computed using virtual horizon techniques for extreme conditions.</li>' +
       '<li><strong>None</strong> \u2014 Event cannot be computed (e.g. no sunset in polar day with strict strategy).</li>' +
       '</ul>' +
-      '<p style="margin-bottom:1rem;"><span class="concept-badge">CrescentVisibility</span> How Ramadan start is determined.</p>' +
-      '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
+      '<p class="mb-4"><span class="concept-badge">CrescentVisibility</span> How Ramadan start is determined.</p>' +
+      '<ul class="text-txt-secondary ml-6 mb-4 list-disc">' +
       '<li><strong>Zone A</strong> \u2014 Crescent visible to naked eye.</li>' +
       '<li><strong>Zone B</strong> \u2014 May need optical aid, sometimes naked eye.</li>' +
       '<li><strong>Zone C</strong> \u2014 Requires optical aid.</li>' +
       '<li><strong>Zone D</strong> \u2014 Not visible (below Odeh criterion threshold).</li>' +
       '</ul>' +
-      '<p style="margin-bottom:1rem;"><span class="concept-badge">GapStrategy</span> How to handle missing events.</p>' +
-      '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
+      '<p class="mb-4"><span class="concept-badge">GapStrategy</span> How to handle missing events.</p>' +
+      '<ul class="text-txt-secondary ml-6 mb-4 list-disc">' +
       '<li><strong>projected45</strong> \u2014 Project times from latitude 45\u00B0 when local computation fails.</li>' +
       '<li><strong>strict</strong> \u2014 Return "None" for events that cannot be astronomically computed.</li>' +
       '</ul>' +
-      '<p><span class="concept-badge">Confidence</span> A 0.0\u20131.0 score indicating reliability. Standard methods score 1.0, projected/virtual score lower depending on latitude deviation.</p>' +
+      '<p class="mb-0"><span class="concept-badge">Confidence</span> A 0.0\u20131.0 score indicating reliability. Standard methods score 1.0, projected/virtual score lower depending on latitude deviation.</p>' +
       '</div></div>';
 
     docsView.innerHTML = html;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -1495,6 +1496,9 @@
   state.currentRoute = getRoute();
   setActiveNav(state.currentRoute);
   navigateToRoute(state.currentRoute);
+
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 
   // Coord copy delegation
   document.addEventListener('click', function (e) {

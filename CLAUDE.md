@@ -1,6 +1,13 @@
-# Abdulwahed's Design System — Green Edition
+# Abdulwahed's Design System — Green Edition v4.0.0
 
 Design system reference for the Polaris Chronos frontend.
+
+## Architecture
+
+- **Tailwind CSS** (Play CDN) — all layout, spacing, typography, colors, backgrounds, borders, shadows, responsive breakpoints, hover/focus states via HTML utility classes
+- **Lucide Icons** (CDN) — professional SVG icon set replacing emoji/inline SVG. Call `lucide.createIcons()` after dynamic DOM updates
+- **style.css** (~350 lines) — CSS custom properties, JS-dependent class definitions, SVG dial styles, keyframe animations, toggle pseudo-elements, RTL overrides, responsive table overrides
+- No Bootstrap — fully replaced by Tailwind
 
 ---
 
@@ -110,3 +117,6 @@ Design system reference for the Polaris Chronos frontend.
 3. **Minimum 15px** body font size (labels/badges can be 11–13px)
 4. **Inter for body**, Plus Jakarta Sans for headings only
 5. **Emerald Green** is the sole brand color — no gold/sand accents
+6. **Tailwind for layout** — use utility classes in HTML, not CSS, for spacing/colors/typography
+7. **Lucide for icons** — call `lucide.createIcons()` after any DOM update that adds `<i data-lucide>` elements
+8. **Search bar max-width** — `max-w-[600px]` centered, not full-width
