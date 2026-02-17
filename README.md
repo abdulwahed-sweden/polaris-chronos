@@ -1,3 +1,12 @@
+---
+title: Polaris Chronos
+emoji: 🕌
+colorFrom: green
+colorTo: yellow
+sdk: docker
+app_port: 7860
+---
+
 <h1 align="center">
   Polaris
 </h1>

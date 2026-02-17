@@ -813,10 +813,16 @@
           shawwalStart: meta.shawwal_start
         };
 
-        var startMonth = startDate.getMonth() + 1;
-        var startYear = startDate.getFullYear();
-        var endMonth = endDate.getMonth() + 1;
-        var endYear = endDate.getFullYear();
+        // Fetch from today (if before Ramadan) through end of Ramadan
+        var today = new Date();
+        today.setHours(12, 0, 0, 0);
+        var fetchStart = today < startDate ? today : startDate;
+        var fetchEnd = endDate;
+
+        var startMonth = fetchStart.getMonth() + 1;
+        var startYear = fetchStart.getFullYear();
+        var endMonth = fetchEnd.getMonth() + 1;
+        var endYear = fetchEnd.getFullYear();
 
         var monthPromises = [];
         var y = startYear, m = startMonth;
@@ -836,19 +842,35 @@
 
         state.allDaysCache = allDays;
 
-        var ramadanData = [];
         var meta = state.ramadanMeta;
+        var today = new Date();
+        today.setHours(12, 0, 0, 0);
+        var calData = [];
+
+        // Include pre-Ramadan days from today if today is before Ramadan
+        if (today < meta.startDate) {
+          var d = new Date(today);
+          while (d < meta.startDate) {
+            var ds = isoDate(d);
+            if (allDays[ds]) {
+              calData.push({ date: ds, data: allDays[ds] });
+            }
+            d.setDate(d.getDate() + 1);
+          }
+        }
+
+        // Ramadan days
         for (var i = 0; i < meta.days; i++) {
           var date = new Date(meta.startDate);
           date.setDate(date.getDate() + i);
           var dateStr = isoDate(date);
           if (allDays[dateStr]) {
-            ramadanData.push({ date: dateStr, ramadanDay: i + 1, data: allDays[dateStr] });
+            calData.push({ date: dateStr, ramadanDay: i + 1, data: allDays[dateStr] });
           }
         }
 
-        state.calendarData = ramadanData;
-        renderCalendar(loc, ramadanData);
+        state.calendarData = calData;
+        renderCalendar(loc, calData);
       })
       .catch(function (err) {
         showError('Failed to load calendar: ' + err.message);
@@ -935,15 +957,38 @@
       weekday: 'short', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    // Ramadan header
+    // Dynamic header — only show Ramadan context if actually in Ramadan
     var meta = state.ramadanMeta;
-    $('ramadan-title').textContent = state.hijriMode ?
-      'Ramadan ' + (meta ? meta.hijriYear + ' AH' : '') :
-      new Date().toLocaleDateString('en', { month: 'long', year: 'numeric' });
-    if (meta && state.hijriMode) {
-      $('ramadan-dates').textContent = displayDate(meta.startDate) + ' \u2014 ' + displayDate(meta.endDate);
+    var todayCheck = new Date();
+    todayCheck.setHours(12, 0, 0, 0);
+    var inRamadan = meta && todayCheck >= meta.startDate && todayCheck <= meta.endDate;
+
+    if (state.hijriMode) {
+      if (inRamadan) {
+        $('ramadan-title').textContent = 'Ramadan ' + meta.hijriYear + ' AH';
+        $('ramadan-dates').textContent = displayDate(meta.startDate) + ' \u2014 ' + displayDate(meta.endDate);
+      } else if (state.hijriData && state.hijriData.hijri_date) {
+        var h = state.hijriData.hijri_date;
+        var monthName = HIJRI_MONTH_NAMES[h.month] || '';
+        $('ramadan-title').textContent = monthName + ' ' + h.year + ' AH';
+        if (meta && todayCheck < meta.startDate) {
+          var daysUntil = Math.ceil((meta.startDate - todayCheck) / 86400000);
+          $('ramadan-dates').textContent = 'Ramadan begins ' + displayDate(meta.startDate) + ' (' + daysUntil + ' days)';
+        } else {
+          $('ramadan-dates').textContent = '';
+        }
+      } else {
+        $('ramadan-title').textContent = 'Hijri Calendar';
+        $('ramadan-dates').textContent = '';
+      }
     } else {
-      $('ramadan-dates').textContent = '';
+      $('ramadan-title').textContent = new Date().toLocaleDateString('en', { month: 'long', year: 'numeric' });
+      if (inRamadan && meta) {
+        var todayRamadanDay = Math.ceil((todayCheck - meta.startDate) / 86400000) + 1;
+        $('ramadan-dates').textContent = 'Ramadan Day ' + todayRamadanDay + ' \u2014 ' + meta.hijriYear + ' AH';
+      } else {
+        $('ramadan-dates').textContent = '';
+      }
     }
 
     // Determine which days to show based on view mode
