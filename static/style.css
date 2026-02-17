@@ -131,13 +131,15 @@
 .polaris-table tbody tr:hover { background: rgba(5, 150, 105, 0.03); }
 
 .polaris-table td.cal-day-num { font-weight: 800; color: var(--text-primary); text-align: center; width: 50px; font-variant-numeric: tabular-nums; font-size: 1rem; }
-.polaris-table td.cal-date { white-space: nowrap; color: var(--text-secondary); font-size: 15px; }
-.polaris-table td.time-cell { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+.polaris-table td.time-cell { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; text-align: center; }
 .polaris-table td.time-cell.no-time { color: var(--text-light); font-weight: 400; }
 .polaris-table td.iftar-cell { color: var(--color-accent-dk) !important; font-weight: 700; background: rgba(5, 150, 105, 0.05); }
 
-.polaris-table tbody tr.today-row { background: var(--color-accent-lt) !important; border-left: 4px solid var(--color-accent); }
-.polaris-table tbody tr.today-row td.cal-day-num { color: var(--color-accent); }
+.polaris-table tbody tr.today-row { background: var(--color-accent-lt) !important; border-left: 4px solid var(--color-accent); box-shadow: inset 0 1px 0 rgba(5,150,105,0.12), inset 0 -1px 0 rgba(5,150,105,0.12); position: relative; }
+.polaris-table tbody tr.today-row td.cal-day-num { color: var(--color-accent); font-weight: 900; }
+.polaris-table tbody tr.today-row td.cal-hijri-cell { color: var(--color-accent); font-weight: 700; }
+.polaris-table tbody tr.today-row td.cal-date .cal-date-day { color: var(--color-accent-dk); }
+.polaris-table tbody tr.today-row td { border-bottom-color: rgba(5,150,105,0.15); }
 
 .polaris-table tbody tr.current-prayer { background: var(--color-accent-lt) !important; border-left: 4px solid var(--color-accent); animation: prayerPulse 2.5s ease-in-out infinite; }
 @keyframes prayerPulse {
@@ -220,6 +222,49 @@
   margin-bottom: 1.25rem;
 }
 
+/* ── Today Hero Banner ──────────────────────────────────── */
+
+.today-hero {
+  background: rgba(5, 150, 105, 0.04);
+  border: 1px solid rgba(5, 150, 105, 0.1);
+}
+
+/* ── Hijri column ──────────────────────────────────────── */
+
+.polaris-table td.cal-hijri-cell {
+  text-align: center;
+  color: var(--color-accent-dk);
+  font-weight: 600;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  min-width: 50px;
+}
+
+.hijri-badge {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--color-accent-dk);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  white-space: nowrap;
+}
+
+.polaris-table td.cal-date {
+  white-space: nowrap;
+  font-size: 15px;
+}
+.polaris-table td.cal-date .cal-date-day {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.polaris-table td.cal-date .cal-date-greg {
+  color: var(--text-secondary);
+}
+
 /* ── Loading Skeleton ────────────────────────────────────── */
 
 .skeleton-banner, .skeleton-table {
@@ -299,6 +344,77 @@
 .docs-concepts { margin-top: 2rem; }
 .docs-concepts h3 { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; margin-bottom: 1rem; }
 .concept-badge { display: inline-block; font-family: var(--font-mono); font-size: 13px; font-weight: 500; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(5, 150, 105, 0.06); color: var(--color-accent-dk); border: 1px solid rgba(5, 150, 105, 0.12); margin-right: 0.5rem; margin-bottom: 0.3rem; }
+
+/* ── Location Choice (GPS dropdown) ──────────────────────── */
+
+.location-choice {
+  max-width: 600px; margin: 0 auto 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+.location-choice-header {
+  padding: 0.8rem 1rem;
+  font-size: 13px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+.location-choice-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  font-size: 15px; color: var(--text-primary);
+  transition: background 0.15s, border-color 0.15s;
+  border-bottom: 1px solid var(--border-light);
+  border-left: 3px solid transparent;
+}
+.location-choice-item:last-child { border-bottom: none; }
+.location-choice-item:hover {
+  background: rgba(5, 150, 105, 0.03);
+  border-left-color: var(--color-accent);
+}
+.location-choice-item .lc-icon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-secondary);
+  border-radius: 8px; color: var(--text-muted); flex-shrink: 0;
+}
+.location-choice-item:hover .lc-icon { color: var(--color-accent); background: rgba(5,150,105,0.06); }
+.location-choice-item .lc-name { font-weight: 600; }
+.location-choice-item .lc-detail { font-size: 13px; color: var(--text-muted); margin-top: 0.1rem; }
+.location-choice-item .lc-distance { font-family: var(--font-mono); font-size: 12px; color: var(--text-light); margin-left: auto; flex-shrink: 0; }
+
+/* ── Month Divider (transition marker) ──────────────────── */
+
+.month-divider td {
+  padding: 0 !important;
+  border-bottom: none !important;
+  background: transparent !important;
+}
+.month-divider-inner {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.6rem 18px;
+}
+.month-divider-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
+}
+.month-divider-text {
+  font-family: var(--font-heading);
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--color-accent);
+  white-space: nowrap;
+  padding: 0.2rem 0.75rem;
+  background: rgba(5, 150, 105, 0.04);
+  border: 1px solid rgba(5, 150, 105, 0.12);
+  border-radius: 20px;
+}
+.month-divider { cursor: default !important; }
+.month-divider:hover { background: transparent !important; }
 
 /* ── RTL ──────────────────────────────────────────────────── */
 

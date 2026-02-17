@@ -45,8 +45,8 @@
     dayData: null,
     ramadanMeta: null,
     hijriData: null,
-    viewMode: 'month',
-    hijriMode: true,
+    viewMode: 'week',
+    hijriMode: false,
     selectedIndex: -1,
     countdownInterval: null
   };
@@ -160,6 +160,7 @@
     dayView.style.display = 'none';
     docsView.style.display = 'none';
     hideDisambiguation();
+    hideLocationChoice();
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -281,6 +282,51 @@
     return h.day + ' ' + monthName + ' ' + h.year + ' AH';
   }
 
+  function haversine(lat1, lon1, lat2, lon2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function findNearestCities(lat, lon, count) {
+    if (!state.cities.length || !state.cities[0].lat) return [];
+    return state.cities
+      .map(function (c) { return { city: c, distance: haversine(lat, lon, c.lat, c.lon) }; })
+      .sort(function (a, b) { return a.distance - b.distance; })
+      .slice(0, count);
+  }
+
+  function fmtDistance(km) {
+    return km < 1 ? '< 1 km' : Math.round(km) + ' km';
+  }
+
+  function getHijriForDate(dateStr) {
+    if (!state.hijriData || !state.hijriData.hijri_date) return null;
+    var anchor = state.hijriData.hijri_date;
+    var anchorDate = new Date(isoDate(new Date()) + 'T12:00:00');
+    var targetDate = new Date(dateStr + 'T12:00:00');
+    var dayDiff = Math.round((targetDate - anchorDate) / 86400000);
+    var day = anchor.day + dayDiff;
+    var month = anchor.month;
+    var year = anchor.year;
+    var daysInMonth = [0, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
+    while (day > daysInMonth[month]) {
+      day -= daysInMonth[month];
+      month++;
+      if (month > 12) { month = 1; year++; }
+    }
+    while (day < 1) {
+      month--;
+      if (month < 1) { month = 12; year--; }
+      day += daysInMonth[month];
+    }
+    return { day: day, month: month, year: year };
+  }
+
   // ═══════════════════════════════════════════════════════════
   //  8. AUTOCOMPLETE
   // ═══════════════════════════════════════════════════════════
@@ -380,20 +426,7 @@
           gpsBtn.classList.remove('locating');
           var lat = pos.coords.latitude;
           var lon = pos.coords.longitude;
-          cityInput.value = formatCoords(lat, lon);
-          // Use coords directly
-          showLoading();
-          var loc = {
-            name: formatCoords(lat, lon),
-            lat: lat,
-            lon: lon,
-            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            tz_label: Intl.DateTimeFormat().resolvedOptions().timeZone + ' (Local Time)',
-            formatted_coords: formatCoords(lat, lon),
-            source: 'GPS',
-            confidence: 1.0
-          };
-          fetchRamadanMonth(loc);
+          showLocationChoice(lat, lon);
         },
         function (err) {
           gpsBtn.classList.remove('locating');
@@ -402,6 +435,78 @@
         { timeout: 10000, enableHighAccuracy: false }
       );
     });
+  }
+
+  function showLocationChoice(lat, lon) {
+    var container = $('location-choice');
+    if (!container) return;
+
+    var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var nearest = findNearestCities(lat, lon, 3);
+
+    var html = '<div class="location-choice-header">Choose your location</div>';
+
+    // Exact coordinates option
+    html += '<div class="location-choice-item" data-type="exact">' +
+      '<div class="lc-icon"><i data-lucide="crosshair" class="w-4 h-4"></i></div>' +
+      '<div><div class="lc-name">Use Exact Location</div>' +
+      '<div class="lc-detail">' + escapeHtml(formatCoords(lat, lon)) + '</div></div></div>';
+
+    // Nearest cities
+    nearest.forEach(function (n) {
+      var cityCountry = filterSensitiveText(n.city.country);
+      html += '<div class="location-choice-item" data-type="city" ' +
+        'data-name="' + escapeHtml(n.city.name) + '" ' +
+        'data-lat="' + n.city.lat + '" data-lon="' + n.city.lon + '" ' +
+        'data-country="' + escapeHtml(cityCountry) + '">' +
+        '<div class="lc-icon"><i data-lucide="building-2" class="w-4 h-4"></i></div>' +
+        '<div><div class="lc-name">' + escapeHtml(capitalize(n.city.name)) + '</div>' +
+        '<div class="lc-detail">' + escapeHtml(cityCountry) + '</div></div>' +
+        '<span class="lc-distance">~' + fmtDistance(n.distance) + '</span></div>';
+    });
+
+    container.innerHTML = html;
+    container.style.display = 'block';
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    container.querySelectorAll('.location-choice-item').forEach(function (item) {
+      item.addEventListener('click', function () {
+        container.style.display = 'none';
+        var loc;
+        if (item.dataset.type === 'exact') {
+          loc = {
+            name: formatCoords(lat, lon),
+            lat: lat, lon: lon, tz: tz,
+            tz_label: tz + ' (Local Time)',
+            formatted_coords: formatCoords(lat, lon),
+            source: 'GPS', confidence: 1.0
+          };
+        } else {
+          var cLat = parseFloat(item.dataset.lat);
+          var cLon = parseFloat(item.dataset.lon);
+          loc = {
+            name: item.dataset.name,
+            country: item.dataset.country,
+            lat: cLat, lon: cLon, tz: tz,
+            tz_label: tz + ' (Local Time)',
+            formatted_coords: formatCoords(cLat, cLon),
+            source: 'GPS + City', confidence: 0.95
+          };
+        }
+        cityInput.value = loc.name;
+        showLoading();
+        if (state.hijriMode) {
+          fetchRamadanMonth(loc);
+        } else {
+          fetchGregorianMonth(loc);
+        }
+      });
+    });
+  }
+
+  function hideLocationChoice() {
+    var el = $('location-choice');
+    if (el) el.style.display = 'none';
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -612,6 +717,7 @@
   function loadCalendarForCity(city) {
     showLoading();
     hideDisambiguation();
+    hideLocationChoice();
 
     api.resolve(city)
       .then(function (loc) {
@@ -619,14 +725,18 @@
         if (state.hijriMode) {
           fetchRamadanMonth(loc);
         } else {
-          fetchRamadanMonth(loc);
+          fetchGregorianMonth(loc);
         }
       })
       .catch(function (err) {
         if (err.message === 'DISAMBIGUATE') {
           showDisambiguation(err.data, function (loc) {
             loc = filterLocation(loc);
-            fetchRamadanMonth(loc);
+            if (state.hijriMode) {
+              fetchRamadanMonth(loc);
+            } else {
+              fetchGregorianMonth(loc);
+            }
           });
         } else {
           showError(err.message);
@@ -700,10 +810,27 @@
     var month = now.getMonth() + 1;
 
     showLoading();
-    api.month({ lat: loc.lat, lon: loc.lon, tz: loc.tz, year: year, month: month })
-      .then(function (monthData) {
-        var calData = monthData.map(function (d, i) {
-          return { date: d.date, ramadanDay: i + 1, data: d };
+    Promise.all([
+      api.hijri({ lat: loc.lat, lon: loc.lon, tz: loc.tz }),
+      api.month({ lat: loc.lat, lon: loc.lon, tz: loc.tz, year: year, month: month })
+    ])
+      .then(function (results) {
+        var hijriData = results[0];
+        var monthData = results[1];
+
+        state.hijriData = hijriData;
+        var meta = hijriData.ramadan;
+        var startDate = new Date(meta.start + 'T12:00:00');
+        var endDate = new Date(meta.end + 'T12:00:00');
+        state.ramadanMeta = {
+          startDate: startDate, endDate: endDate,
+          days: meta.days, hijriYear: meta.hijri_year,
+          conjunction: meta.conjunction, visibility: meta.visibility,
+          shawwalStart: meta.shawwal_start
+        };
+
+        var calData = monthData.map(function (d) {
+          return { date: d.date, data: d };
         });
         state.calendarData = calData;
         renderCalendar(loc, calData);
@@ -722,6 +849,19 @@
       (loc.country_code ? '&cc=' + encodeURIComponent(loc.country_code) : '');
     window.history.pushState({}, '', href);
     navigateToRoute('day');
+  }
+
+  function createTransitionRow(text, colspan) {
+    var tr = document.createElement('tr');
+    tr.className = 'month-divider';
+    var td = document.createElement('td');
+    td.colSpan = colspan;
+    td.innerHTML = '<div class="month-divider-inner">' +
+      '<span class="month-divider-line"></span>' +
+      '<span class="month-divider-text">' + escapeHtml(text) + '</span>' +
+      '<span class="month-divider-line"></span></div>';
+    tr.appendChild(td);
+    return tr;
   }
 
   function renderCalendar(loc, days) {
@@ -743,6 +883,22 @@
     gregDisplay.textContent = new Date().toLocaleDateString('en', {
       weekday: 'short', year: 'numeric', month: 'long', day: 'numeric'
     });
+
+    // Today Hero Banner
+    var todayHero = $('today-hero');
+    var todayHeroText = $('today-hero-text');
+    if (todayHero && todayHeroText) {
+      var now = new Date();
+      var gregPart = now.toLocaleDateString('en', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      });
+      var hijriPart = '';
+      if (state.hijriData && state.hijriData.hijri_date) {
+        hijriPart = formatHijriDate(state.hijriData.hijri_date);
+      }
+      todayHeroText.textContent = gregPart + (hijriPart ? ' \u2014 ' + hijriPart : '');
+      todayHero.style.display = 'block';
+    }
 
     // Ramadan header
     var meta = state.ramadanMeta;
@@ -768,25 +924,64 @@
     tbody.innerHTML = '';
     var todayStr = isoDate(new Date());
 
-    visibleDays.forEach(function (day) {
+    var prevMonth = -1;
+    visibleDays.forEach(function (day, idx) {
+      var dateObj = new Date(day.date + 'T12:00:00');
+
+      // Month transition dividers
+      if (idx > 0) {
+        if (state.hijriMode) {
+          // In Hijri mode, check Gregorian month change
+          var curMonth = dateObj.getMonth();
+          if (prevMonth !== -1 && curMonth !== prevMonth) {
+            var monthLabel = dateObj.toLocaleDateString('en', { month: 'long', year: 'numeric' });
+            tbody.appendChild(createTransitionRow(monthLabel, 8));
+          }
+        } else {
+          // In Gregorian mode, check if Ramadan starts on this day
+          if (state.ramadanMeta) {
+            var ramStart = isoDate(state.ramadanMeta.startDate);
+            var ramEnd = state.ramadanMeta.shawwalStart;
+            if (day.date === ramStart) {
+              tbody.appendChild(createTransitionRow('Start of Ramadan ' + state.ramadanMeta.hijriYear + ' AH', 8));
+            } else if (ramEnd && day.date === ramEnd) {
+              tbody.appendChild(createTransitionRow('Eid al-Fitr \u2014 Shawwal ' + state.ramadanMeta.hijriYear + ' AH', 8));
+            }
+          }
+        }
+      }
+      prevMonth = dateObj.getMonth();
+
       var tr = document.createElement('tr');
       if (day.date === todayStr) tr.className = 'today-row';
 
-      var dateObj = new Date(day.date + 'T12:00:00');
       var dayName = dateObj.toLocaleDateString('en', { weekday: 'short' });
       var monthDay = dateObj.toLocaleDateString('en', { month: 'short', day: 'numeric' });
 
-      // Day number
-      var tdDay = document.createElement('td');
-      tdDay.className = 'cal-day-num';
-      tdDay.textContent = state.hijriMode ? day.ramadanDay : dateObj.getDate();
-      tr.appendChild(tdDay);
-
-      // Date
+      // Column 1: Date (Day Name + Gregorian Date)
       var tdDate = document.createElement('td');
       tdDate.className = 'cal-date';
-      tdDate.textContent = dayName + ', ' + monthDay;
+      tdDate.innerHTML = '<span class="cal-date-day">' + escapeHtml(dayName) + '</span>, ' +
+        '<span class="cal-date-greg">' + escapeHtml(monthDay) + '</span>';
       tr.appendChild(tdDate);
+
+      // Column 2: Hijri
+      var tdHijri = document.createElement('td');
+      tdHijri.className = 'cal-hijri-cell';
+      var hijriInfo = getHijriForDate(day.date);
+      if (hijriInfo) {
+        if (hijriInfo.day === 1) {
+          var monthName = HIJRI_MONTH_NAMES[hijriInfo.month] || '';
+          tdHijri.innerHTML = '<span class="hijri-badge">1 ' + escapeHtml(monthName) + '</span>';
+        } else {
+          tdHijri.textContent = hijriInfo.day;
+        }
+      } else if (day.ramadanDay) {
+        tdHijri.textContent = day.ramadanDay;
+      } else {
+        tdHijri.textContent = '';
+      }
+      tr.appendChild(tdHijri);
 
       // Prayer times
       PRAYER_NAMES.forEach(function (key) {
@@ -1464,6 +1659,7 @@
     dayView.style.display = 'none';
     docsView.style.display = 'none';
     hideDisambiguation();
+    hideLocationChoice();
     loadingState.style.display = 'block';
   }
 
