@@ -17,11 +17,20 @@
   };
 
   var METHOD_COLORS = {
-    'Standard': '#16A34A',
-    'Projected': '#D97706',
+    'Standard': '#059669',
+    'Projected': '#b8972e',
     'Virtual': '#7C3AED',
     'None': '#9CA3AF'
   };
+
+  var HIJRI_MONTH_NAMES = [
+    '', 'Muharram', 'Safar', 'Rabi al-Awwal', 'Rabi al-Thani',
+    'Jumada al-Ula', 'Jumada al-Thani', 'Rajab', 'Sha\'ban',
+    'Ramadan', 'Shawwal', 'Dhu al-Qi\'dah', 'Dhu al-Hijjah'
+  ];
+
+  // Content sensitivity filter
+  var FILTERED_TERMS = ['israel', 'israeli'];
 
   // ═══════════════════════════════════════════════════════════
   //  2. STATE
@@ -32,8 +41,12 @@
     currentLoc: null,
     currentRoute: 'calendar',
     calendarData: null,
+    allDaysCache: null,
     dayData: null,
     ramadanMeta: null,
+    hijriData: null,
+    viewMode: 'month',
+    hijriMode: true,
     selectedIndex: -1,
     countdownInterval: null
   };
@@ -46,6 +59,7 @@
   var cityInput = $('city-input');
   var dateInput = $('date-input');
   var goBtn = $('go-btn');
+  var gpsBtn = $('gps-btn');
   var errorState = $('error-state');
   var errorMsg = $('error-msg');
   var loadingState = $('loading-state');
@@ -57,7 +71,35 @@
   var searchSection = $('search-section');
 
   // ═══════════════════════════════════════════════════════════
-  //  4. ROUTER
+  //  4. CONTENT FILTER
+  // ═══════════════════════════════════════════════════════════
+
+  function filterSensitiveText(text) {
+    if (!text) return text;
+    var result = text;
+    FILTERED_TERMS.forEach(function (term) {
+      var re = new RegExp('\\b' + term + '\\b', 'gi');
+      result = result.replace(re, '');
+    });
+    // Remove Hebrew characters (Unicode range U+0590-U+05FF)
+    result = result.replace(/[\u0590-\u05FF]+/g, '');
+    // Clean up double commas, leading/trailing commas, extra spaces
+    result = result.replace(/,\s*,/g, ',').replace(/^\s*,\s*/, '').replace(/\s*,\s*$/, '');
+    result = result.replace(/\s{2,}/g, ' ').trim();
+    return result;
+  }
+
+  function filterLocation(loc) {
+    if (!loc) return loc;
+    var filtered = Object.assign({}, loc);
+    if (filtered.name) filtered.name = filterSensitiveText(filtered.name);
+    if (filtered.country) filtered.country = filterSensitiveText(filtered.country);
+    if (filtered.display_name) filtered.display_name = filterSensitiveText(filtered.display_name);
+    return filtered;
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  5. ROUTER
   // ═══════════════════════════════════════════════════════════
 
   function getRoute() {
@@ -68,7 +110,7 @@
   }
 
   function setActiveNav(route) {
-    document.querySelectorAll('.polaris-nav .nav-link').forEach(function (link) {
+    document.querySelectorAll('.header-nav .nav-link').forEach(function (link) {
       link.classList.remove('active');
       if (link.dataset.route === route) {
         link.classList.add('active');
@@ -77,8 +119,7 @@
   }
 
   function initRouter() {
-    // SPA-style navigation
-    document.querySelectorAll('.polaris-nav .nav-link').forEach(function (link) {
+    document.querySelectorAll('.header-nav .nav-link[data-route]').forEach(function (link) {
       link.addEventListener('click', function (e) {
         e.preventDefault();
         var href = this.getAttribute('href');
@@ -122,7 +163,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  5. API LAYER
+  //  6. API LAYER
   // ═══════════════════════════════════════════════════════════
 
   var api = {
@@ -179,7 +220,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  6. UTILITIES
+  //  7. UTILITIES
   // ═══════════════════════════════════════════════════════════
 
   function capitalize(s) {
@@ -224,14 +265,24 @@
   }
 
   function displayName(loc) {
-    var name = capitalize(loc.name);
-    if (loc.country) name += ', ' + loc.country;
-    else if (loc.country_code) name += ', ' + loc.country_code;
+    var name = capitalize(filterSensitiveText(loc.name));
+    if (loc.country) {
+      var country = filterSensitiveText(loc.country);
+      if (country) name += ', ' + country;
+    } else if (loc.country_code) {
+      name += ', ' + loc.country_code;
+    }
     return name;
   }
 
+  function formatHijriDate(h) {
+    if (!h) return '';
+    var monthName = HIJRI_MONTH_NAMES[h.month] || '';
+    return h.day + ' ' + monthName + ' ' + h.year + ' AH';
+  }
+
   // ═══════════════════════════════════════════════════════════
-  //  7. AUTOCOMPLETE
+  //  8. AUTOCOMPLETE
   // ═══════════════════════════════════════════════════════════
 
   function setupAutocomplete(onSelect) {
@@ -248,10 +299,11 @@
 
       autocompleteList.innerHTML = '';
       matches.forEach(function (city) {
+        var cityCountry = filterSensitiveText(city.country);
         var item = document.createElement('div');
         item.className = 'autocomplete-item';
         item.innerHTML = '<span>' + escapeHtml(capitalize(city.name)) + '</span>' +
-          '<span class="country-badge">' + escapeHtml(city.country) + '</span>';
+          '<span class="country-badge">' + escapeHtml(cityCountry) + '</span>';
         item.addEventListener('mousedown', function (e) {
           e.preventDefault();
           cityInput.value = capitalize(city.name);
@@ -312,7 +364,48 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  8. NOW DASHBOARD
+  //  9. GPS AUTO-DETECT
+  // ═══════════════════════════════════════════════════════════
+
+  function initGPS() {
+    if (!gpsBtn) return;
+    gpsBtn.addEventListener('click', function () {
+      if (!navigator.geolocation) {
+        showError('Geolocation is not supported by your browser.');
+        return;
+      }
+      gpsBtn.classList.add('locating');
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          gpsBtn.classList.remove('locating');
+          var lat = pos.coords.latitude;
+          var lon = pos.coords.longitude;
+          cityInput.value = formatCoords(lat, lon);
+          // Use coords directly
+          showLoading();
+          var loc = {
+            name: formatCoords(lat, lon),
+            lat: lat,
+            lon: lon,
+            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            tz_label: Intl.DateTimeFormat().resolvedOptions().timeZone + ' (Local Time)',
+            formatted_coords: formatCoords(lat, lon),
+            source: 'GPS',
+            confidence: 1.0
+          };
+          fetchRamadanMonth(loc);
+        },
+        function (err) {
+          gpsBtn.classList.remove('locating');
+          showError('Location access denied. Please search manually.');
+        },
+        { timeout: 10000, enableHighAccuracy: false }
+      );
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  10. NOW DASHBOARD
   // ═══════════════════════════════════════════════════════════
 
   function updateNowDashboard(days) {
@@ -392,7 +485,63 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  9. CALENDAR VIEW
+  //  11. SHARE FUNCTIONALITY
+  // ═══════════════════════════════════════════════════════════
+
+  function generateShareText() {
+    if (!state.calendarData || !state.calendarData.length || !state.currentLoc) return null;
+
+    var todayStr = isoDate(new Date());
+    var todayData = null;
+    for (var i = 0; i < state.calendarData.length; i++) {
+      if (state.calendarData[i].date === todayStr) {
+        todayData = state.calendarData[i];
+        break;
+      }
+    }
+
+    if (!todayData) {
+      todayData = state.calendarData[0];
+    }
+
+    var loc = displayName(state.currentLoc);
+    var fajr = todayData.data.events.fajr;
+    var maghrib = todayData.data.events.maghrib;
+    var meta = state.ramadanMeta;
+
+    var text = 'Prayer Times - ' + loc + '\n';
+    if (meta && todayData.ramadanDay) {
+      text += 'Ramadan ' + todayData.ramadanDay + ' / ' + meta.hijriYear + ' AH\n';
+    }
+    text += todayData.date + '\n\n';
+    if (fajr && fajr.time) text += 'Fajr (Suhoor ends): ' + fmtTime(fajr.time) + '\n';
+    if (maghrib && maghrib.time) text += 'Maghrib (Iftar): ' + fmtTime(maghrib.time) + '\n';
+    text += '\nvia Polaris Chronos';
+
+    return text;
+  }
+
+  function handleShare(btn) {
+    var text = generateShareText();
+    if (!text) return;
+
+    if (navigator.share) {
+      navigator.share({ text: text }).catch(function () {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        btn.classList.add('copied');
+        var orig = btn.innerHTML;
+        btn.textContent = 'Copied!';
+        setTimeout(function () {
+          btn.innerHTML = orig;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  12. CALENDAR VIEW
   // ═══════════════════════════════════════════════════════════
 
   function initCalendar() {
@@ -423,6 +572,40 @@
       loadCalendarForCity(name);
     });
 
+    // View mode tabs
+    document.querySelectorAll('.view-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.view-tab').forEach(function (t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        state.viewMode = tab.dataset.view;
+        if (state.calendarData && state.currentLoc) {
+          renderCalendar(state.currentLoc, state.calendarData);
+        }
+      });
+    });
+
+    // Hijri toggle
+    var hijriToggle = $('hijri-mode');
+    if (hijriToggle) {
+      hijriToggle.checked = state.hijriMode;
+      hijriToggle.addEventListener('change', function () {
+        state.hijriMode = this.checked;
+        if (state.currentLoc) {
+          if (state.hijriMode) {
+            fetchRamadanMonth(state.currentLoc);
+          } else {
+            fetchGregorianMonth(state.currentLoc);
+          }
+        }
+      });
+    }
+
+    // Share button
+    var shareBtn = $('share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', function () { handleShare(this); });
+    }
+
     loadCalendarForCity(city);
   }
 
@@ -432,11 +615,17 @@
 
     api.resolve(city)
       .then(function (loc) {
-        fetchRamadanMonth(loc);
+        loc = filterLocation(loc);
+        if (state.hijriMode) {
+          fetchRamadanMonth(loc);
+        } else {
+          fetchRamadanMonth(loc);
+        }
       })
       .catch(function (err) {
         if (err.message === 'DISAMBIGUATE') {
           showDisambiguation(err.data, function (loc) {
+            loc = filterLocation(loc);
             fetchRamadanMonth(loc);
           });
         } else {
@@ -446,25 +635,23 @@
   }
 
   function fetchRamadanMonth(loc) {
-    // First fetch Hijri data to get dynamic Ramadan start/end
     api.hijri({ lat: loc.lat, lon: loc.lon, tz: loc.tz })
       .then(function (hijriData) {
+        state.hijriData = hijriData;
         var meta = hijriData.ramadan;
         var startDate = new Date(meta.start + 'T12:00:00');
         var endDate = new Date(meta.end + 'T12:00:00');
-        var days = meta.days;
 
         state.ramadanMeta = {
           startDate: startDate,
           endDate: endDate,
-          days: days,
+          days: meta.days,
           hijriYear: meta.hijri_year,
           conjunction: meta.conjunction,
           visibility: meta.visibility,
           shawwalStart: meta.shawwal_start
         };
 
-        // Determine which Gregorian months we need to fetch
         var startMonth = startDate.getMonth() + 1;
         var startYear = startDate.getFullYear();
         var endMonth = endDate.getMonth() + 1;
@@ -486,6 +673,8 @@
           monthData.forEach(function (d) { allDays[d.date] = d; });
         });
 
+        state.allDaysCache = allDays;
+
         var ramadanData = [];
         var meta = state.ramadanMeta;
         for (var i = 0; i < meta.days; i++) {
@@ -499,6 +688,25 @@
 
         state.calendarData = ramadanData;
         renderCalendar(loc, ramadanData);
+      })
+      .catch(function (err) {
+        showError('Failed to load calendar: ' + err.message);
+      });
+  }
+
+  function fetchGregorianMonth(loc) {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth() + 1;
+
+    showLoading();
+    api.month({ lat: loc.lat, lon: loc.lon, tz: loc.tz, year: year, month: month })
+      .then(function (monthData) {
+        var calData = monthData.map(function (d, i) {
+          return { date: d.date, ramadanDay: i + 1, data: d };
+        });
+        state.calendarData = calData;
+        renderCalendar(loc, calData);
       })
       .catch(function (err) {
         showError('Failed to load calendar: ' + err.message);
@@ -521,16 +729,38 @@
     calendarView.style.display = 'block';
     state.currentLoc = loc;
 
-    // Location banner
+    // City dashboard
     $('cal-loc-name').textContent = displayName(loc);
     $('cal-loc-tz').textContent = loc.tz_label || loc.tz;
     $('cal-loc-coords').textContent = loc.formatted_coords || formatCoords(loc.lat, loc.lon);
 
+    // Dual date display
+    var hijriDisplay = $('hijri-date-display');
+    var gregDisplay = $('gregorian-date-display');
+    if (state.hijriData && state.hijriData.hijri_date) {
+      hijriDisplay.textContent = formatHijriDate(state.hijriData.hijri_date);
+    }
+    gregDisplay.textContent = new Date().toLocaleDateString('en', {
+      weekday: 'short', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
     // Ramadan header
     var meta = state.ramadanMeta;
-    $('ramadan-title').textContent = 'Ramadan ' + (meta ? meta.hijriYear + ' AH' : '');
-    if (meta) {
+    $('ramadan-title').textContent = state.hijriMode ?
+      'Ramadan ' + (meta ? meta.hijriYear + ' AH' : '') :
+      new Date().toLocaleDateString('en', { month: 'long', year: 'numeric' });
+    if (meta && state.hijriMode) {
       $('ramadan-dates').textContent = displayDate(meta.startDate) + ' \u2014 ' + displayDate(meta.endDate);
+    } else {
+      $('ramadan-dates').textContent = '';
+    }
+
+    // Determine which days to show based on view mode
+    var visibleDays = days;
+    if (state.viewMode === 'week') {
+      visibleDays = getWeekDays(days);
+    } else if (state.viewMode === 'day') {
+      visibleDays = getTodayDay(days);
     }
 
     // Calendar table
@@ -538,7 +768,7 @@
     tbody.innerHTML = '';
     var todayStr = isoDate(new Date());
 
-    days.forEach(function (day) {
+    visibleDays.forEach(function (day) {
       var tr = document.createElement('tr');
       if (day.date === todayStr) tr.className = 'today-row';
 
@@ -549,7 +779,7 @@
       // Day number
       var tdDay = document.createElement('td');
       tdDay.className = 'cal-day-num';
-      tdDay.textContent = day.ramadanDay;
+      tdDay.textContent = state.hijriMode ? day.ramadanDay : dateObj.getDate();
       tr.appendChild(tdDay);
 
       // Date
@@ -558,7 +788,7 @@
       tdDate.textContent = dayName + ', ' + monthDay;
       tr.appendChild(tdDate);
 
-      // Prayer times with method badges
+      // Prayer times
       PRAYER_NAMES.forEach(function (key) {
         var ev = day.data.events[key];
         var td = document.createElement('td');
@@ -575,8 +805,8 @@
             var badge = document.createElement('span');
             var badgeClass = method === 'virtual' ? 'virtual-h' : method;
             badge.className = 'method-badge ' + badgeClass;
-            badge.style.fontSize = '0.65rem';
-            badge.style.padding = '0.05rem 0.35rem';
+            badge.style.fontSize = '0.6rem';
+            badge.style.padding = '0.05rem 0.3rem';
             badge.textContent = method.charAt(0).toUpperCase();
             td.appendChild(badge);
           }
@@ -595,12 +825,32 @@
       tbody.appendChild(tr);
     });
 
-    // Now dashboard
     updateNowDashboard(days);
   }
 
+  function getWeekDays(days) {
+    var todayStr = isoDate(new Date());
+    var todayIdx = -1;
+    for (var i = 0; i < days.length; i++) {
+      if (days[i].date === todayStr) { todayIdx = i; break; }
+    }
+    if (todayIdx === -1) todayIdx = 0;
+
+    var start = Math.max(0, todayIdx);
+    var end = Math.min(days.length, start + 7);
+    return days.slice(start, end);
+  }
+
+  function getTodayDay(days) {
+    var todayStr = isoDate(new Date());
+    for (var i = 0; i < days.length; i++) {
+      if (days[i].date === todayStr) return [days[i]];
+    }
+    return days.length > 0 ? [days[0]] : [];
+  }
+
   // ═══════════════════════════════════════════════════════════
-  //  10. DAY VIEW
+  //  13. DAY VIEW
   // ═══════════════════════════════════════════════════════════
 
   function initDayView() {
@@ -612,8 +862,8 @@
     var lat = parseFloat(params.get('lat'));
     var lon = parseFloat(params.get('lon'));
     var tz = params.get('tz');
-    var name = params.get('name') || '';
-    var country = params.get('country') || '';
+    var name = filterSensitiveText(params.get('name') || '');
+    var country = filterSensitiveText(params.get('country') || '');
     var cc = params.get('cc') || '';
 
     if (!date || isNaN(lat) || isNaN(lon) || !tz) {
@@ -621,7 +871,6 @@
       return;
     }
 
-    // Location banner
     var locDisplayName = capitalize(name);
     if (country) locDisplayName += ', ' + country;
     else if (cc) locDisplayName += ', ' + cc;
@@ -630,7 +879,6 @@
     $('day-loc-tz').textContent = tz + ' (Local Time)';
     $('day-loc-coords').textContent = formatCoords(lat, lon);
 
-    // Day header
     var dateObj = new Date(date + 'T12:00:00');
     var meta = state.ramadanMeta;
     var ramadanDay = meta ? Math.round((dateObj - meta.startDate) / 86400000) + 1 : -1;
@@ -641,10 +889,8 @@
     $('day-subtitle').textContent =
       dateObj.toLocaleDateString('en', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // City input
     cityInput.value = capitalize(name);
 
-    // Search -> go back to calendar
     goBtn.onclick = function () {
       var c = cityInput.value.trim();
       if (c) {
@@ -657,6 +903,12 @@
       window.history.pushState({}, '', '/?city=' + encodeURIComponent(cityName));
       navigateToRoute('calendar');
     });
+
+    // Share button
+    var dayShareBtn = $('day-share-btn');
+    if (dayShareBtn) {
+      dayShareBtn.addEventListener('click', function () { handleShare(this); });
+    }
 
     // Strategy toggle
     var currentStrategy = 'projected45';
@@ -703,12 +955,12 @@
 
     if (allStandard) {
       stratNote.style.display = 'flex';
-      stratNote.className = 'strategy-note all-standard mb-3';
+      stratNote.className = 'strategy-note all-standard';
       stratIcon.textContent = '\u2714';
       stratText.textContent = 'All times are astronomically computed (real sun positions).';
     } else {
       stratNote.style.display = 'flex';
-      stratNote.className = 'strategy-note has-projected mb-3';
+      stratNote.className = 'strategy-note has-projected';
       stratIcon.textContent = '\u26A0';
       stratText.textContent = 'Some times are projected or virtual due to extreme latitude conditions.';
     }
@@ -812,7 +1064,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  11. HORIZON DIAL SVG
+  //  14. HORIZON DIAL SVG
   // ═══════════════════════════════════════════════════════════
 
   function renderHorizonDial(data) {
@@ -832,7 +1084,7 @@
 
     if (prayerTimes.length < 2) {
       container.style.display = 'block';
-      dial.innerHTML = '<div style="text-align:center;padding:2rem;color:#9CA3AF;">' +
+      dial.innerHTML = '<div style="text-align:center;padding:2rem;color:#7a7a72;">' +
         'Insufficient solar data for horizon visualization (polar conditions).</div>';
       return;
     }
@@ -840,12 +1092,11 @@
     container.style.display = 'block';
     prayerTimes.sort(function (a, b) { return a.hours - b.hours; });
 
-    // Chart dimensions
     var W = 800, H = 420;
     var PAD_L = 60, PAD_R = 40, PAD_T = 55, PAD_B = 70;
     var chartW = W - PAD_L - PAD_R;
     var chartH = H - PAD_T - PAD_B;
-    var horizonY = PAD_T + chartH * 0.55; // horizon line at 55% down
+    var horizonY = PAD_T + chartH * 0.55;
 
     var firstHour = prayerTimes[0].hours;
     var lastHour = prayerTimes[prayerTimes.length - 1].hours;
@@ -858,7 +1109,6 @@
 
     function timeToX(h) { return PAD_L + ((h - tMin) / tRange) * chartW; }
 
-    // Altitude curve: parabolic arc peaking at solar noon
     var sunriseIdx = -1, sunsetIdx = -1;
     for (var i = 0; i < prayerTimes.length; i++) {
       if (prayerTimes[i].name === 'sunrise') sunriseIdx = i;
@@ -872,7 +1122,7 @@
 
     function altitudeY(h) {
       var fromNoon = (h - noonH) / (daySpan / 2);
-      var alt = 1 - fromNoon * fromNoon; // parabola: 1 at noon, 0 at rise/set
+      var alt = 1 - fromNoon * fromNoon;
       var aboveSpace = horizonY - PAD_T - 15;
       var belowSpace = 50;
       if (alt >= 0) {
@@ -887,21 +1137,18 @@
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
-    // Sky zone (above horizon)
     var skyRect = document.createElementNS(ns, 'rect');
     skyRect.setAttribute('x', PAD_L); skyRect.setAttribute('y', PAD_T);
     skyRect.setAttribute('width', chartW); skyRect.setAttribute('height', horizonY - PAD_T);
     skyRect.setAttribute('class', 'dial-sky-fill');
     svg.appendChild(skyRect);
 
-    // Ground zone (below horizon)
     var gndRect = document.createElementNS(ns, 'rect');
     gndRect.setAttribute('x', PAD_L); gndRect.setAttribute('y', horizonY);
     gndRect.setAttribute('width', chartW); gndRect.setAttribute('height', PAD_T + chartH - horizonY);
     gndRect.setAttribute('class', 'dial-ground-fill');
     svg.appendChild(gndRect);
 
-    // Zone labels
     var skyLabel = document.createElementNS(ns, 'text');
     skyLabel.setAttribute('x', PAD_L + 8); skyLabel.setAttribute('y', PAD_T + 18);
     skyLabel.setAttribute('class', 'dial-zone-label');
@@ -914,7 +1161,6 @@
     gndLabel.textContent = 'BELOW HORIZON';
     svg.appendChild(gndLabel);
 
-    // Horizon line
     var hLine = document.createElementNS(ns, 'line');
     hLine.setAttribute('x1', PAD_L); hLine.setAttribute('y1', horizonY);
     hLine.setAttribute('x2', PAD_L + chartW); hLine.setAttribute('y2', horizonY);
@@ -928,7 +1174,6 @@
     hLabel.textContent = '0\u00B0';
     svg.appendChild(hLabel);
 
-    // Sun path: smooth curve with filled area
     var curvePoints = [];
     var steps = 80;
     for (var s = 0; s <= steps; s++) {
@@ -939,7 +1184,6 @@
       curvePoints.push({ x: cx, y: cy });
     }
 
-    // Filled area between curve and horizon
     var areaPath = 'M ' + curvePoints[0].x.toFixed(1) + ' ' + horizonY;
     for (var k = 0; k < curvePoints.length; k++) {
       areaPath += ' L ' + curvePoints[k].x.toFixed(1) + ' ' + curvePoints[k].y.toFixed(1);
@@ -950,33 +1194,27 @@
     area.setAttribute('class', 'dial-sun-area');
     svg.appendChild(area);
 
-    // Sun path line
     var linePath = 'M ' + curvePoints[0].x.toFixed(1) + ' ' + curvePoints[0].y.toFixed(1);
-    for (var k = 1; k < curvePoints.length; k++) {
-      linePath += ' L ' + curvePoints[k].x.toFixed(1) + ' ' + curvePoints[k].y.toFixed(1);
+    for (var k2 = 1; k2 < curvePoints.length; k2++) {
+      linePath += ' L ' + curvePoints[k2].x.toFixed(1) + ' ' + curvePoints[k2].y.toFixed(1);
     }
     var sunLine = document.createElementNS(ns, 'path');
     sunLine.setAttribute('d', linePath);
     sunLine.setAttribute('class', 'dial-sun-path');
     svg.appendChild(sunLine);
 
-    // Prayer markers
-    var labelSlots = []; // collision avoidance for labels
-
-    prayerTimes.forEach(function (pt, idx) {
+    prayerTimes.forEach(function (pt) {
       var mx = timeToX(pt.hours);
       var my = altitudeY(pt.hours);
       my = Math.max(PAD_T + 5, Math.min(PAD_T + chartH - 5, my));
       var color = METHOD_COLORS[pt.method] || '#9CA3AF';
 
-      // Vertical guide line from bottom to dot
       var vLine = document.createElementNS(ns, 'line');
       vLine.setAttribute('x1', mx); vLine.setAttribute('y1', H - PAD_B + 5);
       vLine.setAttribute('x2', mx); vLine.setAttribute('y2', my);
       vLine.setAttribute('class', 'dial-marker-line');
       svg.appendChild(vLine);
 
-      // Dot on the curve
       var dot = document.createElementNS(ns, 'circle');
       dot.setAttribute('cx', mx); dot.setAttribute('cy', my);
       dot.setAttribute('r', 7);
@@ -984,7 +1222,6 @@
       dot.setAttribute('class', 'dial-marker-dot');
       svg.appendChild(dot);
 
-      // Prayer name label (above the chart)
       var nameY = H - PAD_B + 22;
       var nameLabel = document.createElementNS(ns, 'text');
       nameLabel.setAttribute('x', mx); nameLabel.setAttribute('y', nameY);
@@ -993,7 +1230,6 @@
       nameLabel.textContent = capitalize(pt.name);
       svg.appendChild(nameLabel);
 
-      // Time label (below the name)
       var hh = Math.floor(pt.hours);
       var mm = Math.round((pt.hours - hh) * 60);
       var timeStr = pad2(hh) + ':' + pad2(mm);
@@ -1006,7 +1242,6 @@
       svg.appendChild(timeLabel);
     });
 
-    // Current sun position (if today)
     var todayStr = isoDate(new Date());
     if (data.date === todayStr) {
       var now = new Date();
@@ -1029,7 +1264,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  12. DOCS VIEW
+  //  15. DOCS VIEW — Polaris for Developers
   // ═══════════════════════════════════════════════════════════
 
   function renderDocs() {
@@ -1078,6 +1313,18 @@
         js: "const res = await fetch('/api/month?city=stockholm&year=2026&month=2');\nconst days = await res.json();\ndays.forEach(d => console.log(d.date, d.events.fajr.time));"
       },
       {
+        path: '/api/hijri',
+        desc: 'Get Hijri calendar data including Ramadan start/end dates computed via astronomical crescent visibility (Odeh 2004 criterion).',
+        params: [
+          { name: 'lat', type: 'number', required: true, desc: 'Latitude (-90 to 90)' },
+          { name: 'lon', type: 'number', required: true, desc: 'Longitude (-180 to 180)' },
+          { name: 'tz', type: 'string', required: true, desc: 'IANA timezone' },
+          { name: 'hijri_year', type: 'number', required: false, desc: 'Hijri year (defaults to current)' }
+        ],
+        curl: "curl 'http://localhost:3000/api/hijri?lat=21.42&lon=39.83&tz=Asia/Riyadh'",
+        js: "const res = await fetch('/api/hijri?lat=21.42&lon=39.83&tz=Asia/Riyadh');\nconst data = await res.json();\nconsole.log('Ramadan starts:', data.ramadan.start);"
+      },
+      {
         path: '/api/cities',
         desc: 'List all built-in cities with their country codes. Useful for autocomplete or dropdown implementations.',
         params: [],
@@ -1087,12 +1334,12 @@
     ];
 
     var html = '<div class="docs-header">' +
-      '<h1>API Documentation</h1>' +
-      '<p>Polaris Chronos provides a RESTful API for computing prayer times at any location on Earth, including polar regions with adaptive compensation.</p>' +
+      '<h1>Polaris for Developers</h1>' +
+      '<p>A RESTful API for computing prayer times at any location on Earth, including polar regions with adaptive compensation and astronomical Hijri calendar.</p>' +
       '</div>';
 
     endpoints.forEach(function (ep) {
-      html += '<div class="polaris-card docs-endpoint mb-4">' +
+      html += '<div class="polaris-card docs-endpoint">' +
         '<div class="endpoint-badge get">GET ' + escapeHtml(ep.path) + '</div>' +
         '<p class="endpoint-description">' + escapeHtml(ep.desc) + '</p>';
 
@@ -1118,25 +1365,31 @@
         '</div>';
     });
 
-    // Concepts section
     html += '<div class="docs-concepts">' +
       '<h3>Concepts</h3>' +
-      '<div class="polaris-card mb-3">' +
-      '<p class="mb-3"><span class="concept-badge">DayState</span> Describes the solar condition for a given day at the location.</p>' +
+      '<div class="polaris-card">' +
+      '<p style="margin-bottom:1rem;"><span class="concept-badge">DayState</span> Describes the solar condition for a given day at the location.</p>' +
       '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
       '<li><strong>Normal</strong> \u2014 Standard sunrise/sunset cycle. All times are astronomically computed.</li>' +
       '<li><strong>WhiteNight</strong> \u2014 Sun dips below horizon but not far enough for twilight-based events.</li>' +
       '<li><strong>PolarDay</strong> \u2014 Sun never sets (midnight sun). Sunset/twilight events require compensation.</li>' +
       '<li><strong>PolarNight</strong> \u2014 Sun never rises. Sunrise/daytime events require compensation.</li>' +
       '</ul>' +
-      '<p class="mb-3"><span class="concept-badge">EventMethod</span> How each prayer time was determined.</p>' +
+      '<p style="margin-bottom:1rem;"><span class="concept-badge">EventMethod</span> How each prayer time was determined.</p>' +
       '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
       '<li><strong>Standard</strong> \u2014 Real astronomical calculation from sun position.</li>' +
       '<li><strong>Projected</strong> \u2014 Interpolated from the nearest latitude (45\u00B0) where the event occurs naturally.</li>' +
       '<li><strong>Virtual</strong> \u2014 Computed using virtual horizon techniques for extreme conditions.</li>' +
       '<li><strong>None</strong> \u2014 Event cannot be computed (e.g. no sunset in polar day with strict strategy).</li>' +
       '</ul>' +
-      '<p class="mb-3"><span class="concept-badge">GapStrategy</span> How to handle missing events.</p>' +
+      '<p style="margin-bottom:1rem;"><span class="concept-badge">CrescentVisibility</span> How Ramadan start is determined.</p>' +
+      '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
+      '<li><strong>Zone A</strong> \u2014 Crescent visible to naked eye.</li>' +
+      '<li><strong>Zone B</strong> \u2014 May need optical aid, sometimes naked eye.</li>' +
+      '<li><strong>Zone C</strong> \u2014 Requires optical aid.</li>' +
+      '<li><strong>Zone D</strong> \u2014 Not visible (below Odeh criterion threshold).</li>' +
+      '</ul>' +
+      '<p style="margin-bottom:1rem;"><span class="concept-badge">GapStrategy</span> How to handle missing events.</p>' +
       '<ul style="color:var(--text-secondary);margin-left:1.5rem;margin-bottom:1rem;">' +
       '<li><strong>projected45</strong> \u2014 Project times from latitude 45\u00B0 when local computation fails.</li>' +
       '<li><strong>strict</strong> \u2014 Return "None" for events that cannot be astronomically computed.</li>' +
@@ -1148,7 +1401,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  13. DISAMBIGUATION
+  //  16. DISAMBIGUATION
   // ═══════════════════════════════════════════════════════════
 
   function showDisambiguation(data, onSelect) {
@@ -1163,11 +1416,12 @@
 
     var html = '<p>Multiple locations found for "<strong>' + escapeHtml(data.query) + '</strong>":</p>';
     data.options.forEach(function (opt) {
+      var optCountry = filterSensitiveText(opt.country);
       html += '<button class="disambig-btn" data-cc="' + escapeHtml(opt.country_code) + '" ' +
         'data-lat="' + opt.lat + '" data-lon="' + opt.lon + '" data-tz="' + escapeHtml(opt.tz) + '" ' +
         'data-name="' + escapeHtml(opt.name) + '">' +
         '<span class="disambig-name">' + escapeHtml(opt.name) + '</span>' +
-        '<span class="disambig-detail">' + escapeHtml(opt.country) + ' \u00B7 ' + escapeHtml(opt.tz) + '</span>' +
+        '<span class="disambig-detail">' + escapeHtml(optCountry) + ' \u00B7 ' + escapeHtml(opt.tz) + '</span>' +
         '</button>';
     });
 
@@ -1189,7 +1443,7 @@
           source: 'Nominatim',
           confidence: 0.9,
         };
-        onSelect(loc);
+        onSelect(filterLocation(loc));
       });
     });
   }
@@ -1200,7 +1454,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  14. STATE MANAGEMENT
+  //  17. STATE MANAGEMENT
   // ═══════════════════════════════════════════════════════════
 
   function showLoading() {
@@ -1227,7 +1481,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  15. INIT
+  //  18. INIT
   // ═══════════════════════════════════════════════════════════
 
   // Fetch cities for autocomplete
@@ -1237,13 +1491,14 @@
 
   // Set up router and navigate
   initRouter();
+  initGPS();
   state.currentRoute = getRoute();
   setActiveNav(state.currentRoute);
   navigateToRoute(state.currentRoute);
 
   // Coord copy delegation
   document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('loc-coords')) {
+    if (e.target.classList.contains('city-coords')) {
       var text = e.target.textContent;
       if (!text || !navigator.clipboard) return;
       var el = e.target;
