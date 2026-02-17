@@ -495,11 +495,7 @@
         }
         cityInput.value = loc.name;
         showLoading();
-        if (state.hijriMode) {
-          fetchRamadanMonth(loc);
-        } else {
-          fetchGregorianMonth(loc);
-        }
+        fetchGregorianMonth(loc);
       });
     });
   }
@@ -688,18 +684,15 @@
       });
     });
 
-    // Hijri toggle
+    // Hijri toggle — only changes header display, data always starts from today
     var hijriToggle = $('hijri-mode');
     if (hijriToggle) {
       hijriToggle.checked = state.hijriMode;
       hijriToggle.addEventListener('change', function () {
         state.hijriMode = this.checked;
-        if (state.currentLoc) {
-          if (state.hijriMode) {
-            fetchRamadanMonth(state.currentLoc);
-          } else {
-            fetchGregorianMonth(state.currentLoc);
-          }
+        // Re-render with current data (no refetch needed — Hijri column is always shown)
+        if (state.calendarData && state.currentLoc) {
+          renderCalendar(state.currentLoc, state.calendarData);
         }
       });
     }
@@ -757,11 +750,7 @@
         source: 'GPS', confidence: 1.0
       };
       cityInput.value = loc.name;
-      if (state.hijriMode) {
-        fetchRamadanMonth(loc);
-      } else {
-        fetchGregorianMonth(loc);
-      }
+      fetchGregorianMonth(loc);
     }
   }
 
@@ -773,21 +762,13 @@
     api.resolve(city)
       .then(function (loc) {
         loc = filterLocation(loc);
-        if (state.hijriMode) {
-          fetchRamadanMonth(loc);
-        } else {
-          fetchGregorianMonth(loc);
-        }
+        fetchGregorianMonth(loc);
       })
       .catch(function (err) {
         if (err.message === 'DISAMBIGUATE') {
           showDisambiguation(err.data, function (loc) {
             loc = filterLocation(loc);
-            if (state.hijriMode) {
-              fetchRamadanMonth(loc);
-            } else {
-              fetchGregorianMonth(loc);
-            }
+            fetchGregorianMonth(loc);
           });
         } else {
           showError(err.message);
