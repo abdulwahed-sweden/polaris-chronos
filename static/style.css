@@ -439,24 +439,50 @@
 
 @media (max-width: 768px) {
   .polaris-table { font-size: 13px; }
-  .polaris-table thead th { padding: 10px 12px; font-size: 10px; }
-  .polaris-table tbody td { padding: 10px 12px; }
+  .polaris-table thead th { padding: 10px 10px; font-size: 10px; }
+  .polaris-table tbody td { padding: 10px 10px; }
   .polaris-table td.time-cell { font-size: 15px; }
+  .polaris-table td.cal-day-name { font-size: 13px; min-width: 55px; }
+  .polaris-table td.cal-greg-date { font-size: 13px; }
+  .polaris-table td.cal-hijri-cell { font-size: 13px; min-width: 40px; }
+  .polaris-table td.cal-day-num { font-size: 14px; width: 36px; }
   .horizon-dial { max-width: 100%; }
+  .docs-header h1 { font-size: 1.5rem; }
+  .docs-header p { font-size: 0.9rem; }
+  .location-choice { max-width: 100%; }
 }
 
 @media (max-width: 576px) {
-  .search-bar-row { flex-wrap: wrap; }
-  .search-input-wrap { width: 100%; }
-  .polaris-table { font-size: 12px; }
-  .polaris-table thead th { padding: 8px 10px; }
-  .polaris-table tbody td { padding: 8px 10px; }
-  .polaris-table td.time-cell { font-size: 14px; }
+  .search-bar-row { flex-wrap: wrap; gap: 8px; }
+  .search-input-wrap { width: 100%; flex: none; }
+  .polaris-table { font-size: 11px; }
+  .polaris-table thead th { padding: 8px 6px; font-size: 9px; letter-spacing: 0.03em; }
+  .polaris-table tbody td { padding: 8px 6px; }
+  .polaris-table td.time-cell { font-size: 13px; letter-spacing: 0; }
+  .polaris-table td.cal-day-name { font-size: 12px; min-width: 40px; }
+  .polaris-table td.cal-greg-date { font-size: 11px; }
+  .polaris-table td.cal-hijri-cell { font-size: 11px; min-width: 30px; }
+  .polaris-table td.cal-day-num { font-size: 13px; width: 28px; }
+  .hijri-badge { font-size: 10px; padding: 0.15rem 0.4rem; }
   .strategy-row { width: 100%; }
-  .strat-btn { flex: 1; text-align: center; }
+  .strat-btn { flex: 1; text-align: center; font-size: 14px; padding: 0.5rem 0.8rem; }
   .view-controls { flex-direction: column; align-items: stretch; }
   .view-tabs { width: 100%; }
-  .view-tab { flex: 1; text-align: center; }
-  .polaris-card { padding: 1rem; }
+  .view-tab { flex: 1; text-align: center; font-size: 14px; }
+  .polaris-card { padding: 0.85rem; }
   .docs-code-block { font-size: 11px; padding: 0.75rem; }
+  .method-badge { font-size: 10px; padding: 0.15rem 0.4rem; }
+  .confidence-bar { width: 40px; }
+  .confidence-value { font-size: 11px; }
+  .month-divider-inner { padding: 0.4rem 6px; gap: 0.5rem; }
+  .month-divider-text { font-size: 10px; padding: 0.15rem 0.5rem; }
+}
+
+@media (max-width: 380px) {
+  .polaris-table thead th { padding: 6px 4px; font-size: 8px; }
+  .polaris-table tbody td { padding: 7px 4px; }
+  .polaris-table td.time-cell { font-size: 12px; }
+  .polaris-table td.cal-day-name { font-size: 11px; min-width: 32px; }
+  .polaris-table td.cal-greg-date { font-size: 10px; }
+  .polaris-table td.cal-hijri-cell { font-size: 10px; }
 }
