@@ -435,6 +435,20 @@
 [dir='rtl'] .disambiguation { text-align: right; }
 [dir='rtl'] .disambig-btn { text-align: right; }
 
+/* ── Table scroll hint (mobile) ──────────────────────────── */
+
+.overflow-x-auto { -webkit-overflow-scrolling: touch; }
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 24px;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.04));
+  pointer-events: none;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -453,8 +467,6 @@
 }
 
 @media (max-width: 576px) {
-  .search-bar-row { flex-wrap: wrap; gap: 8px; }
-  .search-input-wrap { width: 100%; flex: none; }
   .polaris-table { font-size: 11px; }
   .polaris-table thead th { padding: 8px 6px; font-size: 9px; letter-spacing: 0.03em; }
   .polaris-table tbody td { padding: 8px 6px; }
